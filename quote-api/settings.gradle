@@ -1,0 +1,8 @@
+rootProject.name = 'quote-api-addon'
+
+include 'quote-api'
+include 'quote-api-starter'
+
+rootProject.children.each { p1 ->
+    p1.buildFileName = "${p1.name}.gradle"
+}

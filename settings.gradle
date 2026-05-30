@@ -1,0 +1,15 @@
+rootProject.name = 'jmix-insurance'
+
+includeBuild 'policy-core'
+includeBuild 'policy-api'
+includeBuild 'quote-core'
+includeBuild 'quote-api'
+
+includeBuild 'insurance-app'
+includeBuild 'account-core'
+includeBuild 'account-api'
+includeBuild 'partner-core'
+includeBuild 'partner-api'
+includeBuild 'common'
+includeBuild 'product-core'
+includeBuild 'product-api'

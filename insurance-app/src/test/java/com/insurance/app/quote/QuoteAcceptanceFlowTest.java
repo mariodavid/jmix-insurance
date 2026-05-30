@@ -1,0 +1,122 @@
+package com.insurance.app.quote;
+
+import com.insurance.account.core.entity.Account;
+import com.insurance.account.core.entity.AccountDocument;
+import com.insurance.app.test_support.BaseIntegrationTest;
+import com.insurance.app.test_support.DatabaseCleanup;
+import com.insurance.app.test_support.QuoteFactory;
+import com.insurance.policy.core.entity.Policy;
+import com.insurance.product.api.dto.PaymentFrequency;
+import com.insurance.quote.api.service.QuoteService;
+import com.insurance.quote.core.entity.Quote;
+import io.jmix.core.DataManager;
+import io.jmix.core.Id;
+import io.jmix.core.querycondition.PropertyCondition;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import static com.insurance.app.test_support.assertion.InsuranceAssertions.assertThat;
+
+/**
+ * Testet die vollständige Akzeptanzkette: QuoteService.accept() → PolicyService → PolicyCreatedEvent → AccountService
+ */
+class QuoteAcceptanceFlowTest extends BaseIntegrationTest {
+
+    @Autowired
+    private QuoteService quoteService;
+
+    @Autowired
+    private DataManager dataManager;
+
+    @Autowired
+    private QuoteFactory quoteFactory;
+
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+
+    @BeforeEach
+    void setUp() {
+        databaseCleanup.removeAllEntities();
+    }
+
+    @Test
+    void given_acceptedQuote_when_policyLoaded_then_policyDataMatchesQuote() {
+        // given
+        BigDecimal premium = new BigDecimal("300.00");
+        Quote quote = quoteFactory.save(quoteFactory.defaultData()
+                .paymentFrequency(PaymentFrequency.YEARLY)
+                .calculatedPremium(premium)
+                .build());
+
+        // when
+        quoteService.accept(Id.of(quote));
+
+        // then
+        Quote reloaded = dataManager.load(Quote.class).id(quote.getId()).one();
+        Policy policy = loadPolicyByNo(reloaded.getCreatedPolicyNo());
+
+        assertThat(policy)
+                .hasPolicyNo(reloaded.getCreatedPolicyNo())
+                .hasCoverageStart(quote.getEffectiveDate())
+                .hasPremium(premium);
+    }
+
+    @Test
+    void given_acceptedQuote_when_accountLoaded_then_balanceEqualsNegativePremium() {
+        // given
+        BigDecimal premium = new BigDecimal("480.00");
+        Quote quote = quoteFactory.save(quoteFactory.defaultData()
+                .paymentFrequency(PaymentFrequency.YEARLY)
+                .calculatedPremium(premium)
+                .build());
+
+        // when
+        quoteService.accept(Id.of(quote));
+
+        // then
+        Quote reloaded = dataManager.load(Quote.class).id(quote.getId()).one();
+        Account account = loadAccountByNo(reloaded.getCreatedPolicyNo());
+
+        assertThat(account)
+                .hasAccountNo(reloaded.getCreatedPolicyNo())
+                .hasBalance(premium.negate());
+    }
+
+    @Test
+    void given_acceptedQuoteWithMonthlyFrequency_when_accountLoaded_then_twelveDocumentsCreated() {
+        // given
+        Quote quote = quoteFactory.save(quoteFactory.defaultData()
+                .paymentFrequency(PaymentFrequency.MONTHLY)
+                .calculatedPremium(new BigDecimal("120.00"))
+                .build());
+
+        // when
+        quoteService.accept(Id.of(quote));
+
+        // then
+        Quote reloaded = dataManager.load(Quote.class).id(quote.getId()).one();
+        Account account = loadAccountByNo(reloaded.getCreatedPolicyNo());
+        List<AccountDocument> docs = dataManager.load(AccountDocument.class)
+                .query("select d from account_AccountDocument d where d.account = :account")
+                .parameter("account", account)
+                .list();
+
+        assertThat(docs).hasSize(12);
+    }
+
+    private Policy loadPolicyByNo(String policyNo) {
+        return dataManager.load(Policy.class)
+                .condition(PropertyCondition.equal("policyNo", policyNo))
+                .one();
+    }
+
+    private Account loadAccountByNo(String accountNo) {
+        return dataManager.load(Account.class)
+                .condition(PropertyCondition.equal("accountNo", accountNo))
+                .one();
+    }
+}

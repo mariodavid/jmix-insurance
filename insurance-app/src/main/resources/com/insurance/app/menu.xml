@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<menu-config xmlns="http://jmix.io/schema/flowui/menu">
+
+    <menu id="application" title="msg://com.insurance.app/menu.application.title" opened="true">
+        <item view="app_User.list" title="msg://com.insurance.app.view.user/UserListView.title"/>
+    </menu>
+
+</menu-config>

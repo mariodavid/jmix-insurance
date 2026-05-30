@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      title="msg://com.insurance.account.core.view.account/accountDetailView.title"
+      focusComponent="form">
+    <data>
+        <instance id="accountDc"
+                  class="com.insurance.account.core.entity.Account">
+            <fetchPlan extends="_base">
+                <property name="documents" fetchPlan="_base"/>
+            </fetchPlan>
+            <loader id="accountDl"/>
+            <collection id="documentsDc" property="documents"/>
+        </instance>
+    </data>
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+    </facets>
+    <actions>
+        <action id="saveAction" type="detail_saveClose"/>
+        <action id="closeAction" type="detail_close"/>
+    </actions>
+    <layout>
+        <vbox padding="false" width="100%">
+            <details themeNames="filled" summaryText="msg://com.insurance.account.core.view.account/accountDetails" opened="true" width="100%">
+                <formLayout id="form" dataContainer="accountDc">
+                    <responsiveSteps>
+                        <responsiveStep minWidth="0" columns="1"/>
+                        <responsiveStep minWidth="40em" columns="3"/>
+                    </responsiveSteps>
+                    <textField id="accountNoField" property="accountNo" readOnly="true"/>
+                    <textField id="policyIdField" property="policyId" readOnly="true"/>
+                    <textField id="accountBalanceField" property="accountBalance" readOnly="true"/>
+                </formLayout>
+            </details>
+            <details themeNames="filled" summaryText="msg://com.insurance.account.core.view.account/documents" opened="true" width="100%">
+                <dataGrid id="documentsDataGrid"
+                          width="100%"
+                          minHeight="15em"
+                          dataContainer="documentsDc"
+                          columnReorderingAllowed="true">
+                    <columns resizable="true">
+                        <column property="documentDate"/>
+                        <column property="type"/>
+                        <column property="amount"/>
+                        <column property="description"/>
+                    </columns>
+                </dataGrid>
+            </details>
+        </vbox>
+        <hbox id="detailActions">
+            <button id="saveAndCloseButton" action="saveAction"/>
+            <button id="closeButton" action="closeAction"/>
+        </hbox>
+    </layout>
+</view>

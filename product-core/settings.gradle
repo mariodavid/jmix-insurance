@@ -1,0 +1,8 @@
+rootProject.name = 'product-core-addon'
+
+include 'product-core'
+include 'product-core-starter'
+
+rootProject.children.each { p1 ->
+    p1.buildFileName = "${p1.name}.gradle"
+}

@@ -1,0 +1,8 @@
+rootProject.name = 'account-core-addon'
+
+include 'account-core'
+include 'account-core-starter'
+
+rootProject.children.each { p1 ->
+    p1.buildFileName = "${p1.name}.gradle"
+}
