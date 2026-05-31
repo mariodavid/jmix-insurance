@@ -2,6 +2,7 @@ package com.insurance.security;
 
 import io.jmix.core.annotation.JmixModule;
 import io.jmix.core.impl.scanning.AnnotationScanMetadataReaderFactory;
+import io.jmix.eclipselink.EclipselinkConfiguration;
 import io.jmix.securitydata.SecurityDataConfiguration;
 import io.jmix.securityflowui.SecurityFlowuiConfiguration;
 import io.jmix.flowui.sys.ActionsConfiguration;
@@ -21,6 +22,7 @@ import java.util.Collections;
 @ConfigurationPropertiesScan
 @JmixModule(dependsOn = {
         CommonConfiguration.class,
+        EclipselinkConfiguration.class,
         io.jmix.security.SecurityConfiguration.class,
         SecurityDataConfiguration.class,
         SecurityFlowuiConfiguration.class

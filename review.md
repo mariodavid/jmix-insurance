@@ -2,11 +2,13 @@
 
 Stand: 2026-05-31. Analysiert wurden Composite-Build, Gradle-Abhaengigkeiten, Jmix-Konfigurationen, Starter, Entities, Services, Listener, Views, Liquibase und Tests.
 
+Hinweis zur Abgrenzung: Der separate Implementierungsauftrag "Split Domain Modules into Core and UI" ist hier als bereits beauftragt angenommen. Dieses Review wiederholt daher nicht mehr die konkrete Arbeit, View-Controller, XML-Deskriptoren, Menues, Messages und FlowUI-Abhaengigkeiten aus `partner-core`, `policy-core`, `quote-core` und `account-core` in neue `*-ui`-/`*-ui-starter`-Module zu verschieben.
+
 ## Kurzfazit
 
 Die fachliche Grundidee ist gut erkennbar: `insurance-app` ist die Shell, Fachdomänen liegen in eigenen Add-ons, und die meisten Domänen sind in `*-api`, `*-core` und `*-starter` getrennt. Das ist fuer Jmix grundsätzlich ein tragfaehiges Modularisierungsmuster.
 
-Der aktuelle Stand ist aber eher ein modularisierter Monolith als eine sauber entkoppelte Modularchitektur. Die Modulgrenzen werden auf Build-Ebene stark aufgeweicht, API-Module ziehen Jmix UI/Data-Infrastruktur mit, Core-Module exportieren ihre Abhaengigkeiten zu breit ueber `api`, und einige Dateien deuten auf Copy/Paste-Drift zwischen Modulen hin. Die dringendste Arbeit ist daher nicht, neue Module einzufuehren, sondern die bestehenden Grenzen konsequent zu schaerfen.
+Der aktuelle Stand ist aber eher ein modularisierter Monolith als eine sauber entkoppelte Modularchitektur. Die Modulgrenzen werden auf Build-Ebene stark aufgeweicht, API-Module ziehen Jmix UI/Data-Infrastruktur mit, Core-Module exportieren ihre Abhaengigkeiten zu breit ueber `api`, und einige Dateien deuten auf Copy/Paste-Drift zwischen Modulen hin. Nach dem bereits beauftragten UI-Split sollte der Fokus daher auf leichten API-Modulen, klaren transitive-Dependency-Regeln, Modulidentitaet und Security-/Event-Grenzen liegen.
 
 ## Aktuelle Modulstruktur
 
@@ -20,11 +22,11 @@ Fachliche Module:
 
 - `common`: gemeinsame Basisklassen und gemeinsame Value-/Utility-Typen.
 - `security`: User-Entity, User-Views, UserRepository und FullAccessRole.
-- `partner-api` / `partner-core`: Partner-DTOs und Servicevertrag / Partner-Persistence, UI und Service.
+- `partner-api` / `partner-core`: Partner-DTOs und Servicevertrag / Partner-Persistence und Service. UI wird gemaess separatem Auftrag nach `partner-ui` verschoben.
 - `product-api` / `product-core`: Produkt-Enums/-Katalog in API, derzeit fast kein Core-Verhalten.
-- `quote-api` / `quote-core`: Quote-DTOs und Servicevertrag / Quote-Entity, UI und QuoteService.
-- `policy-api` / `policy-core`: Policy-DTOs, Event und Servicevertrag / Policy-Entity, UI und PolicyService.
-- `account-api` / `account-core`: Account-DTO und Servicevertrag / Account-Entity, UI, Listener und AccountService.
+- `quote-api` / `quote-core`: Quote-DTOs und Servicevertrag / Quote-Entity und QuoteService. UI wird gemaess separatem Auftrag nach `quote-ui` verschoben.
+- `policy-api` / `policy-core`: Policy-DTOs, Event und Servicevertrag / Policy-Entity und PolicyService. UI wird gemaess separatem Auftrag nach `policy-ui` verschoben.
+- `account-api` / `account-core`: Account-DTO und Servicevertrag / Account-Entity, Listener und AccountService. UI wird gemaess separatem Auftrag nach `account-ui` verschoben.
 
 Grobe fachliche Flussrichtung:
 
@@ -38,8 +40,9 @@ flowchart LR
     AccountCore --> PolicyApi
     AccountCore --> ProductApi
     QuoteCore --> PartnerApi
-    CoreModules["*-core"] --> Common["common"]
-    App["insurance-app"] --> CoreModules
+    UiModules["*-ui (separater Auftrag)"] --> CoreModules["*-core"]
+    CoreModules --> Common["common"]
+    App["insurance-app"] --> UiModules
     App --> Security["security"]
 ```
 
@@ -48,7 +51,8 @@ flowchart LR
 - Die Domänenschnitte `partner`, `product`, `quote`, `policy`, `account`, `security` sind fachlich nachvollziehbar.
 - Das API/Core/Starter-Muster ist grundsätzlich sinnvoll: andere Module koennen gegen Service-Interfaces und DTOs arbeiten, waehrend die Implementierung in Core bleibt.
 - Cross-Modul-Kommunikation nutzt meistens Services und DTOs statt direkt fremde Entities zu laden. Beispiele: `quote-core` ruft `PolicyService`, `policy-core` publiziert `PolicyCreatedEvent`, `account-core` konsumiert `PolicyService`.
-- Persistente Fachobjekte und UI liegen weitgehend in den `*-core`-Modulen statt in der Shell-App.
+- Persistente Fachobjekte liegen weitgehend in den `*-core`-Modulen statt in der Shell-App.
+- Der bereits beauftragte UI-Split passt gut zum Add-on-Muster: Core-Module bleiben fachlich/backend-orientiert, UI-Module duerfen direkt die eigenen Core-Entities verwenden.
 - Dezentrale Liquibase-Changelogs pro Modul sind angelegt und im App-Master-Changelog eingebunden.
 - Es gibt bereits App-Integrationstests fuer zentrale End-to-End-Flows: Quote akzeptieren, Policy erzeugen, Account erzeugen.
 
@@ -89,9 +93,9 @@ Empfehlung:
 - Die meisten Cross-Modul-Abhaengigkeiten in Core-Modulen auf `implementation` umstellen.
 - `core-starter -> api project(':core')` kann bleiben; innerhalb des Core-Moduls sollte aber nicht alles transitiv exportiert werden.
 
-### 3. `insurance-app` bindet Core- und API-Starter doppelt ein
+### 3. App-Komposition nach dem UI-Split klarziehen
 
-`insurance-app/build.gradle` zieht pro Domäne meist beides:
+`insurance-app/build.gradle` zieht pro Domäne aktuell meist Core- und API-Starter gemeinsam:
 
 - `account-core-starter` und `account-api-starter`
 - `policy-core-starter` und `policy-api-starter`
@@ -99,22 +103,29 @@ Empfehlung:
 - `partner-core-starter` und `partner-api-starter`
 - `product-core-starter` und `product-api-starter`
 
-Da die Core-Module ihre API-Starter bereits einbinden, ist die explizite API-Einbindung in der App redundant. Sie macht schwerer sichtbar, welche Module wirklich direkt gebraucht werden.
+Der separate UI-Split wird zusaetzlich `partner-ui-starter`, `policy-ui-starter`, `quote-ui-starter` und `account-ui-starter` einfuehren. Danach sollte die App-Komposition einmal bewusst bereinigt werden, damit nicht Core-, UI- und API-Starter redundant nebeneinander stehen.
 
 Empfehlung:
 
-- App nur an die benoetigten Feature-/Core-Starter haengen.
-- API-Starter nur dann direkt in der App einbinden, wenn die App bewusst ohne Core-Implementierung gegen eine API laufen soll.
+- App bevorzugt an die Feature-Starter haengen, die wirklich die lauffaehige Funktion liefern, voraussichtlich `*-ui-starter` fuer user-facing Domänen und `product-core-starter`/`security-starter` fuer reine Backend-/Infrastrukturmodule.
+- API-Starter nur dann direkt in der App einbinden, wenn die App bewusst ohne Core-/UI-Implementierung gegen eine API laufen soll.
+- Nach dem UI-Split pruefen, welche Starter transitiv bereits gezogen werden.
 
-### 4. Architekturgrenze zwischen UI und Domäne ist noch unscharf
+### 4. UI-Split als erledigtes Architektur-Thema nachhalten
 
-Core-Module enthalten Entities, Services, Listener und Flow-UI-Views gemeinsam. Das ist fuer Jmix-Add-ons nicht falsch, aber es erzeugt eine grosse "core"-Schublade. Auffaellig ist ausserdem, dass View-Controller fachliche Orchestrierung anstossen und teilweise UI-Text hart kodieren, z.B. `QuoteListView` mit `"Quote rejected"` und `"Policy issued: ..."`.
+Der konkrete Split von `partner-core`, `policy-core`, `quote-core` und `account-core` in Backend-Core und neue UI-Module ist bereits an einen anderen Agenten gegeben. Dieses Review bewertet das deshalb nicht mehr als offene Hauptmassnahme.
+
+Was nach dem Split noch zu pruefen bleibt:
+
+- Die neuen `*-ui`-Module sollten nur Presentation-Code, XML-Deskriptoren, Menues und UI-Messages enthalten.
+- Fachliche Entscheidungen bleiben in Services/Listenern der Core-Module.
+- UI darf eigene Core-Entities direkt verwenden, sollte fremde Domänen aber weiter ueber API-Services/DTOs ansprechen.
+- Hart kodierter UI-Text, z.B. in `QuoteListView`, sollte beim Umzug in UI-Module in Message Keys ueberfuehrt werden.
 
 Empfehlung:
 
-- Innerhalb jedes Core-Moduls package-seitig staerker trennen: `entity`, `service`, `listener`, `view`, optional `mapper`, `event`.
-- UI darf Services aufrufen, aber fachliche Entscheidungen sollten in Services bleiben.
-- User-visible Text konsequent ueber Message Keys fuehren.
+- Nach Umsetzung des UI-Splits eine kurze Nachpruefung machen: keine `view`-Packages/XML-Views mehr in den vier Backend-Core-Modulen, keine FlowUI-Starter mehr in deren Core-Gradle-Dateien, Jmix `@JmixModule`-Dependencies sauber getrennt.
+- Message Keys fuer UI-Benachrichtigungen beim Umzug vervollstaendigen.
 
 ### 5. Copy/Paste-Drift in Produktmodulen
 
@@ -159,20 +170,21 @@ Empfehlung:
   - Produktmodule duerfen keine Partner-Packages referenzieren.
   - API-Module duerfen keine Flow-UI-Views enthalten.
 
-### 8. Event-Kopplung ist synchron und transaktional unklar
+### 8. Policy- und Account-Erzeugung sollen atomar bleiben
 
-`PolicyServiceCore.createPolicy()` speichert eine Policy und publiziert danach `PolicyCreatedEvent`. `account-core` hoert darauf und erzeugt ein Account. Da ein normales Spring-Event verwendet wird, laeuft der Listener synchron im selben Prozess; die genaue Transaktionssemantik sollte bewusst entschieden werden.
+`PolicyServiceCore.createPolicy()` speichert eine Policy und publiziert danach `PolicyCreatedEvent`. `account-core` hoert darauf und erzeugt ein Account. Fachliche Vorgabe: Policy-Erzeugung und Account-Erzeugung sollen gemeinsam in einer Transaktion laufen. Ein Fehler bei der Account-Erzeugung soll die Policy-Erzeugung zurueckrollen, statt spaeter einen halb fertigen Zustand zu reparieren.
 
-Auswirkung: Ein Fehler im Account-Modul kann je nach Transaktionskontext Policy-Erzeugung beeinflussen oder zu halb erwarteten Zustaenden fuehren. Aktuell loggt der Listener einige Fehler und bricht still ab.
+Auswirkung: Der synchrone Prozess ist fachlich gewollt, muss aber explizit als In-Transaction-Orchestrierung behandelt werden. Aktuell loggt der Listener einige Fehler und bricht still ab; das passt nicht zu einer atomaren Fachoperation, weil dadurch trotz fehlendem Account eine Policy entstehen kann.
 
 Empfehlung:
 
-- Fachlich entscheiden: Muss Account-Erzeugung atomar mit Policy-Erzeugung sein?
-- Falls ja: synchroner Service-Orchestrator oder explizit dokumentierte Transaction Boundary.
-- Falls nein: `@TransactionalEventListener(phase = AFTER_COMMIT)` plus klare Fehlerbehandlung/Retry-Konzept.
-- Event-Payload moeglichst vollstaendig halten, damit Account nicht direkt wieder `PolicyService.findPolicyById()` aufrufen muss.
+- Atomare Semantik dokumentieren: `createPolicy()` ist erst erfolgreich, wenn Policy und initialer Account gespeichert sind.
+- Den aktuellen normalen Spring-Event nur behalten, wenn klar dokumentiert und getestet ist, dass Listener synchron in derselben Transaktion laeuft und Fehler nicht verschluckt werden.
+- Besser pruefen: expliziter synchroner Domain-Service/Orchestrator fuer `createPolicyWithAccount`, der `PolicyServiceCore` und `AccountServiceCore` in einer `@Transactional` Boundary koordiniert. Das macht die Atomaritaet sichtbarer als ein impliziter Event-Listener.
+- Listener darf bei fachlich notwendigen Mutationen nicht nur loggen und returnen; Fehler muessen als Exception durchlaufen, damit Rollback passiert.
+- Event-/Command-Payload moeglichst vollstaendig halten, damit Account nicht direkt wieder `PolicyService.findPolicyById()` aufrufen muss.
 
-### 9. Datenmodell koppelt Domänen ueber String-IDs und Business-Keys
+### 9. Domänenreferenzen sollten auf UUIDs umgestellt werden
 
 Beispiele:
 
@@ -181,12 +193,14 @@ Beispiele:
 - Quote speichert `createdPolicyId` und `createdPolicyNo` als Strings.
 - Partner-Verweise laufen ueber `partnerNo`.
 
-Das kann als bewusste Modulgrenze sinnvoll sein, weil keine fremden Entities referenziert werden. Es braucht dann aber klare Konventionen und Constraints.
+Die Richtung sollte hier klarer sein: Modulgrenzen koennen weiterhin ohne fremde JPA-Relations eingehalten werden, aber technische Referenzen zwischen Domänen sollten als `UUID` modelliert werden, nicht als `String` oder nur als Business-Key. Business-Keys wie `policyNo`, `quoteNo`, `partnerNo` bleiben fachliche Such-/Anzeige- und Integrationswerte, sollten aber nicht die einzige interne Referenz sein.
 
 Empfehlung:
 
-- Pro Referenz bewusst entscheiden: technische UUID als String/UUID, fachlicher Key oder echte JPA-Relation.
-- Felder entsprechend benennen: z.B. `policyId` als `UUID` oder `String policyExternalId`; `accountNo` nicht gleichzeitig als PolicyNo missbrauchen, wenn es fachlich ein eigenes Konto ist.
+- Technische Cross-Domain-Referenzen auf `UUID` umstellen, z.B. `Account.policyId` und `Quote.createdPolicyId`.
+- Business-Keys zusaetzlich behalten, wenn sie fachlich gebraucht werden, aber klar benennen: `policyNo`, `createdPolicyNo`, `partnerNo`.
+- `accountNo` fachlich klaeren: Wenn es eigentlich die Policy-Nummer ist, besser explizit `policyNo` nennen; wenn Account eine eigene Nummer hat, eigene Account-Nummer generieren und `policyId`/`policyNo` separat halten.
+- Keine fremden Core-Entities als JPA-Relation einfuehren, solange die Modulgrenze bewusst ueber API/DTO und technische IDs laufen soll.
 - Unique-Constraints fuer Business-Keys pruefen.
 
 ### 10. Build-Konfiguration ist stark dupliziert
@@ -208,11 +222,21 @@ Ein robustes Zielbild waere:
 ```mermaid
 flowchart TB
     App["insurance-app"] --> SecurityStarter["security-starter"]
-    App --> PartnerCoreStarter["partner-core-starter"]
+    App --> PartnerUiStarter["partner-ui-starter"]
+    App --> PolicyUiStarter["policy-ui-starter"]
+    App --> QuoteUiStarter["quote-ui-starter"]
+    App --> AccountUiStarter["account-ui-starter"]
     App --> ProductCoreStarter["product-core-starter"]
-    App --> QuoteCoreStarter["quote-core-starter"]
-    App --> PolicyCoreStarter["policy-core-starter"]
-    App --> AccountCoreStarter["account-core-starter"]
+
+    PartnerUiStarter --> PartnerUi["partner-ui"]
+    PolicyUiStarter --> PolicyUi["policy-ui"]
+    QuoteUiStarter --> QuoteUi["quote-ui"]
+    AccountUiStarter --> AccountUi["account-ui"]
+
+    PartnerUi --> PartnerCore["partner-core"]
+    PolicyUi --> PolicyCore["policy-core"]
+    QuoteUi --> QuoteCore["quote-core"]
+    AccountUi --> AccountCore["account-core"]
 
     QuoteCore["quote-core"] --> QuoteApi["quote-api"]
     QuoteCore --> PartnerApi["partner-api"]
@@ -240,7 +264,8 @@ flowchart TB
 Kernprinzipien:
 
 - API-Module sind leicht und enthalten keine UI/Persistence-Implementierung.
-- Core-Module implementieren die API und besitzen Entity, Service, Listener, UI und Liquibase ihrer Domäne.
+- Core-Module implementieren die API und besitzen Entity, Service, Listener und Liquibase ihrer Domäne.
+- UI-Module besitzen View-Controller, XML-Deskriptoren, Menues und UI-Messages ihrer Domäne.
 - Fremde Core-Module werden nicht direkt importiert.
 - App setzt Module zusammen, enthaelt aber moeglichst wenig Fachlogik.
 - Starter aktivieren genau ein Modul und dessen benoetigte Konfiguration.
@@ -248,13 +273,14 @@ Kernprinzipien:
 ## Konkrete naechste Schritte
 
 1. Product-Module bereinigen: alle Partner-Artefakte aus `product-api` und `product-core` entfernen oder korrekt umbenennen.
-2. `insurance-app/build.gradle` vereinfachen: direkte `*-api-starter`-Dependencies entfernen, soweit Core-Starter sie bereits bringen.
+2. Nach Abschluss des separaten UI-Splits die App-Komposition bereinigen: keine redundant nebeneinanderstehenden Core-/UI-/API-Starter, klare `@JmixModule`-Dependencies.
 3. API-Module verschlanken: FlowUI/Eclipselink-Abhaengigkeiten und ViewController/Actions-Konfiguration pruefen und entfernen, wo ungenutzt.
 4. Gradle `api` vs. `implementation` auditieren und transitive Exporte reduzieren.
-5. Pro Fachmodul ResourceRoles ergaenzen.
-6. Synchronous Event-Flow Policy -> Account bewusst festlegen und dokumentieren.
-7. Architekturtests fuer Import-Regeln einfuehren.
-8. Gemeinsame Gradle-Conventions einfuehren, um Drift bei Add-on-Builds zu stoppen.
+5. Pro Fachmodul ResourceRoles ergaenzen; UI-Policies gehoeren nach dem Split in die UI-Module, Entity-/Service-nahe Rollen in die fachlich passende Domäne.
+6. Policy -> Account als atomaren In-Transaction-Flow absichern: Fehler nicht verschlucken, Rollback testen, optional expliziten Orchestrator statt implizitem Event-Listener einfuehren.
+7. Technische Cross-Domain-Referenzen auf `UUID` umstellen und Business-Keys nur noch ergaenzend/fachlich verwenden.
+8. Architekturtests fuer Import-Regeln einfuehren.
+9. Gemeinsame Gradle-Conventions einfuehren, um Drift bei Add-on-Builds zu stoppen.
 
 ## Priorisierte Findings
 
@@ -262,10 +288,11 @@ Kernprinzipien:
 | --- | --- | --- | --- |
 | Hoch | Product-Module enthalten Partner-Artefakte | Falsche Scans, falsche Tests, unklare Modulidentitaet | Sofort bereinigen |
 | Hoch | API-Module ziehen UI/Data-Starter | Schwere APIs, schlechte Entkopplung | API-Module verschlanken |
-| Hoch | App bindet Core- und API-Starter doppelt | Unklare Komposition, redundante Konfiguration | App-Dependencies reduzieren |
+| Hoch | App-Komposition nach UI-Split unklar | Redundante Core-/UI-/API-Starter, doppelte Jmix-Konfiguration | Nach UI-Split bereinigen |
 | Mittel | Zu breites `api` in Gradle | Transitive Kopplung | `implementation` als Default |
 | Mittel | Keine fachmodularen Rollen | Security nicht modular | Rollen pro Fachmodul |
-| Mittel | Sync-Event Policy -> Account unklar | Fehler-/Transaktionsverhalten unklar | Transaction Boundary entscheiden |
+| Mittel | Policy -> Account muss atomar sein | Fehler koennen sonst Policy ohne Account hinterlassen | In-Transaction-Flow absichern |
+| Mittel | Cross-Domain-Referenzen als Strings/Business-Keys | Schwache Typisierung, unklare fachliche vs. technische Referenzen | UUIDs fuer technische Referenzen |
 | Mittel | Build-Duplikation | Drift bei Versionen/Konfiguration | Convention Plugin |
 | Niedrig | Context-only Modul-Tests | Wenig Schutz fuer Modulgrenzen | Architektur- und Service-Tests |
 
@@ -273,6 +300,5 @@ Kernprinzipien:
 
 - Soll diese Struktur bewusst ein modularer Monolith bleiben, oder ist spaetere Auslagerung einzelner Domänen geplant?
 - Sind API-Module auch fuer externe Clients gedacht, oder nur fuer interne Cross-Modul-Aufrufe?
-- Soll die Account-Erzeugung fachlich zwingend Teil der Policy-Erzeugung sein?
 - Soll `product-core` ueberhaupt existieren, solange der Produktkatalog rein enum-/regelbasiert im `product-api` liegt?
-
+- Nach dem UI-Split: Soll die App nur `*-ui-starter` konsumieren, oder sollen Core-Starter fuer nicht sichtbare Backend-Funktionen weiterhin explizit in der App stehen?

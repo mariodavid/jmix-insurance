@@ -27,14 +27,18 @@ dependencies {
     implementation 'com.insurance.security:security-starter:0.0.1-SNAPSHOT'
 
     implementation 'com.insurance.account:account-core-starter:0.0.1-SNAPSHOT'
+    implementation 'com.insurance.account:account-ui-starter:0.0.1-SNAPSHOT'
     implementation 'com.insurance.account:account-api-starter:0.0.1-SNAPSHOT'
 
     implementation 'com.insurance.policy:policy-core-starter:0.0.1-SNAPSHOT'
+    implementation 'com.insurance.policy:policy-ui-starter:0.0.1-SNAPSHOT'
     implementation 'com.insurance.policy:policy-api-starter:0.0.1-SNAPSHOT'
     implementation 'com.insurance.quote:quote-core-starter:0.0.1-SNAPSHOT'
+    implementation 'com.insurance.quote:quote-ui-starter:0.0.1-SNAPSHOT'
     implementation 'com.insurance.quote:quote-api-starter:0.0.1-SNAPSHOT'
 
     implementation 'com.insurance.partner:partner-core-starter:0.0.1-SNAPSHOT'
+    implementation 'com.insurance.partner:partner-ui-starter:0.0.1-SNAPSHOT'
     implementation 'com.insurance.partner:partner-api-starter:0.0.1-SNAPSHOT'
 
     implementation 'com.insurance.product:product-core-starter:0.0.1-SNAPSHOT'

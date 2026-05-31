@@ -2,6 +2,8 @@ rootProject.name = 'partner-core-addon'
 
 include 'partner-core'
 include 'partner-core-starter'
+include 'partner-ui'
+include 'partner-ui-starter'
 
 rootProject.children.each { p1 ->
     p1.buildFileName = "${p1.name}.gradle"

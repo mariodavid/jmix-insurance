@@ -3,6 +3,7 @@ archivesBaseName = 'security'
 dependencies {
     api 'com.insurance:common-starter:0.0.1-SNAPSHOT'
 
+    api 'io.jmix.data:jmix-eclipselink-starter'
     api 'io.jmix.security:jmix-security-starter'
     api 'io.jmix.security:jmix-security-data-starter'
     api 'io.jmix.security:jmix-security-flowui-starter'

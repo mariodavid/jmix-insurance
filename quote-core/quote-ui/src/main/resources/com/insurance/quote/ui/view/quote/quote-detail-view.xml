@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      title="msg://com.insurance.quote.ui.view.quote/quoteDetailView.title"
+      focusComponent="form">
+    <data>
+        <instance id="quoteDc"
+                  class="com.insurance.quote.core.entity.Quote">
+            <fetchPlan extends="_base"/>
+            <loader id="quoteDl"/>
+        </instance>
+    </data>
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+    </facets>
+    <actions>
+        <action id="calculatePremiumAction" icon="CALC" text="msg://calculatePremium" actionVariant="PRIMARY"/>
+        <action id="saveAction" type="detail_saveClose"/>
+        <action id="closeAction" type="detail_close"/>
+    </actions>
+    <layout>
+        <formLayout id="form" dataContainer="quoteDc">
+            <responsiveSteps>
+                <responsiveStep minWidth="0" columns="1"/>
+                <responsiveStep minWidth="40em" columns="2"/>
+            </responsiveSteps>
+            <textField id="quoteNoField" property="quoteNo" readOnly="true"/>
+            <datePicker id="validFromField" property="validFrom"/>
+            <datePicker id="validUntilField" property="validUntil"/>
+            <hr colspan="2"/>
+            <entityComboBox id="partnerComboBox" label="msg://com.insurance.quote.ui.view.quote/partnerComboBox.label" metaClass="partner_api_PartnerDto" required="true">
+                <actions>
+                    <action id="entityClear" type="entity_clear"/>
+                </actions>
+            </entityComboBox>
+            <hr colspan="2"/>
+            <select id="productTypeField" property="productType"/>
+            <select id="productVariantField" property="productVariant"/>
+            <datePicker id="effectiveDateField" property="effectiveDate"/>
+            <integerField id="squareMetersField" property="squareMeters"/>
+            <select id="paymentFrequencyField" property="paymentFrequency"/>
+            <hr colspan="2"/>
+            <select id="insuranceProductField" property="insuranceProduct" readOnly="true"/>
+            <textField id="calculatedPremiumField" property="calculatedPremium" readOnly="true">
+                <suffix>
+                    <span text="EUR"/>
+                </suffix>
+            </textField>
+            <hr colspan="2"/>
+        </formLayout>
+        <hbox id="detailActions">
+            <button id="calculatePremium" action="calculatePremiumAction"/>
+            <button id="saveAndCloseButton" action="saveAction" enabled="false"/>
+            <button id="closeButton" action="closeAction"/>
+        </hbox>
+    </layout>
+</view>

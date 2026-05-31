@@ -48,10 +48,14 @@ import org.springframework.context.ApplicationContext;
         com.insurance.common.CommonConfiguration.class,
         com.insurance.security.SecurityConfiguration.class,
         com.insurance.partner.core.PartnerConfiguration.class,
+        com.insurance.partner.ui.PartnerUiConfiguration.class,
         com.insurance.product.core.ProductConfiguration.class,
         com.insurance.policy.core.PolicyConfiguration.class,
+        com.insurance.policy.ui.PolicyUiConfiguration.class,
         com.insurance.quote.core.QuoteConfiguration.class,
-        com.insurance.account.core.AccountConfiguration.class
+        com.insurance.quote.ui.QuoteUiConfiguration.class,
+        com.insurance.account.core.AccountConfiguration.class,
+        com.insurance.account.ui.AccountUiConfiguration.class
 })
 @SpringBootApplication
 public class InsuranceAppApplication implements AppShellConfigurator {
