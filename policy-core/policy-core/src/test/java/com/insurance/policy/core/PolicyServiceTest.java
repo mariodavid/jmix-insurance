@@ -19,6 +19,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -43,6 +45,9 @@ class PolicyServiceTest {
 
     @Autowired
     private MetadataTools metadataTools;
+
+    @Autowired
+    private PolicyTestConfiguration.FailingPolicyCreatedEventOrchestrator failingPolicyCreatedEventOrchestrator;
 
     private static final LocalDate EFFECTIVE_DATE = LocalDate.of(2025, 1, 1);
 
@@ -76,11 +81,23 @@ class PolicyServiceTest {
 
         // then
         assertThat(result).isNotNull();
+        assertThat(result.getId()).isNotNull();
+        assertThat(result.getPolicyNo())
+                .as("DTO policyNo should match HC-YYYY-NNNNNN format")
+                .matches("HC-\\d{4}-\\d{6}");
+        assertThat(result.getCoverageStart()).isEqualTo(EFFECTIVE_DATE);
+        assertThat(result.getCoverageEnd()).isEqualTo(EFFECTIVE_DATE.plusYears(1));
+        assertThat(result.getPremium()).isEqualByComparingTo(new BigDecimal("240.00"));
+        assertThat(result.getPaymentFrequency()).isEqualTo("YEARLY");
+
         Policy policy = loadPolicyByNo(result.getPolicyNo());
         assertThat(policy).isNotNull();
+        assertThat(policy.getId()).isEqualTo(result.getId());
         assertThat(policy.getPolicyNo())
                 .as("policyNo should match HC-YYYY-NNNNNN format")
                 .matches("HC-\\d{4}-\\d{6}");
+        assertThat(policy.getPartnerNo()).isEqualTo("PT-TEST");
+        assertThat(policy.getInsuranceProduct().getId()).isEqualTo("HOME_CONTENT_BASIC_2024_01");
         assertThat(policy.getCoverageStart())
                 .as("coverageStart")
                 .isEqualTo(EFFECTIVE_DATE);
@@ -104,6 +121,26 @@ class PolicyServiceTest {
         assertThatThrownBy(() -> policyService.createPolicy(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("UNKNOWN_PRODUCT");
+        assertThat(loadPolicies()).isEmpty();
+    }
+
+    @Test
+    void given_unknownPaymentFrequencyId_when_policyCreated_then_illegalArgumentExceptionThrownAndNoPolicySaved() {
+        // given
+        CreatePolicyRequestDto request = new CreatePolicyRequestDto(
+                "QT-00003",
+                "PT-00001",
+                "HOME_CONTENT_BASIC_2024_01",
+                EFFECTIVE_DATE,
+                new BigDecimal("100.00"),
+                "WEEKLY"
+        );
+
+        // when / then
+        assertThatThrownBy(() -> policyService.createPolicy(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("WEEKLY");
+        assertThat(loadPolicies()).isEmpty();
     }
 
     @Test
@@ -126,11 +163,62 @@ class PolicyServiceTest {
         assertThat(found).isNotNull();
         assertThat(found.getId()).isEqualTo(created.getId());
         assertThat(found.getPolicyNo()).isEqualTo(created.getPolicyNo());
+        assertThat(found.getPartnerNo()).isEqualTo(created.getPartnerNo());
+        assertThat(found.getInsuranceProduct()).isEqualTo(created.getInsuranceProduct());
+        assertThat(found.getCoverageStart()).isEqualTo(created.getCoverageStart());
+        assertThat(found.getCoverageEnd()).isEqualTo(created.getCoverageEnd());
+        assertThat(found.getPremium()).isEqualByComparingTo(created.getPremium());
+        assertThat(found.getPaymentFrequency()).isEqualTo(created.getPaymentFrequency());
+
+        Policy persisted = dataManager.load(Policy.class).id(created.getId()).one();
+        assertThat(found.getPolicyNo()).isEqualTo(persisted.getPolicyNo());
+        assertThat(found.getPartnerNo()).isEqualTo(persisted.getPartnerNo());
+        assertThat(found.getInsuranceProduct()).isEqualTo(persisted.getInsuranceProduct().getId());
+        assertThat(found.getCoverageStart()).isEqualTo(persisted.getCoverageStart());
+        assertThat(found.getCoverageEnd()).isEqualTo(persisted.getCoverageEnd());
+        assertThat(found.getPremium()).isEqualByComparingTo(persisted.getPremium());
+        assertThat(found.getPaymentFrequency()).isEqualTo(persisted.getPaymentFrequency().getId());
+    }
+
+    @Test
+    void given_unknownPolicyUuid_when_loadedById_then_nullReturned() {
+        assertThat(policyService.findPolicyById(UUID.randomUUID().toString())).isNull();
+    }
+
+    @Test
+    void given_malformedPolicyUuid_when_loadedById_then_illegalArgumentExceptionThrown() {
+        assertThatThrownBy(() -> policyService.findPolicyById("not-a-uuid"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Invalid UUID");
+    }
+
+    @Test
+    void given_accountOrchestratorFails_when_policyCreated_then_exceptionPropagatesAndPolicyRollsBack() {
+        // given
+        CreatePolicyRequestDto request = new CreatePolicyRequestDto(
+                "QT-00004",
+                "PT-00001",
+                "HOME_CONTENT_BASIC_2024_01",
+                EFFECTIVE_DATE,
+                new BigDecimal("240.00"),
+                "YEARLY"
+        );
+        failingPolicyCreatedEventOrchestrator.failNextPolicyCreatedEvent();
+
+        // when / then
+        assertThatThrownBy(() -> policyService.createPolicy(request))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Account orchestration failed");
+        assertThat(loadPolicies()).isEmpty();
     }
 
     private Policy loadPolicyByNo(String policyNo) {
         return dataManager.load(Policy.class)
                 .condition(PropertyCondition.equal("policyNo", policyNo))
                 .one();
+    }
+
+    private List<Policy> loadPolicies() {
+        return dataManager.load(Policy.class).all().list();
     }
 }

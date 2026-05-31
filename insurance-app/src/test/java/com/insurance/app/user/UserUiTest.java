@@ -21,7 +21,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Sample UI integration test for the User entity.
@@ -36,6 +39,9 @@ public class UserUiTest {
 
     @Autowired
     ViewNavigators viewNavigators;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Test
     void test_createUser() {
@@ -79,6 +85,43 @@ public class UserUiTest {
                 .filter(u -> u.getUsername().equals(username))
                 .findFirst()
                 .orElseThrow();
+
+        User savedUser = dataManager.load(User.class)
+                .query("e.username = ?1", username)
+                .one();
+        assertThat(savedUser.getPassword()).isNotEqualTo("test-passwd");
+        assertThat(passwordEncoder.matches("test-passwd", savedUser.getPassword())).isTrue();
+        assertThat(savedUser.getActive()).isTrue();
+    }
+
+    @Test
+    void test_passwordMismatchPreventsSave() {
+        viewNavigators.view(UiTestUtils.getCurrentView(), UserListView.class).navigate();
+
+        UserListView userListView = UiTestUtils.getCurrentView();
+        JmixButton createBtn = UiTestUtils.getComponent(userListView, "createButton");
+        createBtn.click();
+
+        UserDetailView userDetailView = UiTestUtils.getCurrentView();
+        TypedTextField<String> usernameField = UiTestUtils.getComponent(userDetailView, "usernameField");
+        String username = "test-user-" + System.currentTimeMillis();
+        usernameField.setValue(username);
+
+        JmixPasswordField passwordField = UiTestUtils.getComponent(userDetailView, "passwordField");
+        passwordField.setValue("test-passwd");
+
+        JmixPasswordField confirmPasswordField = UiTestUtils.getComponent(userDetailView, "confirmPasswordField");
+        confirmPasswordField.setValue("different-passwd");
+
+        JmixButton commitAndCloseBtn = UiTestUtils.getComponent(userDetailView, "saveAndCloseButton");
+        commitAndCloseBtn.click();
+
+        View<?> currentView = UiTestUtils.getCurrentView();
+        assertThat(currentView).isInstanceOf(UserDetailView.class);
+        assertThat(dataManager.load(User.class)
+                .query("e.username = ?1", username)
+                .optional())
+                .isEmpty();
     }
 
     @AfterEach

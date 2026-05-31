@@ -2,22 +2,49 @@ package com.insurance.policy.api.event;
 
 import org.springframework.context.ApplicationEvent;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.UUID;
+
 public class PolicyCreatedEvent extends ApplicationEvent {
     
-    private final String policyId;
+    private final UUID policyId;
     private final String policyNo;
+    private final LocalDate coverageStart;
+    private final BigDecimal premium;
+    private final String paymentFrequencyId;
 
-    public PolicyCreatedEvent(Object source, String policyId, String policyNo) {
+    public PolicyCreatedEvent(Object source,
+                              UUID policyId,
+                              String policyNo,
+                              LocalDate coverageStart,
+                              BigDecimal premium,
+                              String paymentFrequencyId) {
         super(source);
         this.policyId = policyId;
         this.policyNo = policyNo;
+        this.coverageStart = coverageStart;
+        this.premium = premium;
+        this.paymentFrequencyId = paymentFrequencyId;
     }
 
-    public String getPolicyId() {
+    public UUID getPolicyId() {
         return policyId;
     }
 
     public String getPolicyNo() {
         return policyNo;
+    }
+
+    public LocalDate getCoverageStart() {
+        return coverageStart;
+    }
+
+    public BigDecimal getPremium() {
+        return premium;
+    }
+
+    public String getPaymentFrequencyId() {
+        return paymentFrequencyId;
     }
 }

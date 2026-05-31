@@ -6,6 +6,7 @@ import io.jmix.eclipselink.EclipselinkConfiguration;
 import io.jmix.flowui.FlowuiConfiguration;
 import io.jmix.flowui.sys.ActionsConfiguration;
 import io.jmix.flowui.sys.ViewControllersConfiguration;
+import io.jmix.core.repository.EnableJmixDataRepositories;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,7 @@ import java.util.Collections;
 @Configuration
 @ComponentScan
 @ConfigurationPropertiesScan
+@EnableJmixDataRepositories
 @JmixModule(dependsOn = {EclipselinkConfiguration.class,
         FlowuiConfiguration.class})
 @PropertySource(name = "com.insurance.common", value = "classpath:/com/insurance/common/module.properties")

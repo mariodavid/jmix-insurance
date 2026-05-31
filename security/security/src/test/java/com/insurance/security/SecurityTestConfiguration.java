@@ -1,4 +1,4 @@
-package com.insurance.product.core;
+package com.insurance.security;
 
 import io.jmix.core.annotation.JmixModule;
 import org.springframework.boot.SpringBootConfiguration;
@@ -14,10 +14,10 @@ import javax.sql.DataSource;
 
 @SpringBootConfiguration
 @EnableAutoConfiguration
-@Import(ProductConfiguration.class)
-@PropertySource("classpath:/com/insurance/product/core/test-app.properties")
-@JmixModule(id = "com.insurance.product.core.test", dependsOn = ProductConfiguration.class)
-public class ProductTestConfiguration {
+@Import(SecurityConfiguration.class)
+@PropertySource("classpath:/com/insurance/security/test-app.properties")
+@JmixModule(id = "com.insurance.security.test", dependsOn = SecurityConfiguration.class)
+public class SecurityTestConfiguration {
 
     @Bean
     @Primary

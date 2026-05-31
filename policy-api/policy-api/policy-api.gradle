@@ -3,8 +3,6 @@ archivesBaseName = 'policy-api'
 dependencies {
     implementation 'io.jmix.core:jmix-core-starter'
     implementation 'io.jmix.data:jmix-eclipselink-starter'
-    implementation 'io.jmix.flowui:jmix-flowui-starter'
-    implementation 'io.jmix.flowui:jmix-flowui-themes'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -13,12 +11,6 @@ dependencies {
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testRuntimeOnly 'org.hsqldb:hsqldb'
-}
-
-configurations.implementation {
-    exclude group: 'com.vaadin', module: 'hilla'
-    exclude group: 'com.vaadin', module: 'hilla-dev'
-    exclude group: 'com.vaadin', module: 'copilot'
 }
 
 test {

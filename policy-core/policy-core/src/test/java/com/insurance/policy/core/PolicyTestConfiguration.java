@@ -9,13 +9,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.event.EventListener;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.sql.DataSource;
-import java.util.Collections;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @SpringBootConfiguration
 @EnableAutoConfiguration
@@ -33,6 +32,27 @@ public class PolicyTestConfiguration {
                 .generateUniqueName(true)
                 .setType(EmbeddedDatabaseType.HSQL)
                 .build();
+    }
+
+    @Bean
+    FailingPolicyCreatedEventOrchestrator failingPolicyCreatedEventOrchestrator() {
+        return new FailingPolicyCreatedEventOrchestrator();
+    }
+
+    public static class FailingPolicyCreatedEventOrchestrator {
+
+        private final AtomicBoolean failOnPolicyCreated = new AtomicBoolean();
+
+        void failNextPolicyCreatedEvent() {
+            failOnPolicyCreated.set(true);
+        }
+
+        @EventListener
+        void onPolicyCreated(com.insurance.policy.api.event.PolicyCreatedEvent event) {
+            if (failOnPolicyCreated.getAndSet(false)) {
+                throw new IllegalStateException("Account orchestration failed for policy " + event.getPolicyNo());
+            }
+        }
     }
 
 }

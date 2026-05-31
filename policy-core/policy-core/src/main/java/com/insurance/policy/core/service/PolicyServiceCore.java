@@ -75,7 +75,13 @@ public class PolicyServiceCore implements PolicyService {
         Policy savedPolicy = dataManager.save(policy);
         log.debug("Policy saving successful");
 
-        eventPublisher.publishEvent(new PolicyCreatedEvent(this, savedPolicy.getId().toString(), savedPolicy.getPolicyNo()));
+        eventPublisher.publishEvent(new PolicyCreatedEvent(
+                this,
+                savedPolicy.getId(),
+                savedPolicy.getPolicyNo(),
+                savedPolicy.getCoverageStart(),
+                savedPolicy.getPremium(),
+                savedPolicy.getPaymentFrequency().getId()));
 
         return mapToDto(savedPolicy);
     }

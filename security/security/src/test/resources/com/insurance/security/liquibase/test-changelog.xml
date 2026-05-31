@@ -6,6 +6,9 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <include file="/io/jmix/data/liquibase/changelog.xml"/>
+    <include file="/io/jmix/securitydata/liquibase/changelog.xml"/>
+
     <include file="/com/insurance/common/liquibase/changelog.xml"/>
+    <include file="/com/insurance/security/liquibase/changelog.xml"/>
 
 </databaseChangeLog>
