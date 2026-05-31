@@ -3,8 +3,12 @@ package com.insurance.app.policy;
 import com.insurance.account.core.entity.Account;
 import com.insurance.app.InsuranceAppApplication;
 import com.insurance.app.test_support.DatabaseCleanup;
-import com.insurance.app.test_support.PolicyFactory;
+import com.insurance.common.test_support.EntityTestData;
+import com.insurance.partner.core.entity.Partner;
+import com.insurance.partner.core.test_support.PartnerDataProvider;
+import com.insurance.policy.api.dto.CreatePolicyRequestDto;
 import com.insurance.policy.api.dto.PolicyDto;
+import com.insurance.policy.api.service.PolicyService;
 import com.insurance.policy.core.entity.Policy;
 import com.insurance.policy.ui.view.policy.PolicyDetailView;
 import com.insurance.policy.ui.view.policy.PolicyListView;
@@ -40,13 +44,28 @@ class PolicyUiTest {
     private ViewNavigators viewNavigators;
 
     @Autowired
-    private PolicyFactory policyFactory;
+    private PolicyService policyService;
+
+    @Autowired
+    private EntityTestData entityTestData;
 
     @Autowired
     private DataManager dataManager;
 
     @Autowired
     private DatabaseCleanup databaseCleanup;
+
+    private PolicyDto createPolicy(String paymentFrequencyId, BigDecimal premium) {
+        Partner partner = entityTestData.saveWithDefaults(new PartnerDataProvider());
+        return policyService.createPolicy(new CreatePolicyRequestDto(
+                "QT-FACTORY",
+                partner.getPartnerNo(),
+                "HOME_CONTENT_BASIC_2024_01",
+                LocalDate.of(2025, 1, 1),
+                premium,
+                paymentFrequencyId
+        ));
+    }
 
     @BeforeEach
     void setUp() {
@@ -55,10 +74,7 @@ class PolicyUiTest {
 
     @Test
     void given_policyCreatedAtomically_when_policyListOpened_then_policyIsVisibleAndAccountExists() {
-        PolicyDto policy = policyFactory.create(policyFactory.defaultData()
-                .premium(new BigDecimal("240.00"))
-                .paymentFrequencyId("YEARLY")
-                .build());
+        PolicyDto policy = createPolicy("YEARLY", new BigDecimal("240.00"));
 
         viewNavigators.view(UiTestUtils.getCurrentView(), PolicyListView.class).navigate();
 
@@ -74,10 +90,7 @@ class PolicyUiTest {
 
     @Test
     void given_policyWithAccount_when_detailBalanceDateChanged_then_balanceIsDisplayed() {
-        PolicyDto policy = policyFactory.create(policyFactory.defaultData()
-                .premium(new BigDecimal("240.00"))
-                .paymentFrequencyId("YEARLY")
-                .build());
+        PolicyDto policy = createPolicy("YEARLY", new BigDecimal("240.00"));
         Policy persistedPolicy = loadPolicyByNo(policy.getPolicyNo());
 
         viewNavigators.detailView(UiTestUtils.getCurrentView(), Policy.class)

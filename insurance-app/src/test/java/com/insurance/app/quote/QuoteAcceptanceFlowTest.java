@@ -4,11 +4,12 @@ import com.insurance.account.core.entity.Account;
 import com.insurance.account.core.entity.AccountDocument;
 import com.insurance.app.test_support.BaseIntegrationTest;
 import com.insurance.app.test_support.DatabaseCleanup;
-import com.insurance.app.test_support.QuoteFactory;
+import com.insurance.common.test_support.EntityTestData;
 import com.insurance.policy.core.entity.Policy;
 import com.insurance.product.api.dto.PaymentFrequency;
 import com.insurance.quote.api.service.QuoteService;
 import com.insurance.quote.core.entity.Quote;
+import com.insurance.quote.core.test_support.QuoteDataProvider;
 import io.jmix.core.DataManager;
 import io.jmix.core.Id;
 import io.jmix.core.querycondition.PropertyCondition;
@@ -33,7 +34,7 @@ class QuoteAcceptanceFlowTest extends BaseIntegrationTest {
     private DataManager dataManager;
 
     @Autowired
-    private QuoteFactory quoteFactory;
+    private EntityTestData entityTestData;
 
     @Autowired
     private DatabaseCleanup databaseCleanup;
@@ -47,10 +48,10 @@ class QuoteAcceptanceFlowTest extends BaseIntegrationTest {
     void given_acceptedQuote_when_policyLoaded_then_policyDataMatchesQuote() {
         // given
         BigDecimal premium = new BigDecimal("300.00");
-        Quote quote = quoteFactory.save(quoteFactory.defaultData()
-                .paymentFrequency(PaymentFrequency.YEARLY)
-                .calculatedPremium(premium)
-                .build());
+        Quote quote = entityTestData.saveWithDefaults(new QuoteDataProvider(), q -> {
+            q.setPaymentFrequency(PaymentFrequency.YEARLY);
+            q.setCalculatedPremium(premium);
+        });
 
         // when
         quoteService.accept(Id.of(quote));
@@ -69,10 +70,10 @@ class QuoteAcceptanceFlowTest extends BaseIntegrationTest {
     void given_acceptedQuote_when_accountLoaded_then_balanceEqualsNegativePremium() {
         // given
         BigDecimal premium = new BigDecimal("480.00");
-        Quote quote = quoteFactory.save(quoteFactory.defaultData()
-                .paymentFrequency(PaymentFrequency.YEARLY)
-                .calculatedPremium(premium)
-                .build());
+        Quote quote = entityTestData.saveWithDefaults(new QuoteDataProvider(), q -> {
+            q.setPaymentFrequency(PaymentFrequency.YEARLY);
+            q.setCalculatedPremium(premium);
+        });
 
         // when
         quoteService.accept(Id.of(quote));
@@ -89,10 +90,10 @@ class QuoteAcceptanceFlowTest extends BaseIntegrationTest {
     @Test
     void given_acceptedQuoteWithMonthlyFrequency_when_accountLoaded_then_twelveDocumentsCreated() {
         // given
-        Quote quote = quoteFactory.save(quoteFactory.defaultData()
-                .paymentFrequency(PaymentFrequency.MONTHLY)
-                .calculatedPremium(new BigDecimal("120.00"))
-                .build());
+        Quote quote = entityTestData.saveWithDefaults(new QuoteDataProvider(), q -> {
+            q.setPaymentFrequency(PaymentFrequency.MONTHLY);
+            q.setCalculatedPremium(new BigDecimal("120.00"));
+        });
 
         // when
         quoteService.accept(Id.of(quote));

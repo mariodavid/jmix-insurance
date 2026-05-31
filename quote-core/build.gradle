@@ -14,6 +14,7 @@ subprojects {
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
     apply plugin: 'io.jmix'
+    apply plugin: 'java-test-fixtures'
 
     repositories {
         mavenCentral()
@@ -25,6 +26,10 @@ subprojects {
     jmix {
         bomVersion = '2.8.1'
         projectId = 'quote'
+    }
+
+    dependencies {
+        testFixturesImplementation platform("io.jmix.bom:jmix-bom:2.8.1")
     }
 
     group = this.group

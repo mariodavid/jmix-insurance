@@ -2,7 +2,8 @@ package com.insurance.app.partner;
 
 import com.insurance.app.test_support.BaseIntegrationTest;
 import com.insurance.app.test_support.DatabaseCleanup;
-import com.insurance.app.test_support.PartnerFactory;
+import com.insurance.common.test_support.EntityTestData;
+import com.insurance.partner.core.test_support.PartnerDataProvider;
 import com.insurance.partner.api.dto.PartnerDto;
 import com.insurance.partner.api.service.PartnerService;
 import com.insurance.partner.core.entity.Partner;
@@ -25,7 +26,7 @@ class PartnerServiceTest extends BaseIntegrationTest {
     private DataManager dataManager;
 
     @Autowired
-    private PartnerFactory partnerFactory;
+    private EntityTestData entityTestData;
 
     @Autowired
     private DatabaseCleanup databaseCleanup;
@@ -56,7 +57,7 @@ class PartnerServiceTest extends BaseIntegrationTest {
     @Test
     void given_existingPartner_when_savedWithUpdatedFields_then_partnerNoRemainsUnchanged() {
         // given
-        Partner existing = partnerFactory.saveDefault();
+        Partner existing = entityTestData.saveWithDefaults(new PartnerDataProvider());
 
         // when
         PartnerDto dto = dataManager.create(PartnerDto.class);
@@ -69,16 +70,16 @@ class PartnerServiceTest extends BaseIntegrationTest {
         // then
         Partner updated = dataManager.load(Partner.class).id(existing.getId()).one();
         assertThat(updated)
-                .hasPartnerNo(existing.getPartnerNo())
-                .hasFirstName("Updated")
-                .hasLastName("Name");
+            .hasPartnerNo(existing.getPartnerNo())
+            .hasFirstName("Updated")
+            .hasLastName("Name");
     }
 
     @Test
     void given_twoPartners_when_searchByLastName_then_onlyMatchingPartnerReturned() {
         // given
-        partnerFactory.save(partnerFactory.defaultData().lastName("Mayer").build());
-        partnerFactory.save(partnerFactory.defaultData().lastName("Müller").build());
+        entityTestData.saveWithDefaults(new PartnerDataProvider(), p -> p.setLastName("Mayer"));
+        entityTestData.saveWithDefaults(new PartnerDataProvider(), p -> p.setLastName("Müller"));
 
         // when
         List<PartnerDto> result = partnerService.findPartners("Mayer", 10, 0);
@@ -91,7 +92,7 @@ class PartnerServiceTest extends BaseIntegrationTest {
     @Test
     void given_savedPartner_when_loadedByPartnerNo_then_correctDtoReturned() {
         // given
-        Partner saved = partnerFactory.saveDefault();
+        Partner saved = entityTestData.saveWithDefaults(new PartnerDataProvider());
 
         // when
         PartnerDto found = partnerService.getPartner(saved.getPartnerNo());

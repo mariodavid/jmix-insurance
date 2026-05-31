@@ -2,9 +2,10 @@ package com.insurance.app.quote;
 
 import com.insurance.app.test_support.BaseIntegrationTest;
 import com.insurance.app.test_support.DatabaseCleanup;
-import com.insurance.app.test_support.QuoteFactory;
+import com.insurance.common.test_support.EntityTestData;
 import com.insurance.quote.api.service.QuoteService;
 import com.insurance.quote.core.entity.Quote;
+import com.insurance.quote.core.test_support.QuoteDataProvider;
 import io.jmix.core.DataManager;
 import io.jmix.core.Id;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +23,7 @@ class QuoteServiceTest extends BaseIntegrationTest {
     private DataManager dataManager;
 
     @Autowired
-    private QuoteFactory quoteFactory;
+    private EntityTestData entityTestData;
 
     @Autowired
     private DatabaseCleanup databaseCleanup;
@@ -35,7 +36,7 @@ class QuoteServiceTest extends BaseIntegrationTest {
     @Test
     void given_pendingQuote_when_rejected_then_quoteIsMarkedAsRejected() {
         // given
-        Quote quote = quoteFactory.saveDefault();
+        Quote quote = entityTestData.saveWithDefaults(new QuoteDataProvider());
 
         // when
         quoteService.reject(Id.of(quote));
@@ -48,7 +49,7 @@ class QuoteServiceTest extends BaseIntegrationTest {
     @Test
     void given_pendingQuote_when_accepted_then_quoteIsMarkedAsAcceptedWithPolicyReference() {
         // given
-        Quote quote = quoteFactory.saveDefault();
+        Quote quote = entityTestData.saveWithDefaults(new QuoteDataProvider());
 
         // when
         quoteService.accept(Id.of(quote));

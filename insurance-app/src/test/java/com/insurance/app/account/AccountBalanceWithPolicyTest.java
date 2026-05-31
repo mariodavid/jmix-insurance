@@ -3,9 +3,12 @@ package com.insurance.app.account;
 import com.insurance.account.api.service.AccountService;
 import com.insurance.app.test_support.BaseIntegrationTest;
 import com.insurance.app.test_support.DatabaseCleanup;
-import com.insurance.app.test_support.PolicyData;
-import com.insurance.app.test_support.PolicyFactory;
+import com.insurance.common.test_support.EntityTestData;
+import com.insurance.partner.core.entity.Partner;
+import com.insurance.partner.core.test_support.PartnerDataProvider;
+import com.insurance.policy.api.dto.CreatePolicyRequestDto;
 import com.insurance.policy.api.dto.PolicyDto;
+import com.insurance.policy.api.service.PolicyService;
 import io.jmix.core.DataManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +31,10 @@ class AccountBalanceWithPolicyTest extends BaseIntegrationTest {
     private AccountService accountService;
 
     @Autowired
-    private PolicyFactory policyFactory;
+    private PolicyService policyService;
+
+    @Autowired
+    private EntityTestData entityTestData;
 
     @Autowired
     private DataManager dataManager;
@@ -39,6 +45,18 @@ class AccountBalanceWithPolicyTest extends BaseIntegrationTest {
     private static final LocalDate COVERAGE_START = LocalDate.of(2025, 1, 1);
     private static final BigDecimal PREMIUM = new BigDecimal("120.00");
 
+    private PolicyDto createPolicy(String paymentFrequencyId, BigDecimal premium) {
+        Partner partner = entityTestData.saveWithDefaults(new PartnerDataProvider());
+        return policyService.createPolicy(new CreatePolicyRequestDto(
+                "QT-FACTORY",
+                partner.getPartnerNo(),
+                "HOME_CONTENT_BASIC_2024_01",
+                COVERAGE_START,
+                premium,
+                paymentFrequencyId
+        ));
+    }
+
     @BeforeEach
     void setUp() {
         databaseCleanup.removeAllEntities();
@@ -47,10 +65,7 @@ class AccountBalanceWithPolicyTest extends BaseIntegrationTest {
     @Test
     void given_quarterlyPolicyWithinCoverage_when_balanceQueriedAfterTwoPayments_then_partialSumReturned() {
         // given — QUARTERLY: Raten am 1.1, 1.4, 1.7, 1.10
-        PolicyDto policy = policyFactory.create(policyFactory.defaultData()
-                .premium(PREMIUM)
-                .paymentFrequencyId("QUARTERLY")
-                .build());
+        PolicyDto policy = createPolicy("QUARTERLY", PREMIUM);
 
         // when — Stichtag 30.6 → 2 von 4 Raten fällig
         LocalDate effectiveDate = LocalDate.of(2025, 6, 30);
@@ -64,7 +79,7 @@ class AccountBalanceWithPolicyTest extends BaseIntegrationTest {
     @Test
     void given_policyWithExpiredCoverage_when_balanceQueried_then_illegalArgumentExceptionThrown() {
         // given — coverageEnd = coverageStart + 1 Jahr = 2026-01-01
-        PolicyDto policy = policyFactory.createDefault();
+        PolicyDto policy = createPolicy("YEARLY", PREMIUM);
 
         // when / then
         LocalDate afterCoverageEnd = policy.getCoverageEnd().plusDays(1);

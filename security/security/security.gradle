@@ -12,6 +12,8 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'org.springframework.boot:spring-boot-starter-web'
+    testFixturesApi 'org.assertj:assertj-core:3.24.2'
+    testFixturesApi testFixtures('com.insurance:common:0.0.1-SNAPSHOT')
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testRuntimeOnly 'org.hsqldb:hsqldb'

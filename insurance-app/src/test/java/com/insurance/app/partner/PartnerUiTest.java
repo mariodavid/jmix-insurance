@@ -1,11 +1,11 @@
 package com.insurance.app.partner;
 
 import com.insurance.app.InsuranceAppApplication;
+import com.insurance.app.test_support.AuthenticatedAsAdmin;
 import com.insurance.partner.core.entity.Partner;
 import com.insurance.partner.ui.view.partner.PartnerDetailView;
 import com.insurance.partner.ui.view.partner.PartnerListView;
 import io.jmix.core.DataManager;
-import io.jmix.core.security.SystemAuthenticator;
 import io.jmix.flowui.ViewNavigators;
 import io.jmix.flowui.component.grid.DataGrid;
 import io.jmix.flowui.component.textfield.TypedTextField;
@@ -17,6 +17,7 @@ import io.jmix.flowui.testassist.UiTest;
 import io.jmix.flowui.testassist.UiTestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -30,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @UiTest
 @SpringBootTest(classes = {InsuranceAppApplication.class, FlowuiTestAssistConfiguration.class})
 @ActiveProfiles("test")
+@ExtendWith(AuthenticatedAsAdmin.class)
 class PartnerUiTest {
 
     @Autowired
@@ -37,9 +39,6 @@ class PartnerUiTest {
 
     @Autowired
     private ViewNavigators viewNavigators;
-
-    @Autowired
-    private SystemAuthenticator systemAuthenticator;
 
     private final List<UUID> cleanupIds = new ArrayList<>();
 
@@ -75,21 +74,19 @@ class PartnerUiTest {
 
     @Test
     void given_existingPartner_when_editedThroughUi_then_nameChangesAndPartnerNoRemainsUnchanged() {
-        Partner existing = systemAuthenticator.withUser("admin", () -> {
-            Partner partner = dataManager.create(Partner.class);
-            partner.setPartnerNo("PT-83001");
-            partner.setFirstName("Before");
-            partner.setLastName("Edit");
-            return dataManager.save(partner);
-        });
-        cleanupIds.add(existing.getId());
+        Partner existing = dataManager.create(Partner.class);
+        existing.setPartnerNo("PT-83001");
+        existing.setFirstName("Before");
+        existing.setLastName("Edit");
+        Partner saved = dataManager.save(existing);
+        cleanupIds.add(saved.getId());
 
         viewNavigators.view(UiTestUtils.getCurrentView(), PartnerListView.class).navigate();
 
         PartnerListView listView = UiTestUtils.getCurrentView();
         DataGrid<Partner> partnersDataGrid = UiTestUtils.getComponent(listView, "partnersDataGrid");
         Partner gridPartner = gridItems(partnersDataGrid).stream()
-                .filter(partner -> partner.getId().equals(existing.getId()))
+                .filter(partner -> partner.getId().equals(saved.getId()))
                 .findFirst()
                 .orElseThrow();
         partnersDataGrid.select(gridPartner);
@@ -106,8 +103,7 @@ class PartnerUiTest {
         JmixButton saveAndCloseButton = UiTestUtils.getComponent(detailView, "saveAndCloseButton");
         saveAndCloseButton.click();
 
-        Partner updated = systemAuthenticator.withUser("admin",
-                () -> dataManager.load(Partner.class).id(existing.getId()).one());
+        Partner updated = dataManager.load(Partner.class).id(saved.getId()).one();
 
         assertThat(updated.getPartnerNo()).isEqualTo("PT-83001");
         assertThat(updated.getFirstName()).isEqualTo("After");
@@ -116,21 +112,19 @@ class PartnerUiTest {
 
     @Test
     void given_existingPartner_when_removedThroughUi_then_partnerIsRemovedFromDatabase() {
-        Partner existing = systemAuthenticator.withUser("admin", () -> {
-            Partner partner = dataManager.create(Partner.class);
-            partner.setPartnerNo("PT-83002");
-            partner.setFirstName("Remove");
-            partner.setLastName("Candidate");
-            return dataManager.save(partner);
-        });
-        cleanupIds.add(existing.getId());
+        Partner existing = dataManager.create(Partner.class);
+        existing.setPartnerNo("PT-83002");
+        existing.setFirstName("Remove");
+        existing.setLastName("Candidate");
+        Partner saved = dataManager.save(existing);
+        cleanupIds.add(saved.getId());
 
         viewNavigators.view(UiTestUtils.getCurrentView(), PartnerListView.class).navigate();
 
         PartnerListView listView = UiTestUtils.getCurrentView();
         DataGrid<Partner> partnersDataGrid = UiTestUtils.getComponent(listView, "partnersDataGrid");
         Partner gridPartner = gridItems(partnersDataGrid).stream()
-                .filter(partner -> partner.getId().equals(existing.getId()))
+                .filter(partner -> partner.getId().equals(saved.getId()))
                 .findFirst()
                 .orElseThrow();
         partnersDataGrid.select(gridPartner);
@@ -141,29 +135,28 @@ class PartnerUiTest {
         assertThat(confirmationDialog).isNotNull();
         confirmationDialog.getButtons().get(0).click();
 
-        assertThat(systemAuthenticator.withUser("admin", () -> dataManager.load(Partner.class)
-                .id(existing.getId())
-                .optional()))
+        assertThat(dataManager.load(Partner.class)
+                .id(saved.getId())
+                .optional())
                 .isEmpty();
-        cleanupIds.remove(existing.getId());
+        cleanupIds.remove(saved.getId());
     }
 
     @AfterEach
     void tearDown() {
-        cleanupIds.forEach(id -> systemAuthenticator.withUser("admin", () -> {
+        cleanupIds.forEach(id -> {
             dataManager.load(Partner.class)
                     .id(id)
                     .optional()
                     .ifPresent(dataManager::remove);
-            return null;
-        }));
+        });
         cleanupIds.clear();
     }
 
     private Partner loadPartnerByLastName(String lastName) {
-        return systemAuthenticator.withUser("admin", () -> dataManager.load(Partner.class)
+        return dataManager.load(Partner.class)
                 .query("e.lastName = ?1", lastName)
-                .one());
+                .one();
     }
 
     private List<Partner> gridItems(DataGrid<Partner> dataGrid) {

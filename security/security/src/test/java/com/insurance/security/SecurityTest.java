@@ -1,9 +1,11 @@
 package com.insurance.security;
 
+import com.insurance.common.test_support.AuthenticatedAsAdmin;
+import com.insurance.common.test_support.EntityTestData;
 import com.insurance.security.entity.User;
 import com.insurance.security.security.FullAccessRole;
+import com.insurance.security.test_support.UserDataProvider;
 import io.jmix.core.DataManager;
-import io.jmix.core.security.SystemAuthenticator;
 import io.jmix.core.security.UserRepository;
 import io.jmix.security.model.EntityAttributePolicyAction;
 import io.jmix.security.model.EntityPolicyAction;
@@ -14,6 +16,7 @@ import io.jmix.securityflowui.role.annotation.MenuPolicy;
 import io.jmix.securityflowui.role.annotation.ViewPolicy;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,9 +24,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.lang.reflect.Method;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.insurance.security.test_support.Assertions.assertThat;
 
 @SpringBootTest(properties = "spring.main.allow-bean-definition-overriding=true")
+@ExtendWith(AuthenticatedAsAdmin.class)
 class SecurityTest {
 
     @Autowired
@@ -36,25 +40,24 @@ class SecurityTest {
     private UserRepository userRepository;
 
     @Autowired
-    private SystemAuthenticator systemAuthenticator;
+    private EntityTestData entityTestData;
 
     private User savedUser;
 
     @Test
     void given_userCreatedWithDataManager_when_saved_then_canBeLoadedByIdAndUsername() {
-        User user = dataManager.create(User.class);
-        user.setUsername("security-test-user-" + System.currentTimeMillis());
-        user.setPassword(passwordEncoder.encode("test-passwd"));
-        user.setActive(true);
+        savedUser = entityTestData.saveWithDefaults(new UserDataProvider(), user -> {
+            user.setUsername("security-test-user-" + System.currentTimeMillis());
+            user.setPassword(passwordEncoder.encode("test-passwd"));
+        });
 
-        savedUser = systemAuthenticator.withSystem(() -> dataManager.save(user));
-
-        User loaded = systemAuthenticator.withSystem(() -> dataManager.load(User.class).id(savedUser.getId()).one());
+        User loaded = dataManager.load(User.class).id(savedUser.getId()).one();
         UserDetails userDetails = userRepository.loadUserByUsername(savedUser.getUsername());
 
-        assertThat(loaded.getId()).isEqualTo(savedUser.getId());
-        assertThat(loaded.getUsername()).isEqualTo(savedUser.getUsername());
-        assertThat(loaded.getActive()).isTrue();
+        assertThat(loaded)
+                .hasId(savedUser.getId())
+                .hasUsername(savedUser.getUsername())
+                .isActive();
         assertThat(userDetails.getUsername()).isEqualTo(savedUser.getUsername());
     }
 
@@ -82,13 +85,10 @@ class SecurityTest {
     void tearDown() {
         if (savedUser != null) {
             User user = savedUser;
-            systemAuthenticator.withSystem(() -> {
-                dataManager.load(User.class)
-                        .id(user.getId())
-                        .optional()
-                        .ifPresent(dataManager::remove);
-                return null;
-            });
+            dataManager.load(User.class)
+                    .id(user.getId())
+                    .optional()
+                    .ifPresent(dataManager::remove);
             savedUser = null;
         }
     }

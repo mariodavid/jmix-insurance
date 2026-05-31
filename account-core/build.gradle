@@ -4,6 +4,7 @@ buildscript {
     }
     dependencies {
         classpath "io.jmix.gradle:jmix-gradle-plugin:2.8.1"
+        classpath "org.assertj:assertj-generator-gradle-plugin:1.1.0"
     }
 }
 
@@ -14,6 +15,7 @@ subprojects {
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
     apply plugin: 'io.jmix'
+    apply plugin: 'java-test-fixtures'
 
     repositories {
         mavenCentral()
@@ -25,6 +27,10 @@ subprojects {
     jmix {
         bomVersion = '2.8.1'
         projectId = 'account'
+    }
+
+    dependencies {
+        testFixturesImplementation platform("io.jmix.bom:jmix-bom:2.8.1")
     }
 
     group = this.group

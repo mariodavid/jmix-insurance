@@ -64,6 +64,13 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'io.jmix.flowui:jmix-flowui-test-assist'
+    testImplementation testFixtures('com.insurance:common:0.0.1-SNAPSHOT')
+    testImplementation testFixtures('com.insurance.security:security:0.0.1-SNAPSHOT')
+    testImplementation testFixtures('com.insurance.partner:partner-core:0.0.1-SNAPSHOT')
+    testImplementation testFixtures('com.insurance.product:product-core:0.0.1-SNAPSHOT')
+    testImplementation testFixtures('com.insurance.policy:policy-core:0.0.1-SNAPSHOT')
+    testImplementation testFixtures('com.insurance.quote:quote-core:0.0.1-SNAPSHOT')
+    testImplementation testFixtures('com.insurance.account:account-core:0.0.1-SNAPSHOT')
 }
 
 configurations.implementation {

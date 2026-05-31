@@ -22,7 +22,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @PropertySource("classpath:/com/insurance/policy/core/test-app.properties")
 @JmixModule(id = "com.insurance.policy.core.test",
         dependsOn = {PolicyConfiguration.class,
-                     com.insurance.security.SecurityConfiguration.class})
+                     com.insurance.security.SecurityConfiguration.class,
+                     com.insurance.partner.core.PartnerConfiguration.class})
 public class PolicyTestConfiguration {
 
     @Bean

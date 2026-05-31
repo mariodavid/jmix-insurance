@@ -8,10 +8,10 @@ import io.jmix.core.DataManager;
 import io.jmix.core.Metadata;
 import io.jmix.core.MetadataTools;
 import io.jmix.core.querycondition.PropertyCondition;
-import io.jmix.core.security.SystemAuthenticator;
-import org.junit.jupiter.api.AfterEach;
+import com.insurance.common.test_support.AuthenticatedAsAdmin;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,10 +22,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static com.insurance.policy.core.test_support.Assertions.assertThat;
+import static com.insurance.policy.core.test_support.Assertions.assertThatThrownBy;
 
 @SpringBootTest(properties = "spring.main.allow-bean-definition-overriding=true")
+@ExtendWith(AuthenticatedAsAdmin.class)
 class PolicyServiceTest {
 
     @Autowired
@@ -33,9 +34,6 @@ class PolicyServiceTest {
 
     @Autowired
     private DataManager dataManager;
-
-    @Autowired
-    private SystemAuthenticator systemAuthenticator;
 
     @Autowired
     private DataSource dataSource;
@@ -53,15 +51,9 @@ class PolicyServiceTest {
 
     @BeforeEach
     void setUp() {
-        systemAuthenticator.begin("admin");
         JdbcTemplate jdbc = new JdbcTemplate(dataSource);
         String table = metadataTools.getDatabaseTable(metadata.getClass(Policy.class));
         jdbc.update("DELETE FROM " + table);
-    }
-
-    @AfterEach
-    void tearDown() {
-        systemAuthenticator.end();
     }
 
     @Test
