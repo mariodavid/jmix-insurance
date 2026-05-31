@@ -1,6 +1,6 @@
 package com.insurance.app.user;
 
-import com.insurance.app.entity.User;
+import com.insurance.security.entity.User;
 import com.insurance.app.test_support.AuthenticatedAsAdmin;
 import io.jmix.core.DataManager;
 import io.jmix.core.security.UserRepository;

@@ -46,6 +46,7 @@ import org.springframework.context.ApplicationContext;
         io.jmix.flowuidata.FlowuiDataConfiguration.class,
         io.jmix.localfs.LocalFileStorageConfiguration.class,
         com.insurance.common.CommonConfiguration.class,
+        com.insurance.security.SecurityConfiguration.class,
         com.insurance.partner.core.PartnerConfiguration.class,
         com.insurance.product.core.ProductConfiguration.class,
         com.insurance.policy.core.PolicyConfiguration.class,

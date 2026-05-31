@@ -18,7 +18,8 @@ import java.util.Collections;
 @Configuration
 @ComponentScan
 @ConfigurationPropertiesScan
-@JmixModule(dependsOn = {EclipselinkConfiguration.class, FlowuiConfiguration.class})
+@JmixModule(dependsOn = {EclipselinkConfiguration.class,
+        FlowuiConfiguration.class})
 @PropertySource(name = "com.insurance.common", value = "classpath:/com/insurance/common/module.properties")
 public class CommonConfiguration {
 

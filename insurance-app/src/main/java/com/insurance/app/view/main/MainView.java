@@ -1,6 +1,6 @@
 package com.insurance.app.view.main;
 
-import com.insurance.app.entity.User;
+import com.insurance.security.entity.User;
 import com.google.common.base.Strings;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.avatar.Avatar;

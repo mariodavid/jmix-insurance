@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1" author="app">
+        <createTable tableName="QUOTE_QUOTE">
+            <column name="ID" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QUOTE_QUOTE"/>
+            </column>
+            <column name="VERSION" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="VARCHAR(255)"/>
+            <column name="CREATED_DATE" type="timestamp with time zone"/>
+            <column name="LAST_MODIFIED_BY" type="VARCHAR(255)"/>
+            <column name="LAST_MODIFIED_DATE" type="timestamp with time zone"/>
+            <column name="DELETED_BY" type="VARCHAR(255)"/>
+            <column name="DELETED_DATE" type="timestamp with time zone"/>
+            <column name="PARTNER_NO" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="QUOTE_NO" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STATUS" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRODUCT_TYPE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRODUCT_VARIANT" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PAYMENT_FREQUENCY" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ACCEPTED_AT" type="DATETIME"/>
+            <column name="REJECTED_AT" type="DATETIME"/>
+            <column name="CREATED_POLICY_NO" type="VARCHAR(255)"/>
+            <column name="CREATED_POLICY_ID" type="VARCHAR(255)"/>
+            <column name="INSURANCE_PRODUCT" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EFFECTIVE_DATE" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SQUARE_METERS" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CALCULATED_PREMIUM" type="DECIMAL(19, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALID_FROM" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALID_UNTIL" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

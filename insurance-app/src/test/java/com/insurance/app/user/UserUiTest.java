@@ -1,9 +1,9 @@
 package com.insurance.app.user;
 
 import com.insurance.app.InsuranceAppApplication;
-import com.insurance.app.entity.User;
-import com.insurance.app.view.user.UserDetailView;
-import com.insurance.app.view.user.UserListView;
+import com.insurance.security.entity.User;
+import com.insurance.security.view.user.UserDetailView;
+import com.insurance.security.view.user.UserListView;
 import com.vaadin.flow.component.Component;
 import io.jmix.core.DataManager;
 import io.jmix.flowui.ViewNavigators;

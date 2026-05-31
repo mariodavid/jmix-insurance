@@ -11,6 +11,14 @@
     <include file="/io/jmix/flowuidata/liquibase/changelog.xml"/>
     <include file="/io/jmix/securitydata/liquibase/changelog.xml"/>
 
+    <!-- Include de-centralized module changelogs -->
+    <include file="/com/insurance/common/liquibase/changelog.xml"/>
+    <include file="/com/insurance/security/liquibase/changelog.xml"/>
+    <include file="/com/insurance/partner/core/liquibase/changelog.xml"/>
+    <include file="/com/insurance/quote/core/liquibase/changelog.xml"/>
+    <include file="/com/insurance/policy/core/liquibase/changelog.xml"/>
+    <include file="/com/insurance/account/core/liquibase/changelog.xml"/>
+
     <includeAll path="/com/insurance/app/liquibase/changelog"/>
 
 </databaseChangeLog>

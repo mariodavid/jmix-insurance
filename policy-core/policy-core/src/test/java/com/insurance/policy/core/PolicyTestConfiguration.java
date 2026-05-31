@@ -23,8 +23,7 @@ import java.util.Collections;
 @PropertySource("classpath:/com/insurance/policy/core/test-app.properties")
 @JmixModule(id = "com.insurance.policy.core.test",
         dependsOn = {PolicyConfiguration.class,
-                     io.jmix.security.SecurityConfiguration.class,
-                     io.jmix.securitydata.SecurityDataConfiguration.class})
+                     com.insurance.security.SecurityConfiguration.class})
 public class PolicyTestConfiguration {
 
     @Bean
@@ -36,15 +35,4 @@ public class PolicyTestConfiguration {
                 .build();
     }
 
-    @Bean
-    @Primary
-    UserRepository userRepository() {
-        InMemoryUserRepository repository = new InMemoryUserRepository();
-        UserDetails admin = User.withUsername("admin")
-                .password("{noop}admin")
-                .authorities("ROLE_test-full-access")
-                .build();
-        repository.addUser(admin);
-        return repository;
-    }
 }

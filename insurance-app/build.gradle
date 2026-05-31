@@ -24,6 +24,7 @@ repositories {
 
 dependencies {
     implementation 'com.insurance:common-starter:0.0.1-SNAPSHOT'
+    implementation 'com.insurance.security:security-starter:0.0.1-SNAPSHOT'
 
     implementation 'com.insurance.account:account-core-starter:0.0.1-SNAPSHOT'
     implementation 'com.insurance.account:account-api-starter:0.0.1-SNAPSHOT'
@@ -69,6 +70,7 @@ configurations.implementation {
 
 test {
     useJUnitPlatform()
+    systemProperty 'liquibase.duplicateFileMode', 'WARN'
 }
 
 idea {
