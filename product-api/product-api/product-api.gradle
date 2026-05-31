@@ -1,17 +1,5 @@
 archivesBaseName = 'product-api'
 
-apply plugin: 'org.assertj.generator'
-
-sourceSets {
-    main {
-        assertJ {
-            packages {
-                include "com.insurance.product.api.dto**"
-            }
-        }
-    }
-}
-
 dependencies {
     implementation 'io.jmix.core:jmix-core-starter'
     implementation 'io.jmix.data:jmix-eclipselink-starter'

@@ -12,6 +12,7 @@ version = '0.0.1-SNAPSHOT'
 
 subprojects {
     apply plugin: 'java-library'
+    apply plugin: 'java-test-fixtures'
     apply plugin: 'maven-publish'
     apply plugin: 'io.jmix'
 
@@ -25,6 +26,10 @@ subprojects {
     jmix {
         bomVersion = '2.8.1'
         projectId = 'quote_api'
+    }
+
+    dependencies {
+        testFixturesImplementation platform("io.jmix.bom:jmix-bom:2.8.1")
     }
 
     group = this.group

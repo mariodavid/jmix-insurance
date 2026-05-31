@@ -87,7 +87,7 @@ public class QuoteDetailView extends StandardDetailView<Quote> {
         );
 
         if (matchingProduct.isEmpty()) {
-            notifications.create(messageBundle.formatMessage("noMatchingProduct"))
+            notifications.create(messageBundle.getMessage("noMatchingProduct"))
                     .withType(Notifications.Type.ERROR)
                     .show();
             return;

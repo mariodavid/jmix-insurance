@@ -32,8 +32,8 @@ import org.springframework.test.context.ActiveProfiles;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static com.insurance.app.test_support.assertion.InsuranceAssertions.assertThat;
+import static com.insurance.app.test_support.assertion.InsuranceAssertions.assertThatThrownBy;
 
 @UiTest
 @SpringBootTest(classes = {InsuranceAppApplication.class, FlowuiTestAssistConfiguration.class})
@@ -85,7 +85,7 @@ class PolicyUiTest {
         assertThat(items).isNotNull();
         assertThat(items.getItems())
                 .anySatisfy(item -> assertThat(item.getPolicyNo()).isEqualTo(policy.getPolicyNo()));
-        assertThat(loadAccountByNo(policy.getPolicyNo()).getPolicyId()).isEqualTo(policy.getId().toString());
+        assertThat(loadAccountByNo(policy.getPolicyNo())).hasPolicyId(policy.getId().toString());
     }
 
     @Test

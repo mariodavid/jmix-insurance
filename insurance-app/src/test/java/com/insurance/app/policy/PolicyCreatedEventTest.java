@@ -73,8 +73,9 @@ class PolicyCreatedEventTest extends BaseIntegrationTest {
                 .hasDocumentCount(1);
 
         List<AccountDocument> docs = loadDocuments(account);
-        assertThat(docs.get(0).getType()).isEqualTo(DocumentType.CREDIT);
-        assertThat(docs.get(0).getDocumentDate()).isEqualTo(COVERAGE_START);
+        assertThat(docs.get(0))
+                .hasType(DocumentType.CREDIT)
+                .hasDocumentDate(COVERAGE_START);
     }
 
     @Test
@@ -87,8 +88,8 @@ class PolicyCreatedEventTest extends BaseIntegrationTest {
         assertThat(account).hasDocumentCount(12);
 
         List<AccountDocument> docs = loadDocuments(account);
-        assertThat(docs.get(0).getDocumentDate()).isEqualTo(COVERAGE_START);
-        assertThat(docs.get(11).getDocumentDate()).isEqualTo(COVERAGE_START.plusMonths(11));
+        assertThat(docs.get(0)).hasDocumentDate(COVERAGE_START);
+        assertThat(docs.get(11)).hasDocumentDate(COVERAGE_START.plusMonths(11));
     }
 
     @Test
@@ -101,8 +102,8 @@ class PolicyCreatedEventTest extends BaseIntegrationTest {
         assertThat(account).hasDocumentCount(4);
 
         List<AccountDocument> docs = loadDocuments(account);
-        assertThat(docs.get(0).getDocumentDate()).isEqualTo(COVERAGE_START);
-        assertThat(docs.get(3).getDocumentDate()).isEqualTo(COVERAGE_START.plusMonths(9));
+        assertThat(docs.get(0)).hasDocumentDate(COVERAGE_START);
+        assertThat(docs.get(3)).hasDocumentDate(COVERAGE_START.plusMonths(9));
     }
 
     private Account loadAccountByNo(String accountNo) {

@@ -5,6 +5,9 @@ dependencies {
     implementation 'io.jmix.core:jmix-core-starter'
     implementation 'io.jmix.data:jmix-eclipselink-starter'
 
+    testFixturesApi 'org.assertj:assertj-core:3.24.2'
+    testFixturesImplementation 'io.jmix.core:jmix-core-starter'
+
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }

@@ -4,7 +4,6 @@ buildscript {
     }
     dependencies {
         classpath "io.jmix.gradle:jmix-gradle-plugin:2.8.1"
-        classpath "org.assertj:assertj-generator-gradle-plugin:1.1.0"
     }
 }
 

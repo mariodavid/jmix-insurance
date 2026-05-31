@@ -25,9 +25,12 @@ import io.jmix.flowui.component.textfield.JmixIntegerField;
 import io.jmix.flowui.component.textfield.TypedTextField;
 import io.jmix.flowui.data.grid.DataGridItems;
 import io.jmix.flowui.kit.component.button.JmixButton;
+import io.jmix.flowui.Notifications;
 import io.jmix.flowui.testassist.FlowuiTestAssistConfiguration;
 import io.jmix.flowui.testassist.UiTest;
 import io.jmix.flowui.testassist.UiTestUtils;
+import io.jmix.flowui.testassist.notification.NotificationInfo;
+import io.jmix.flowui.testassist.notification.OpenedNotifications;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,6 +50,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @UiTest
@@ -68,6 +73,9 @@ class QuoteUiTest {
 
     @Autowired
     private PartnerService partnerService;
+
+    @Autowired
+    private OpenedNotifications openedNotifications;
 
     @Autowired
     private DataSource dataSource;
@@ -211,6 +219,12 @@ class QuoteUiTest {
 
         TypedTextField<BigDecimal> premiumField = UiTestUtils.getComponent(detailView, "calculatedPremiumField");
         assertThat(premiumField.getTypedValue()).isNull();
+
+        NotificationInfo notification = openedNotifications.getLastNotification();
+        assertThat(notification).isNotNull();
+        assertThat(notification.getType()).isEqualTo(Notifications.Type.ERROR);
+        assertThat(notification.getText())
+                .contains("No matching active product found");
     }
 
     @Test
@@ -242,6 +256,38 @@ class QuoteUiTest {
         assertThat(reloaded).hasStatus(QuoteStatus.ACCEPTED);
         assertThat(reloaded.getAcceptedAt()).isNotNull();
         assertThat(reloaded.getCreatedPolicyNo()).isEqualTo("HC-2025-000001");
+
+        DataGrid<Quote> reloadedGrid = UiTestUtils.getComponent(
+                (QuoteListView) UiTestUtils.getCurrentView(), "quotesDataGrid");
+        assertThat(reloadedGrid.getItems()).isNotNull();
+    }
+
+    @Test
+    void given_pendingQuote_when_rejectedViaDataGrid_then_quoteIsRejectedAndGridReloads() {
+        // given
+        Quote quote = entityTestData.saveWithDefaults(new QuoteDataProvider());
+
+        viewNavigators.view(UiTestUtils.getCurrentView(), QuoteListView.class).navigate();
+        QuoteListView listView = UiTestUtils.getCurrentView();
+
+        DataGrid<Quote> quotesDataGrid = UiTestUtils.getComponent(listView, "quotesDataGrid");
+        Quote gridQuote = gridItems(quotesDataGrid).stream()
+                .filter(q -> q.getId().equals(quote.getId()))
+                .findFirst()
+                .orElseThrow();
+        quotesDataGrid.select(gridQuote);
+
+        // when
+        JmixButton rejectButton = UiTestUtils.getComponent(listView, "rejectButton");
+        rejectButton.click();
+
+        // then
+        Quote reloaded = dataManager.load(Quote.class).id(quote.getId()).one();
+        assertThat(reloaded).hasStatus(QuoteStatus.REJECTED);
+        assertThat(reloaded.getRejectedAt()).isNotNull();
+        assertThat(reloaded.getAcceptedAt()).isNull();
+        assertThat(reloaded.getCreatedPolicyNo()).isNull();
+        verify(policyService, never()).createPolicy(any());
 
         DataGrid<Quote> reloadedGrid = UiTestUtils.getComponent(
                 (QuoteListView) UiTestUtils.getCurrentView(), "quotesDataGrid");

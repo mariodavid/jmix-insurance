@@ -54,8 +54,9 @@ class AccountServiceTest extends BaseIntegrationTest {
         assertThat(account)
                 .hasBalance(PREMIUM.negate())
                 .hasDocumentCount(1);
-        assertThat(account.getDocuments().get(0).getType()).isEqualTo(DocumentType.CREDIT);
-        assertThat(account.getDocuments().get(0).getDocumentDate()).isEqualTo(COVERAGE_START);
+        assertThat(account.getDocuments().get(0))
+                .hasType(DocumentType.CREDIT)
+                .hasDocumentDate(COVERAGE_START);
     }
 
     @Test
@@ -66,8 +67,8 @@ class AccountServiceTest extends BaseIntegrationTest {
         // then
         Account account = loadWithDocuments("HC-2025-000002");
         assertThat(account).hasDocumentCount(12);
-        assertThat(account.getDocuments().get(0).getDocumentDate()).isEqualTo(COVERAGE_START);
-        assertThat(account.getDocuments().get(11).getDocumentDate()).isEqualTo(COVERAGE_START.plusMonths(11));
+        assertThat(account.getDocuments().get(0)).hasDocumentDate(COVERAGE_START);
+        assertThat(account.getDocuments().get(11)).hasDocumentDate(COVERAGE_START.plusMonths(11));
     }
 
     @Test
@@ -78,8 +79,8 @@ class AccountServiceTest extends BaseIntegrationTest {
         // then
         Account account = loadWithDocuments("HC-2025-000003");
         assertThat(account).hasDocumentCount(4);
-        assertThat(account.getDocuments().get(0).getDocumentDate()).isEqualTo(COVERAGE_START);
-        assertThat(account.getDocuments().get(3).getDocumentDate()).isEqualTo(COVERAGE_START.plusMonths(9));
+        assertThat(account.getDocuments().get(0)).hasDocumentDate(COVERAGE_START);
+        assertThat(account.getDocuments().get(3)).hasDocumentDate(COVERAGE_START.plusMonths(9));
     }
 
     @Test

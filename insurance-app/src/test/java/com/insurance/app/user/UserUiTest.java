@@ -24,7 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.insurance.security.test_support.Assertions.assertThat;
 
 /**
  * Sample UI integration test for the User entity.
@@ -91,7 +91,7 @@ public class UserUiTest {
                 .one();
         assertThat(savedUser.getPassword()).isNotEqualTo("test-passwd");
         assertThat(passwordEncoder.matches("test-passwd", savedUser.getPassword())).isTrue();
-        assertThat(savedUser.getActive()).isTrue();
+        assertThat(savedUser).isActive();
     }
 
     @Test

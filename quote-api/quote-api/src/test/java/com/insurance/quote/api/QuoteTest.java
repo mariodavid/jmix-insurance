@@ -21,7 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.insurance.quote.api.dto.Assertions.assertThat;
 
 @SpringBootTest
 class QuoteTest {
@@ -62,16 +62,16 @@ class QuoteTest {
 
         assertThat(dto.getId()).isNotNull();
         assertThat(metaClass.getProperty("id")).isNotNull();
-        assertThat(dto.getQuoteNo()).isEqualTo("QT-36001");
+        assertThat(dto).hasQuoteNo("QT-36001");
         assertThat(dto.getStatus()).isEqualTo(QuoteStatus.PENDING);
         assertThat(dto.getProductType()).isEqualTo(ProductType.HOME_CONTENT);
         assertThat(dto.getProductVariant()).isEqualTo(ProductVariant.SMALL);
         assertThat(dto.getPaymentFrequency()).isEqualTo(PaymentFrequency.YEARLY);
         assertThat(dto.getInsuranceProduct()).isEqualTo(InsuranceProduct.HOME_CONTENT_BASIC_2024_01);
-        assertThat(dto.getEffectiveDate()).isEqualTo(LocalDate.of(2025, 1, 1));
-        assertThat(dto.getCalculatedPremium()).isEqualByComparingTo("240.00");
-        assertThat(dto.getCreatedPolicyNo()).isEqualTo("HC-2025-000001");
-        assertThat(dto.getCreatedPolicyId()).isEqualTo(policyId.toString());
+        assertThat(dto).hasEffectiveDate(LocalDate.of(2025, 1, 1));
+        assertThat(dto).hasCalculatedPremium(new BigDecimal("240.00"));
+        assertThat(dto).hasCreatedPolicyNo("HC-2025-000001");
+        assertThat(dto).hasCreatedPolicyId(policyId.toString());
         assertThat(dto.getAcceptedAt()).isEqualTo(LocalDateTime.of(2025, 1, 2, 0, 0));
         assertThat(dto.instanceName()).isEqualTo("QT-36001");
     }

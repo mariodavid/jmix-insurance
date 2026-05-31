@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.insurance.policy.api.dto.Assertions.assertThat;
 
 @SpringBootTest
 class PolicyTest {
@@ -65,10 +65,10 @@ class PolicyTest {
 
         assertThat(dto.getId()).isNotNull();
         assertThat(metaClass.getProperty("id")).isNotNull();
-        assertThat(dto.getPolicyNo()).isEqualTo("HC-2025-000001");
-        assertThat(dto.getCoverageStart()).isEqualTo(LocalDate.of(2025, 1, 1));
-        assertThat(dto.getCoverageEnd()).isEqualTo(LocalDate.of(2026, 1, 1));
-        assertThat(dto.getPremium()).isEqualByComparingTo("240.00");
+        assertThat(dto).hasPolicyNo("HC-2025-000001");
+        assertThat(dto).hasCoverageStart(LocalDate.of(2025, 1, 1));
+        assertThat(dto).hasCoverageEnd(LocalDate.of(2026, 1, 1));
+        assertThat(dto).hasPremium(new BigDecimal("240.00"));
         assertThat(dto.getPaymentFrequency()).isEqualTo("YEARLY");
         assertThat(dto.instanceName()).isEqualTo("HC-2025-000001");
     }

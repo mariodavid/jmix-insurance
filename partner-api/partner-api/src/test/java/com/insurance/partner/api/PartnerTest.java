@@ -16,7 +16,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.insurance.partner.api.dto.Assertions.assertThat;
 
 @SpringBootTest
 class PartnerTest {
@@ -42,9 +42,9 @@ class PartnerTest {
 
         assertThat(dto.getId()).isNotNull();
         assertThat(metaClass.getProperty("id")).isNotNull();
-        assertThat(dto.getPartnerNo()).isEqualTo("PT-12345");
-        assertThat(dto.getFirstName()).isEqualTo("Anna");
-        assertThat(dto.getLastName()).isEqualTo("Schmidt");
+        assertThat(dto).hasPartnerNo("PT-12345");
+        assertThat(dto).hasFirstName("Anna");
+        assertThat(dto).hasLastName("Schmidt");
         assertThat(dto.instanceName()).isEqualTo("PT-12345 - Anna Schmidt");
     }
 

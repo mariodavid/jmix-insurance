@@ -1,5 +1,6 @@
 archivesBaseName = 'security'
 
+
 dependencies {
     api 'com.insurance:common-starter:0.0.1-SNAPSHOT'
 

@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.insurance.partner.core.test_support.Assertions.assertThat;
 
 @UiTest
 @SpringBootTest(classes = {InsuranceAppApplication.class, FlowuiTestAssistConfiguration.class})
@@ -62,9 +62,9 @@ class PartnerUiTest {
         Partner saved = loadPartnerByLastName("Partner");
         cleanupIds.add(saved.getId());
 
-        assertThat(saved.getPartnerNo()).matches("PT-\\d{5}");
-        assertThat(saved.getFirstName()).isEqualTo("UiCreate");
-        assertThat(saved.getLastName()).isEqualTo("Partner");
+        assertThat(saved).hasPartnerNoMatchingPattern();
+        assertThat(saved).hasFirstName("UiCreate");
+        assertThat(saved).hasLastName("Partner");
 
         PartnerListView navigatedListView = UiTestUtils.getCurrentView();
         DataGrid<Partner> partnersDataGrid = UiTestUtils.getComponent(navigatedListView, "partnersDataGrid");
@@ -105,9 +105,9 @@ class PartnerUiTest {
 
         Partner updated = dataManager.load(Partner.class).id(saved.getId()).one();
 
-        assertThat(updated.getPartnerNo()).isEqualTo("PT-83001");
-        assertThat(updated.getFirstName()).isEqualTo("After");
-        assertThat(updated.getLastName()).isEqualTo("Edited");
+        assertThat(updated).hasPartnerNo("PT-83001");
+        assertThat(updated).hasFirstName("After");
+        assertThat(updated).hasLastName("Edited");
     }
 
     @Test

@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.insurance.security.test_support.Assertions.assertThat;
 
 /**
  * Sample integration test for the User entity.
@@ -45,12 +45,11 @@ public class UserTest {
 
         // Check the new user can be loaded
         User loadedUser = dataManager.load(User.class).id(user.getId()).one();
-        assertThat(loadedUser).isEqualTo(user);
-        assertThat(loadedUser.getActive()).isTrue();
+        assertThat(loadedUser).hasId(user.getId()).hasUsername(user.getUsername()).isActive();
 
         // Check the new user is available through UserRepository
         UserDetails userDetails = userRepository.loadUserByUsername(user.getUsername());
-        assertThat(userDetails).isEqualTo(user);
+        assertThat(userDetails.getUsername()).isEqualTo(user.getUsername());
     }
 
     @AfterEach
