@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.insurance.policy.api.dto.CreatePolicyRequestDto;
 import com.insurance.policy.api.dto.PolicyDto;
@@ -40,18 +41,12 @@ public class QuoteServiceCore implements QuoteService {
     }
 
     @Override
+    @Transactional
     public Quote accept(Id<?> quoteId) {
         log.info("Trying to accept quote");
 
         log.debug("Loading quote with id {}", quoteId);
         Quote quote = loadQuote(quoteId);
-
-        quote.setStatus(QuoteStatus.ACCEPTED);
-        quote.setAcceptedAt(timeSource.now().toLocalDateTime());
-
-        log.debug("Saving accepted quote");
-        Quote savedQuote = dataManager.save(quote);
-        log.info("Quote accepted successfully");
 
         CreatePolicyRequestDto request = new CreatePolicyRequestDto(
                 quote.getQuoteNo(),
@@ -63,16 +58,18 @@ public class QuoteServiceCore implements QuoteService {
         );
 
         PolicyDto policyResponse = policyService.createPolicy(request);
-
         log.info("Policy creation successful");
 
-        log.debug("Updating quote policy references");
-        savedQuote.setCreatedPolicyNo(policyResponse.getPolicyNo());
-        savedQuote.setCreatedPolicyId(policyResponse.getId().toString());
-        Quote updatedQuote = dataManager.save(savedQuote);
-        log.debug("Quote policy references updated successfully");
+        quote.setStatus(QuoteStatus.ACCEPTED);
+        quote.setAcceptedAt(timeSource.now().toLocalDateTime());
+        quote.setCreatedPolicyNo(policyResponse.getPolicyNo());
+        quote.setCreatedPolicyId(policyResponse.getId().toString());
 
-        return updatedQuote;
+        log.debug("Saving accepted quote with policy references");
+        Quote savedQuote = dataManager.save(quote);
+        log.debug("Quote accepted and policy references saved successfully");
+
+        return savedQuote;
     }
 
     private Quote loadQuote(Id<?> quoteId) {
