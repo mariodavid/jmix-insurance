@@ -2,6 +2,7 @@ package com.insurance.quote.ui.view.quote;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.insurance.quote.api.dto.QuoteDto;
 import com.insurance.quote.api.service.QuoteService;
 import com.insurance.quote.core.entity.Quote;
 
@@ -55,7 +56,7 @@ public class QuoteListView extends StandardListView<Quote> {
     public void onQuotesDataGridAcceptAction(final ActionPerformedEvent event) {
         Quote quote = quotesDataGrid.getSingleSelectedItem();
         if (quote != null) {
-            Quote acceptedQuote = (Quote) quoteService.accept(Id.of(quote));
+            QuoteDto acceptedQuote = quoteService.accept(Id.of(quote));
             notifications.create(
                     messageBundle.getMessage("quoteAcceptedTitle"),
                     messageBundle.formatMessage("quoteAcceptedMessage", acceptedQuote.getCreatedPolicyNo())

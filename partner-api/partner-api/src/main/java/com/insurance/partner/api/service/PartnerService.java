@@ -4,38 +4,40 @@ import com.insurance.partner.api.dto.PartnerDto;
 import java.util.List;
 
 /**
- * Service interface for managing and querying partners (customers)
- * in the monolithic insurance system.
+ * Public partner API used by other modules to search, read, and persist
+ * customer records.
  * <p>
- * This interface provides the public API of the Partner module,
- * facilitating decoupled communication between other business modules
- * (such as Quote and Policy) and the Partner domain.
+ * The partner module owns partner numbers and customer master data. Other
+ * modules should depend on this contract instead of partner-core classes.
  */
 public interface PartnerService {
 
     /**
-     * Searches for partners based on a search term (first name, last name, or partner number).
+     * Searches partners by first name, last name, or partner number.
      *
-     * @param search the search query (case-insensitive, wildcard search)
-     * @param limit  the maximum number of partners to return (pagination)
-     * @param offset the starting index for results (pagination)
-     * @return a list of {@link PartnerDto} objects matching the search criteria
+     * @param search the case-insensitive search term; blank values return all partners
+     * @param limit  the maximum number of partners to return
+     * @param offset the zero-based offset of the first result
+     * @return matching partners ordered by partner number
      */
     List<PartnerDto> findPartners(String search, int limit, int offset);
 
     /**
-     * Retrieves a specific partner by their unique business key (partner number).
+     * Loads a partner by its business key.
      *
-     * @param partnerNo the unique partner number (e.g. "PT-10001")
-     * @return the {@link PartnerDto} object of the partner, or {@code null} if no partner was found
+     * @param partnerNo the unique partner number, for example {@code PT-10001}
+     * @return the partner data, or {@code null} if no partner exists for the number
      */
     PartnerDto getPartner(String partnerNo);
 
     /**
-     * Saves a partner (creates a new one or updates an existing one).
+     * Creates or updates a partner.
+     * <p>
+     * If the DTO has an id, the existing partner is updated. Otherwise, a new
+     * partner is created and a partner number is generated when none is supplied.
      *
-     * @param partnerDto the {@link PartnerDto} to be saved
-     * @return the saved {@link PartnerDto} containing any generated values (e.g. partner number, generated ID)
+     * @param partnerDto the partner data to persist
+     * @return the saved partner data including generated values
      */
     PartnerDto savePartner(PartnerDto partnerDto);
 }

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.insurance.policy.api.dto.CreatePolicyRequestDto;
 import com.insurance.policy.api.dto.PolicyDto;
 import com.insurance.policy.api.service.PolicyService;
+import com.insurance.quote.api.dto.QuoteDto;
 import com.insurance.quote.api.dto.QuoteStatus;
 import com.insurance.quote.api.service.QuoteService;
 import com.insurance.quote.core.entity.Quote;
@@ -42,7 +43,7 @@ public class QuoteServiceCore implements QuoteService {
 
     @Override
     @Transactional
-    public Quote accept(Id<?> quoteId) {
+    public QuoteDto accept(Id<?> quoteId) {
         log.info("Trying to accept quote");
 
         log.debug("Loading quote with id {}", quoteId);
@@ -69,10 +70,32 @@ public class QuoteServiceCore implements QuoteService {
         Quote savedQuote = dataManager.save(quote);
         log.debug("Quote accepted and policy references saved successfully");
 
-        return savedQuote;
+        return mapToDto(savedQuote);
     }
 
     private Quote loadQuote(Id<?> quoteId) {
         return (Quote) dataManager.load(quoteId).one();
+    }
+
+    private QuoteDto mapToDto(Quote quote) {
+        QuoteDto dto = dataManager.create(QuoteDto.class);
+        dto.setId(quote.getId());
+        dto.setPartnerNo(quote.getPartnerNo());
+        dto.setQuoteNo(quote.getQuoteNo());
+        dto.setStatus(quote.getStatus());
+        dto.setProductType(quote.getProductType());
+        dto.setProductVariant(quote.getProductVariant());
+        dto.setPaymentFrequency(quote.getPaymentFrequency());
+        dto.setInsuranceProduct(quote.getInsuranceProduct());
+        dto.setEffectiveDate(quote.getEffectiveDate());
+        dto.setSquareMeters(quote.getSquareMeters());
+        dto.setCalculatedPremium(quote.getCalculatedPremium());
+        dto.setValidFrom(quote.getValidFrom());
+        dto.setValidUntil(quote.getValidUntil());
+        dto.setCreatedPolicyNo(quote.getCreatedPolicyNo());
+        dto.setCreatedPolicyId(quote.getCreatedPolicyId());
+        dto.setAcceptedAt(quote.getAcceptedAt());
+        dto.setRejectedAt(quote.getRejectedAt());
+        return dto;
     }
 }

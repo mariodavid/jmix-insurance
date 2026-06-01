@@ -5,6 +5,7 @@ import com.insurance.common.test_support.EntityTestData;
 import com.insurance.policy.api.dto.PolicyDto;
 import com.insurance.policy.api.service.PolicyService;
 import com.insurance.product.api.dto.PaymentFrequency;
+import com.insurance.quote.api.dto.QuoteDto;
 import com.insurance.quote.api.dto.QuoteStatus;
 import com.insurance.quote.api.service.QuoteService;
 import com.insurance.quote.core.entity.Quote;
@@ -93,7 +94,7 @@ class QuoteTest {
         when(policyService.createPolicy(org.mockito.ArgumentMatchers.any()))
                 .thenReturn(policyDto);
 
-        Quote acceptedQuote = (Quote) quoteService.accept(Id.of(quote));
+        QuoteDto acceptedQuote = quoteService.accept(Id.of(quote));
 
         Quote reloaded = dataManager.load(Quote.class).id(quote.getId()).one();
         assertThat(acceptedQuote.getId()).isEqualTo(quote.getId());
