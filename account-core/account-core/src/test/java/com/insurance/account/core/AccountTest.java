@@ -12,17 +12,21 @@ import io.jmix.core.DataManager;
 import io.jmix.core.FetchPlan;
 import io.jmix.core.querycondition.PropertyCondition;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 
+import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.insurance.account.core.test_support.Assertions.assertThat;
+import static com.insurance.account.core.test_support.Assertions.assertThatThrownBy;
 
 @SpringBootTest(properties = "spring.main.allow-bean-definition-overriding=true")
 @ExtendWith(AuthenticatedAsAdmin.class)
@@ -37,15 +41,25 @@ class AccountTest {
     @Autowired
     private AccountServiceCore accountService;
 
+    @Autowired
+    private DataSource dataSource;
+
     private static final LocalDate COVERAGE_START = LocalDate.of(2025, 1, 1);
     private static final BigDecimal PREMIUM = new BigDecimal("120.00");
     private static final String POLICY_ID_YEARLY = "00000000-0000-0000-0000-000000000001";
+    private static final String POLICY_ID_MONTHLY = "00000000-0000-0000-0000-000000000002";
     private static final String POLICY_ID_QUARTERLY = "00000000-0000-0000-0000-000000000003";
+    private static final String POLICY_ID_BALANCE = "00000000-0000-0000-0000-000000000004";
 
     private final List<Account> cleanup = new ArrayList<>();
 
     @Test
     void contextLoads() {
+    }
+
+    @BeforeEach
+    void setUp() {
+        deleteAllAccounts();
     }
 
     @Test
@@ -112,15 +126,63 @@ class AccountTest {
         }
     }
 
+    @Test
+    void given_monthlyFrequency_when_accountCreated_then_twelveDocumentsSpreadOverYear() {
+        // when
+        Account saved = accountService.createAccount(
+                POLICY_ID_MONTHLY, "HC-2025-000002", COVERAGE_START, PREMIUM, PaymentFrequency.MONTHLY);
+        cleanup.add(saved);
+
+        // then
+        Account account = loadWithDocuments("HC-2025-000002");
+        assertThat(account)
+                .hasBalance(PREMIUM.negate())
+                .hasDocumentCount(12);
+
+        BigDecimal expectedAmount = new BigDecimal("-10.00");
+        for (int i = 0; i < account.getDocuments().size(); i++) {
+            assertThat(account.getDocuments().get(i))
+                    .hasType(DocumentType.CREDIT)
+                    .hasAmount(expectedAmount)
+                    .hasDocumentDate(COVERAGE_START.plusMonths(i));
+        }
+    }
+
+    @Test
+    void given_quarterlyAccount_when_balanceQueriedBeforeThirdPayment_then_partialSumReturned() {
+        // given
+        Account saved = accountService.createAccount(
+                POLICY_ID_BALANCE, "HC-2025-000004", COVERAGE_START, PREMIUM, PaymentFrequency.QUARTERLY);
+        cleanup.add(saved);
+
+        // when
+        BigDecimal balance = accountService.getAccountBalance("HC-2025-000004", LocalDate.of(2025, 6, 30));
+
+        // then
+        assertThat(balance).isEqualByComparingTo("-60.00");
+    }
+
+    @Test
+    void given_invalidAccountData_when_createAccountFails_then_noAccountOrDocumentIsPersisted() {
+        // when / then
+        assertThatThrownBy(() -> accountService.createAccount(
+                POLICY_ID_YEARLY, null, COVERAGE_START, PREMIUM, PaymentFrequency.YEARLY))
+                .isInstanceOf(RuntimeException.class);
+
+        assertThat(dataManager.load(Account.class).all().list()).isEmpty();
+        assertThat(dataManager.load(AccountDocument.class).all().list()).isEmpty();
+    }
+
     @AfterEach
     void tearDown() {
-        cleanup.forEach(account -> {
-            dataManager.load(Account.class)
-                    .id(account.getId())
-                    .optional()
-                    .ifPresent(dataManager::remove);
-        });
+        deleteAllAccounts();
         cleanup.clear();
+    }
+
+    private void deleteAllAccounts() {
+        JdbcTemplate jdbc = new JdbcTemplate(dataSource);
+        jdbc.update("DELETE FROM ACCOUNT_ACCOUNT_DOCUMENT");
+        jdbc.update("DELETE FROM ACCOUNT_ACCOUNT");
     }
 
     private Account loadWithDocuments(String accountNo) {

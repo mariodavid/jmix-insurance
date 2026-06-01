@@ -38,6 +38,10 @@ public class AccountServiceCore implements AccountService {
 
     @Transactional
     public Account createAccount(String policyId, String accountNo, LocalDate coverageStart, BigDecimal premium, PaymentFrequency paymentFrequency) {
+        if (policyId == null || accountNo == null || coverageStart == null || premium == null || paymentFrequency == null) {
+            throw new IllegalArgumentException("Policy id, account number, coverage start, premium and payment frequency are required");
+        }
+
         log.info("Creating account {}", accountNo);
         Account account = dataManager.create(Account.class);
 

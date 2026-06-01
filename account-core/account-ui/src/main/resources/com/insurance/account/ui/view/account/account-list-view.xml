@@ -44,6 +44,7 @@
             </actions>
             <columns resizable="true">
                 <column property="accountNo"/>
+                <column property="policyId"/>
                 <column property="accountBalance"/>
             </columns>
         </dataGrid>
