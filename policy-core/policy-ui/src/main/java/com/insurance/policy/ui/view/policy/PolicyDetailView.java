@@ -2,7 +2,6 @@ package com.insurance.policy.ui.view.policy;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

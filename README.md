@@ -67,10 +67,16 @@ The embedded HSQLDB database is stored under `.jmix/hsqldb/` in the project root
 ./gradlew :insurance-app:test
 ```
 
-Or run all module tests at once:
+Run all module tests plus Checkstyle, SpotBugs and aggregate JaCoCo coverage from the root composite build:
 
 ```bash
-./run_all_tests.sh
+./gradlew check
+```
+
+Run the same checks from a clean workspace:
+
+```bash
+./gradlew clean check
 ```
 
 ## Usage

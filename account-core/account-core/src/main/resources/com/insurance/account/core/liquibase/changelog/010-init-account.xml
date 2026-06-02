@@ -19,7 +19,7 @@
             <column name="LAST_MODIFIED_DATE" type="timestamp with time zone"/>
             <column name="DELETED_BY" type="VARCHAR(255)"/>
             <column name="DELETED_DATE" type="timestamp with time zone"/>
-            <column name="POLICY_ID" type="VARCHAR(255)">
+            <column name="POLICY_ID" type="UUID">
                 <constraints nullable="false"/>
             </column>
             <column name="ACCOUNT_NO" type="VARCHAR(255)">

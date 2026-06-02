@@ -25,22 +25,28 @@ public class PolicyCreatedEventListener {
     @EventListener
     @Authenticated
     public void onPolicyCreated(final PolicyCreatedEvent event) {
-        log.info("Local PolicyCreatedEvent received for policyId: {}", event.getPolicyId());
+        log.info("Synchronous PolicyCreatedEvent received for policyId: {}", event.getPolicyId());
 
         PaymentFrequency paymentFrequency = PaymentFrequency.fromId(event.getPaymentFrequencyId());
         if (paymentFrequency == null) {
-            log.error("Policy has unknown payment frequency {}. Account creation aborted.", event.getPaymentFrequencyId());
-            return;
+            throw new IllegalArgumentException("Policy has unknown payment frequency " + event.getPaymentFrequencyId() + ". Account creation aborted.");
         }
 
-        accountService.createAccount(
-                event.getPolicyId().toString(),
-                event.getPolicyNo(),
-                event.getCoverageStart(),
-                event.getPremium(),
-                paymentFrequency
-        );
-
-        log.info("Monolithic account automatically created for PolicyNo: {}", event.getPolicyNo());
+        try {
+            accountService.createAccount(
+                    event.getPolicyId(),
+                    event.getPolicyNo(),
+                    event.getCoverageStart(),
+                    event.getPremium(),
+                    paymentFrequency
+            );
+            log.info("Monolithic account automatically created for PolicyNo: {}", event.getPolicyNo());
+        } catch (RuntimeException e) {
+            log.error("Account creation failed for PolicyNo: {}, rolling back transaction", event.getPolicyNo(), e);
+            throw e;
+        } catch (Exception e) {
+            log.error("Account creation failed for PolicyNo: {}, rolling back transaction", event.getPolicyNo(), e);
+            throw new RuntimeException("Account creation failed for policy: " + event.getPolicyNo(), e);
+        }
     }
 }

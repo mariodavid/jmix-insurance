@@ -4,7 +4,6 @@ import com.insurance.common.test_support.AuthenticatedAsAdmin;
 import com.insurance.common.test_support.EntityTestData;
 import com.insurance.policy.api.dto.PolicyDto;
 import com.insurance.policy.api.service.PolicyService;
-import com.insurance.product.api.dto.PaymentFrequency;
 import com.insurance.quote.api.dto.QuoteDto;
 import com.insurance.quote.api.dto.QuoteStatus;
 import com.insurance.quote.api.service.QuoteService;
@@ -15,7 +14,6 @@ import io.jmix.core.Id;
 import io.jmix.core.Metadata;
 import io.jmix.core.MetadataTools;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -24,7 +22,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -100,7 +97,7 @@ class QuoteTest {
         assertThat(acceptedQuote.getId()).isEqualTo(quote.getId());
         assertThat(reloaded)
                 .hasStatus(QuoteStatus.ACCEPTED)
-                .hasCreatedPolicyId(policyId.toString())
+                .hasCreatedPolicyId(policyId)
                 .hasCreatedPolicyNo("HC-2025-000123");
         assertThat(reloaded.getAcceptedAt()).isNotNull();
         assertThat(reloaded.getRejectedAt()).isNull();

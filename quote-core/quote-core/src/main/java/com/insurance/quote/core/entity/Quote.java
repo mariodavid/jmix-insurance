@@ -3,6 +3,7 @@ package com.insurance.quote.core.entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -57,7 +58,7 @@ public class Quote extends CommonEntity {
     private String createdPolicyNo;
 
     @Column(name = "CREATED_POLICY_ID")
-    private String createdPolicyId;
+    private UUID createdPolicyId;
 
     @Column(name = "INSURANCE_PRODUCT", nullable = false)
     @NotNull
@@ -91,11 +92,11 @@ public class Quote extends CommonEntity {
         this.partnerNo = partnerNo;
     }
 
-    public String getCreatedPolicyId() {
+    public UUID getCreatedPolicyId() {
         return createdPolicyId;
     }
 
-    public void setCreatedPolicyId(String createdPolicyId) {
+    public void setCreatedPolicyId(UUID createdPolicyId) {
         this.createdPolicyId = createdPolicyId;
     }
 

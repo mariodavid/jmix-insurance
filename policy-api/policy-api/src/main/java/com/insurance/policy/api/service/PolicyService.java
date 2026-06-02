@@ -29,9 +29,8 @@ public interface PolicyService {
     /**
      * Finds a policy by its technical identifier.
      *
-     * @param id the policy UUID as a string
+     * @param id the policy UUID
      * @return the policy data, or {@code null} if no policy exists for the id
-     * @throws IllegalArgumentException if the id is not a valid UUID string
      */
-    PolicyDto findPolicyById(String id);
+    PolicyDto findPolicyById(java.util.UUID id);
 }

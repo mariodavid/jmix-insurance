@@ -36,7 +36,7 @@ class AccountUiTest {
 
     private static final LocalDate COVERAGE_START = LocalDate.of(2025, 1, 1);
     private static final BigDecimal PREMIUM = new BigDecimal("120.00");
-    private static final String POLICY_ID = "00000000-0000-0000-0000-000000000065";
+    private static final java.util.UUID POLICY_ID = java.util.UUID.fromString("00000000-0000-0000-0000-000000000065");
 
     @Autowired
     private ViewNavigators viewNavigators;

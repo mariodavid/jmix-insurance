@@ -1,0 +1,32 @@
+// Static Analysis Conventions
+
+apply plugin: 'checkstyle'
+checkstyle {
+    toolVersion = '10.12.5'
+    configFile = file("${rootDir}/../config/checkstyle/checkstyle.xml")
+    ignoreFailures = false
+}
+
+// Ensure Checkstyle runs as part of check
+tasks.withType(Checkstyle).configureEach {
+    configDirectory = file("${rootDir}/../config/checkstyle")
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+apply plugin: 'com.github.spotbugs'
+spotbugs {
+    excludeFilter = file("${rootDir}/../config/spotbugs/exclude.xml")
+    ignoreFailures = false
+    toolVersion = '4.8.3'
+}
+
+// SpotBugs HTML report configuration using class name match to avoid compile-time type resolution issues
+tasks.matching { it.class.name.contains('SpotBugsTask') }.configureEach {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}

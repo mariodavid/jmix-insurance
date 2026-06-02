@@ -2,6 +2,8 @@ plugins {
     id 'io.jmix' version '2.8.1'
     id 'java'
     id 'org.jetbrains.gradle.plugin.idea-ext' version '1.1.9'
+    id 'checkstyle'
+    id 'com.github.spotbugs' version '6.0.20'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -80,9 +82,23 @@ configurations.implementation {
     exclude group: 'com.vaadin', module: 'copilot'
 }
 
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
 test {
     useJUnitPlatform()
     systemProperty 'liquibase.duplicateFileMode', 'WARN'
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.required = true
+    }
 }
 
 idea {
@@ -93,4 +109,31 @@ idea {
 
 vaadin {
     optimizeBundle = false
+}
+
+checkstyle {
+    toolVersion = '10.12.5'
+    configFile = file("${rootDir}/../config/checkstyle/checkstyle.xml")
+    ignoreFailures = false
+}
+
+tasks.withType(Checkstyle).configureEach {
+    configDirectory = file("${rootDir}/../config/checkstyle")
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+spotbugs {
+    excludeFilter = file("${rootDir}/../config/spotbugs/exclude.xml")
+    ignoreFailures = false
+    toolVersion = '4.8.3'
+}
+
+tasks.matching { it.class.name == 'com.github.spotbugs.snom.SpotBugsTask' }.configureEach {
+    reports {
+        xml.required = true
+        html.required = true
+    }
 }

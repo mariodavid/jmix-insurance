@@ -1,6 +1,5 @@
 package com.insurance.quote.core.service;
 
-import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -64,7 +63,7 @@ public class QuoteServiceCore implements QuoteService {
         quote.setStatus(QuoteStatus.ACCEPTED);
         quote.setAcceptedAt(timeSource.now().toLocalDateTime());
         quote.setCreatedPolicyNo(policyResponse.getPolicyNo());
-        quote.setCreatedPolicyId(policyResponse.getId().toString());
+        quote.setCreatedPolicyId(policyResponse.getId());
 
         log.debug("Saving accepted quote with policy references");
         Quote savedQuote = dataManager.save(quote);

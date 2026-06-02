@@ -66,7 +66,7 @@ class PolicyCreatedEventTest extends BaseIntegrationTest {
         PolicyDto policy = createPolicy("YEARLY", PREMIUM);
 
         // then
-        Account account = loadAccountByNo(policy.getPolicyNo());
+        Account account = awaitAccountByNo(policy.getPolicyNo(), 1);
         assertThat(account)
                 .hasAccountNo(policy.getPolicyNo())
                 .hasBalance(PREMIUM.negate())
@@ -84,7 +84,7 @@ class PolicyCreatedEventTest extends BaseIntegrationTest {
         PolicyDto policy = createPolicy("MONTHLY", PREMIUM);
 
         // then
-        Account account = loadAccountByNo(policy.getPolicyNo());
+        Account account = awaitAccountByNo(policy.getPolicyNo(), 12);
         assertThat(account).hasDocumentCount(12);
 
         List<AccountDocument> docs = loadDocuments(account);
@@ -98,12 +98,40 @@ class PolicyCreatedEventTest extends BaseIntegrationTest {
         PolicyDto policy = createPolicy("QUARTERLY", PREMIUM);
 
         // then
-        Account account = loadAccountByNo(policy.getPolicyNo());
+        Account account = awaitAccountByNo(policy.getPolicyNo(), 4);
         assertThat(account).hasDocumentCount(4);
 
         List<AccountDocument> docs = loadDocuments(account);
         assertThat(docs.get(0)).hasDocumentDate(COVERAGE_START);
         assertThat(docs.get(3)).hasDocumentDate(COVERAGE_START.plusMonths(9));
+    }
+
+    private Account awaitAccountByNo(String accountNo, int expectedDocumentCount) {
+        long start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 5000) {
+            try {
+                Account account = dataManager.load(Account.class)
+                        .condition(PropertyCondition.equal("accountNo", accountNo))
+                        .fetchPlan(fp -> fp.addFetchPlan(io.jmix.core.FetchPlan.BASE).add("documents", io.jmix.core.FetchPlan.BASE))
+                        .optional()
+                        .orElse(null);
+                if (account != null && account.getDocuments() != null && account.getDocuments().size() == expectedDocumentCount) {
+                    return account;
+                }
+            } catch (Exception e) {
+                // ignore and retry
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
+        }
+        return dataManager.load(Account.class)
+                .condition(PropertyCondition.equal("accountNo", accountNo))
+                .fetchPlan(fp -> fp.addFetchPlan(io.jmix.core.FetchPlan.BASE).add("documents", io.jmix.core.FetchPlan.BASE))
+                .one();
     }
 
     private Account loadAccountByNo(String accountNo) {

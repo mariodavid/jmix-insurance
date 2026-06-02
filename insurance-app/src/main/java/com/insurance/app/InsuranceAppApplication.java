@@ -21,15 +21,8 @@ import javax.sql.DataSource;
 
 import io.jmix.core.annotation.JmixModule;
 import io.jmix.core.impl.scanning.AnnotationScanMetadataReaderFactory;
-import io.jmix.datatools.DatatoolsConfiguration;
-import io.jmix.datatoolsflowui.DatatoolsFlowuiConfiguration;
 import io.jmix.flowui.sys.ActionsConfiguration;
 import io.jmix.flowui.sys.ViewControllersConfiguration;
-import io.jmix.flowuidata.FlowuiDataConfiguration;
-import io.jmix.localfs.LocalFileStorageConfiguration;
-import io.jmix.security.SecurityConfiguration;
-import io.jmix.securitydata.SecurityDataConfiguration;
-import io.jmix.securityflowui.SecurityFlowuiConfiguration;
 import org.springframework.context.ApplicationContext;
 
 @Push

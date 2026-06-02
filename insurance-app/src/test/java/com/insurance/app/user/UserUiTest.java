@@ -4,7 +4,6 @@ import com.insurance.app.InsuranceAppApplication;
 import com.insurance.security.entity.User;
 import com.insurance.security.view.user.UserDetailView;
 import com.insurance.security.view.user.UserListView;
-import com.vaadin.flow.component.Component;
 import io.jmix.core.DataManager;
 import io.jmix.flowui.ViewNavigators;
 import io.jmix.flowui.component.grid.DataGrid;

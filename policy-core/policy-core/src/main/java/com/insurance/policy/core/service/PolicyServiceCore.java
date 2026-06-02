@@ -1,6 +1,5 @@
 package com.insurance.policy.core.service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -19,7 +18,6 @@ import com.insurance.product.api.dto.InsuranceProduct;
 import com.insurance.product.api.dto.PaymentFrequency;
 
 import io.jmix.core.DataManager;
-import io.jmix.core.TimeSource;
 import io.jmix.data.Sequence;
 import io.jmix.data.Sequences;
 
@@ -87,9 +85,9 @@ public class PolicyServiceCore implements PolicyService {
     }
 
     @Override
-    public PolicyDto findPolicyById(String policyId) {
+    public PolicyDto findPolicyById(UUID policyId) {
         Policy policy = dataManager.load(Policy.class)
-                .id(UUID.fromString(policyId))
+                .id(policyId)
                 .optional()
                 .orElse(null);
         return mapToDto(policy);

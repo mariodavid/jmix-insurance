@@ -4,8 +4,11 @@ buildscript {
     }
     dependencies {
         classpath "io.jmix.gradle:jmix-gradle-plugin:2.8.1"
+        classpath "com.github.spotbugs:com.github.spotbugs.gradle.plugin:6.0.20"
     }
 }
+
+apply plugin: 'base'
 
 group = 'com.insurance.partner'
 version = '0.0.1-SNAPSHOT'
@@ -15,6 +18,7 @@ subprojects {
     apply plugin: 'maven-publish'
     apply plugin: 'io.jmix'
     apply plugin: 'java-test-fixtures'
+    apply from: "${rootDir}/../gradle/static-analysis.gradle"
 
     repositories {
         mavenCentral()
@@ -78,5 +82,31 @@ subprojects {
 
     tasks.withType(Test).configureEach {
         systemProperty 'liquibase.duplicateFileMode', 'WARN'
+        finalizedBy jacocoTestReport
     }
+
+    apply plugin: 'jacoco'
+    jacoco {
+        toolVersion = "0.8.11"
+    }
+    jacocoTestReport {
+        reports {
+            xml.required = true
+            html.required = true
+        }
+    }
+}
+
+tasks.named('check') {
+    dependsOn subprojects.collect { it.tasks.named('check') }
+}
+
+tasks.named('clean') {
+    dependsOn subprojects.collect { it.tasks.named('clean') }
+}
+
+tasks.register('test') {
+    group = 'verification'
+    description = 'Runs tests for all subprojects.'
+    dependsOn subprojects.collect { it.tasks.matching { task -> task.name == 'test' } }
 }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!-- Exclude Jmix/EclipseLink woven bytecode methods/fields -->
+    <Match>
+        <Method name="~_persistence_.*"/>
+    </Match>
+    <Match>
+        <Field name="~_persistence_.*"/>
+    </Match>
+    <!-- Exclude autoconfigure and entity classes from analysis to prevent woven bytecode noise -->
+    <Match>
+        <Class name="~.*\.autoconfigure\..*"/>
+    </Match>
+    <Match>
+        <Class name="~.*\.entity\..*"/>
+    </Match>
+    <!-- Spring/Jmix services and listeners store injected framework beans by design. -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+        <Class name="~com\.insurance\..*\.(service|listener)\..*"/>
+    </Match>
+    <!-- Jmix Flow UI view dependencies are injected and managed by the framework lifecycle. -->
+    <Match>
+        <Bug pattern="SE_BAD_FIELD"/>
+        <Class name="~com\.insurance\..*\.view\..*"/>
+    </Match>
+    <!-- Test fixture assertion entry points intentionally mirror AssertJ naming. -->
+    <Match>
+        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
+        <Class name="~com\.insurance\..*\.Assertions"/>
+    </Match>
+</FindBugsFilter>

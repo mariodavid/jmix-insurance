@@ -3,7 +3,6 @@ package com.insurance.account.core.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -37,7 +36,7 @@ public class AccountServiceCore implements AccountService {
     }
 
     @Transactional
-    public Account createAccount(String policyId, String accountNo, LocalDate coverageStart, BigDecimal premium, PaymentFrequency paymentFrequency) {
+    public Account createAccount(java.util.UUID policyId, String accountNo, LocalDate coverageStart, BigDecimal premium, PaymentFrequency paymentFrequency) {
         if (policyId == null || accountNo == null || coverageStart == null || premium == null || paymentFrequency == null) {
             throw new IllegalArgumentException("Policy id, account number, coverage start, premium and payment frequency are required");
         }

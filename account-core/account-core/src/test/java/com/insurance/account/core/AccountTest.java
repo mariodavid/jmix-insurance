@@ -46,10 +46,10 @@ class AccountTest {
 
     private static final LocalDate COVERAGE_START = LocalDate.of(2025, 1, 1);
     private static final BigDecimal PREMIUM = new BigDecimal("120.00");
-    private static final String POLICY_ID_YEARLY = "00000000-0000-0000-0000-000000000001";
-    private static final String POLICY_ID_MONTHLY = "00000000-0000-0000-0000-000000000002";
-    private static final String POLICY_ID_QUARTERLY = "00000000-0000-0000-0000-000000000003";
-    private static final String POLICY_ID_BALANCE = "00000000-0000-0000-0000-000000000004";
+    private static final java.util.UUID POLICY_ID_YEARLY = java.util.UUID.fromString("00000000-0000-0000-0000-000000000001");
+    private static final java.util.UUID POLICY_ID_MONTHLY = java.util.UUID.fromString("00000000-0000-0000-0000-000000000002");
+    private static final java.util.UUID POLICY_ID_QUARTERLY = java.util.UUID.fromString("00000000-0000-0000-0000-000000000003");
+    private static final java.util.UUID POLICY_ID_BALANCE = java.util.UUID.fromString("00000000-0000-0000-0000-000000000004");
 
     private final List<Account> cleanup = new ArrayList<>();
 

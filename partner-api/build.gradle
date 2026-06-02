@@ -4,8 +4,11 @@ buildscript {
     }
     dependencies {
         classpath "io.jmix.gradle:jmix-gradle-plugin:2.8.1"
+        classpath "com.github.spotbugs:com.github.spotbugs.gradle.plugin:6.0.20"
     }
 }
+
+apply plugin: 'base'
 
 group = 'com.insurance.partner'
 version = '0.0.1-SNAPSHOT'
@@ -15,6 +18,7 @@ subprojects {
     apply plugin: 'java-test-fixtures'
     apply plugin: 'maven-publish'
     apply plugin: 'io.jmix'
+    apply from: "${rootDir}/../gradle/static-analysis.gradle"
 
     repositories {
         mavenCentral()
@@ -75,4 +79,18 @@ subprojects {
     project.tasks.withType(JavaCompile).configureEach {
         options.compilerArgs.add("-parameters")
     }
+}
+
+tasks.named('check') {
+    dependsOn subprojects.collect { it.tasks.named('check') }
+}
+
+tasks.named('clean') {
+    dependsOn subprojects.collect { it.tasks.named('clean') }
+}
+
+tasks.register('test') {
+    group = 'verification'
+    description = 'Runs tests for all subprojects.'
+    dependsOn subprojects.collect { it.tasks.matching { task -> task.name == 'test' } }
 }

@@ -1,5 +1,8 @@
 package com.insurance.app.arch;
 
+import com.tngtech.archunit.base.DescribedPredicate;
+import com.tngtech.archunit.core.domain.JavaAnnotation;
+import com.tngtech.archunit.core.domain.JavaConstructorCall;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
@@ -80,6 +83,54 @@ class ArchitectureTest {
         @DisplayName("Core modules do not declare Flow UI dependencies or view resources")
         void coreModuleDoesNotDeclareFlowUiDependenciesOrViews(String modulePath) {
             assertCoreModuleDoesNotDeclareFlowUi(projectRoot().resolve(modulePath));
+        }
+
+        @Test
+        @DisplayName("Core services must not depend on UI classes")
+        void coreServicesMustNotDependOnUiClasses() {
+            noClasses()
+                    .that().resideInAPackage(anyInsuranceCorePackage())
+                    .and().areAnnotatedWith(org.springframework.stereotype.Service.class)
+                    .should().dependOnClassesThat().resideInAnyPackage(
+                            anyInsuranceUiPackage(),
+                            anyFlowUiPackage(),
+                            "com.vaadin.flow.."
+                    )
+                    .check(productionClasses);
+        }
+    }
+
+    @Nested
+    @DisplayName("Jmix Specific Rules")
+    class JmixSpecificRules {
+
+        @Test
+        @DisplayName("Jmix entities are not instantiated via constructor from foreign classes")
+        void jmixEntitiesAreNotInstantiatedViaConstructor() {
+            noClasses()
+                    .should().callConstructorWhere(new DescribedPredicate<JavaConstructorCall>("target is a foreign Jmix entity class") {
+                        @Override
+                        public boolean test(JavaConstructorCall target) {
+                            boolean isJmixEntity = target.getTargetOwner().isAnnotatedWith(io.jmix.core.metamodel.annotation.JmixEntity.class);
+                            boolean isInheritanceCall = target.getOriginOwner().isAssignableTo(target.getTargetOwner().getName());
+                            return isJmixEntity && !isInheritanceCall;
+                        }
+                    })
+                    .check(productionClasses);
+        }
+
+        @Test
+        @DisplayName("Persistent Jmix entities must not use Lombok annotations")
+        void persistentJmixEntitiesMustNotUseLombok() {
+            noClasses()
+                    .that().areAnnotatedWith(jakarta.persistence.Entity.class)
+                    .should().beAnnotatedWith(new DescribedPredicate<JavaAnnotation<?>>("Lombok annotation") {
+                        @Override
+                        public boolean test(JavaAnnotation<?> annotation) {
+                            return annotation.getRawType().getName().startsWith("lombok.");
+                        }
+                    })
+                    .check(productionClasses);
         }
     }
 
@@ -165,7 +216,15 @@ class ArchitectureTest {
 
     private static Path projectRoot() {
         Path userDir = Path.of(System.getProperty("user.dir")).toAbsolutePath().normalize();
-        return userDir.getFileName().toString().equals("insurance-app") ? userDir.getParent() : userDir;
+        Path fileName = userDir.getFileName();
+        if (fileName != null && fileName.toString().equals("insurance-app")) {
+            Path parent = userDir.getParent();
+            if (parent == null) {
+                throw new IllegalStateException("Cannot determine project root from " + userDir);
+            }
+            return parent;
+        }
+        return userDir;
     }
 
     private static void assertCoreModuleDoesNotDeclareFlowUi(Path moduleRoot) {

@@ -149,7 +149,7 @@ class PolicyServiceTest {
         PolicyDto created = policyService.createPolicy(request);
 
         // when
-        PolicyDto found = policyService.findPolicyById(created.getId().toString());
+        PolicyDto found = policyService.findPolicyById(created.getId());
 
         // then
         assertThat(found).isNotNull();
@@ -174,14 +174,7 @@ class PolicyServiceTest {
 
     @Test
     void given_unknownPolicyUuid_when_loadedById_then_nullReturned() {
-        assertThat(policyService.findPolicyById(UUID.randomUUID().toString())).isNull();
-    }
-
-    @Test
-    void given_malformedPolicyUuid_when_loadedById_then_illegalArgumentExceptionThrown() {
-        assertThatThrownBy(() -> policyService.findPolicyById("not-a-uuid"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Invalid UUID");
+        assertThat(policyService.findPolicyById(UUID.randomUUID())).isNull();
     }
 
     @Test

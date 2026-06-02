@@ -85,7 +85,7 @@ class PolicyUiTest {
         assertThat(items).isNotNull();
         assertThat(items.getItems())
                 .anySatisfy(item -> assertThat(item.getPolicyNo()).isEqualTo(policy.getPolicyNo()));
-        assertThat(loadAccountByNo(policy.getPolicyNo())).hasPolicyId(policy.getId().toString());
+        assertThat(loadAccountByNo(policy.getPolicyNo())).hasPolicyId(policy.getId());
     }
 
     @Test

@@ -16,7 +16,7 @@ import java.util.Collections;
 
 @Configuration
 @ComponentScan
-@JmixModule(dependsOn = {AccountConfiguration.class, FlowuiConfiguration.class})
+@JmixModule(dependsOn = {AccountConfiguration.class, FlowuiConfiguration.class, io.jmix.securityflowui.SecurityFlowuiConfiguration.class})
 @PropertySource(name = "com.insurance.account.ui", value = "classpath:/com/insurance/account/ui/module.properties")
 public class AccountUiConfiguration {
 

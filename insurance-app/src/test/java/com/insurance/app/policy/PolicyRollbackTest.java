@@ -21,7 +21,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -66,16 +65,17 @@ class PolicyRollbackTest extends BaseIntegrationTest {
         );
         doThrow(new IllegalStateException("Account creation failed"))
                 .when(accountService)
-                .createAccount(anyString(), anyString(), any(LocalDate.class), any(BigDecimal.class), any(PaymentFrequency.class));
+                .createAccount(any(java.util.UUID.class), anyString(), any(LocalDate.class), any(BigDecimal.class), any(PaymentFrequency.class));
 
         // when / then
-        assertThatThrownBy(() -> policyService.createPolicy(request))
-                .isInstanceOf(IllegalStateException.class)
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> policyService.createPolicy(request))
+                .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Account creation failed");
 
-        verify(accountService)
-                .createAccount(anyString(), anyString(), any(LocalDate.class), any(BigDecimal.class), any(PaymentFrequency.class));
+        // then — policy is rolled back synchronously, so it should not exist in the database
         assertThat(dataManager.load(Policy.class).all().list()).isEmpty();
+        verify(accountService)
+                .createAccount(any(java.util.UUID.class), anyString(), any(LocalDate.class), any(BigDecimal.class), any(PaymentFrequency.class));
         assertThat(dataManager.load(Account.class).all().list()).isEmpty();
     }
 }

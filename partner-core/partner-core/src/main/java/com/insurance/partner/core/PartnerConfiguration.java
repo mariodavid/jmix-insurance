@@ -15,7 +15,7 @@ import io.jmix.core.repository.EnableJmixDataRepositories;
 @ComponentScan
 @ConfigurationPropertiesScan
 @EnableJmixDataRepositories
-@JmixModule(dependsOn = {EclipselinkConfiguration.class, CommonConfiguration.class, PartnerApiConfiguration.class})
+@JmixModule(dependsOn = {EclipselinkConfiguration.class, CommonConfiguration.class, PartnerApiConfiguration.class, io.jmix.security.SecurityConfiguration.class})
 @PropertySource(name = "com.insurance.partner.core", value = "classpath:/com/insurance/partner/core/module.properties")
 public class PartnerConfiguration {
 }

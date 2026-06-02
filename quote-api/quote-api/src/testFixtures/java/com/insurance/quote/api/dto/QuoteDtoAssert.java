@@ -75,7 +75,7 @@ public class QuoteDtoAssert extends AbstractAssert<QuoteDtoAssert, QuoteDto> {
         return this;
     }
 
-    public QuoteDtoAssert hasCreatedPolicyId(String expected) {
+    public QuoteDtoAssert hasCreatedPolicyId(UUID expected) {
         isNotNull();
         if (!Objects.equals(actual.getCreatedPolicyId(), expected)) {
             failWithMessage("Expected QuoteDto createdPolicyId to be <%s> but was <%s>", expected, actual.getCreatedPolicyId());

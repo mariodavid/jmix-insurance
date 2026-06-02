@@ -2,6 +2,7 @@ package com.insurance.account.core.entity;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
@@ -25,7 +26,7 @@ public class Account extends CommonEntity {
 
     @Column(name = "POLICY_ID", nullable = false)
     @NotNull
-    private String policyId;
+    private UUID policyId;
 
     @InstanceName
     @Column(name = "ACCOUNT_NO", nullable = false)
@@ -41,11 +42,11 @@ public class Account extends CommonEntity {
     @OneToMany(mappedBy = "account")
     private List<AccountDocument> documents;
 
-    public String getPolicyId() {
+    public UUID getPolicyId() {
         return policyId;
     }
 
-    public void setPolicyId(String policyId) {
+    public void setPolicyId(UUID policyId) {
         this.policyId = policyId;
     }
 

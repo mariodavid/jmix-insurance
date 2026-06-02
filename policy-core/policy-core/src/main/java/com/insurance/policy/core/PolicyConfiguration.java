@@ -15,7 +15,7 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @ComponentScan
 @ConfigurationPropertiesScan
-@JmixModule(dependsOn = {EclipselinkConfiguration.class, AccountApiConfiguration.class, CommonConfiguration.class, PartnerApiConfiguration.class, PolicyApiConfiguration.class, ProductApiConfiguration.class})
+@JmixModule(dependsOn = {EclipselinkConfiguration.class, AccountApiConfiguration.class, CommonConfiguration.class, PartnerApiConfiguration.class, PolicyApiConfiguration.class, ProductApiConfiguration.class, io.jmix.security.SecurityConfiguration.class})
 @PropertySource(name = "com.insurance.policy.core", value = "classpath:/com/insurance/policy/core/module.properties")
 public class PolicyConfiguration {
 }

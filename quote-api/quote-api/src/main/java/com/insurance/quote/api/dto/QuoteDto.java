@@ -47,7 +47,7 @@ public class QuoteDto {
 
     private String createdPolicyNo;
 
-    private String createdPolicyId;
+    private UUID createdPolicyId;
 
     private LocalDateTime acceptedAt;
 
@@ -165,11 +165,11 @@ public class QuoteDto {
         this.createdPolicyNo = createdPolicyNo;
     }
 
-    public String getCreatedPolicyId() {
+    public UUID getCreatedPolicyId() {
         return createdPolicyId;
     }
 
-    public void setCreatedPolicyId(String createdPolicyId) {
+    public void setCreatedPolicyId(UUID createdPolicyId) {
         this.createdPolicyId = createdPolicyId;
     }
 

@@ -44,7 +44,7 @@ class InsuranceAppTestFixturesMigrationTest extends BaseIntegrationTest {
                 q.setPartnerNo(partner.getPartnerNo()));
 
         Account account = entityTestData.saveWithDefaults(new AccountDataProvider(), a -> {
-            a.setPolicyId(policy.getId().toString());
+            a.setPolicyId(policy.getId());
             a.setAccountNo(policy.getPolicyNo());
             a.setAccountBalance(new BigDecimal("0.00"));
         });

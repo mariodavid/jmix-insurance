@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -67,7 +68,7 @@ class ProductTest {
 
     @TestFactory
     Stream<DynamicTest> productModulesDoNotContainPartnerImportsOrPartnerViewResources() throws IOException {
-        Path repositoryRoot = Path.of(System.getProperty("user.dir")).getParent().getParent();
+        Path repositoryRoot = repositoryRoot();
         List<Path> roots = List.of(
                 repositoryRoot.resolve("product-api/product-api/src/main"),
                 repositoryRoot.resolve("product-core/product-core/src/main"));
@@ -96,5 +97,13 @@ class ProductTest {
         } catch (IOException e) {
             throw new IllegalStateException("Cannot inspect product module files below " + root, e);
         }
+    }
+
+    private Path repositoryRoot() {
+        Path current = Path.of(System.getProperty("user.dir")).toAbsolutePath();
+        return Stream.iterate(current, Objects::nonNull, Path::getParent)
+                .filter(path -> Files.exists(path.resolve("product-api/product-api/src/main")))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Cannot locate repository root from " + current));
     }
 }

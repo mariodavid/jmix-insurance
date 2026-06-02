@@ -8,6 +8,7 @@ dependencies {
     implementation 'io.jmix.core:jmix-core-starter'
     implementation 'io.jmix.flowui:jmix-flowui-starter'
     implementation 'io.jmix.flowui:jmix-flowui-themes'
+    implementation 'io.jmix.security:jmix-security-flowui-starter'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -15,6 +16,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'io.jmix.flowui:jmix-flowui-test-assist'
     testImplementation 'com.insurance.security:security-starter:0.0.1-SNAPSHOT'
+    testImplementation 'com.insurance.security:security:0.0.1-SNAPSHOT'
     testImplementation 'com.insurance:common:0.0.1-SNAPSHOT'
     testImplementation 'com.insurance.account:account-core-starter:0.0.1-SNAPSHOT'
     testImplementation 'com.insurance.partner:partner-core-starter:0.0.1-SNAPSHOT'

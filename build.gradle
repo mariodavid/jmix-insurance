@@ -1,1 +1,70 @@
 ext.jmixCompositeProjectRoot = true
+
+apply plugin: 'base'
+apply plugin: 'jacoco'
+
+repositories {
+    mavenCentral()
+}
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+def includedBuildTasks = { String taskName ->
+    gradle.includedBuilds.collect { includedBuild ->
+        includedBuild.task(":${taskName}")
+    }
+}
+
+tasks.named('check') {
+    description = 'Runs tests, Checkstyle, SpotBugs and aggregate JaCoCo coverage for all included builds'
+    dependsOn(includedBuildTasks('check'))
+    dependsOn(tasks.named('jacocoRootReport'))
+}
+
+tasks.named('clean') {
+    dependsOn(includedBuildTasks('clean'))
+}
+
+tasks.register('jacocoRootReport', JacocoReport) {
+    description = 'Generates an aggregate JaCoCo coverage report for all composite builds'
+    group = 'Verification'
+
+    dependsOn(includedBuildTasks('test'))
+
+    def reportRoots = providers.provider {
+        gradle.includedBuilds.collect { it.projectDir } + [rootDir]
+    }
+
+    classDirectories.setFrom(reportRoots.map { roots ->
+        files(roots.collect { reportRoot ->
+            fileTree(reportRoot) {
+                include '**/build/classes/java/main/**'
+                exclude '**/autoconfigure/**'
+                exclude '**/entity/**'
+            }
+        })
+    })
+    sourceDirectories.setFrom(reportRoots.map { roots ->
+        files(roots.collect { reportRoot ->
+            fileTree(reportRoot) {
+                include '**/src/main/java/**'
+            }
+        })
+    })
+    executionData.setFrom(reportRoots.map { roots ->
+        files(roots.collect { reportRoot ->
+            fileTree(reportRoot) {
+                include '**/build/jacoco/*.exec'
+            }
+        })
+    })
+
+    reports {
+        xml.required = true
+        html.required = true
+        html.outputLocation = layout.buildDirectory.dir('reports/jacoco/rootReport/html')
+        xml.outputLocation = layout.buildDirectory.file('reports/jacoco/rootReport/jacoco.xml')
+    }
+}

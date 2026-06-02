@@ -1,7 +1,6 @@
 package com.insurance.app.account;
 
 import com.insurance.account.core.entity.Account;
-import com.insurance.account.core.entity.AccountDocument;
 import com.insurance.account.core.entity.DocumentType;
 import com.insurance.account.core.service.AccountServiceCore;
 import com.insurance.app.test_support.BaseIntegrationTest;
@@ -34,10 +33,10 @@ class AccountServiceTest extends BaseIntegrationTest {
     private static final BigDecimal PREMIUM = new BigDecimal("120.00");
 
     // Gültige UUIDs — PolicyService.findPolicyById() gibt null zurück → coverageEnd-Check wird übersprungen
-    private static final String POLICY_ID_YEARLY    = "00000000-0000-0000-0000-000000000001";
-    private static final String POLICY_ID_MONTHLY   = "00000000-0000-0000-0000-000000000002";
-    private static final String POLICY_ID_QUARTERLY = "00000000-0000-0000-0000-000000000003";
-    private static final String POLICY_ID_BALANCE   = "00000000-0000-0000-0000-000000000004";
+    private static final java.util.UUID POLICY_ID_YEARLY    = java.util.UUID.fromString("00000000-0000-0000-0000-000000000001");
+    private static final java.util.UUID POLICY_ID_MONTHLY   = java.util.UUID.fromString("00000000-0000-0000-0000-000000000002");
+    private static final java.util.UUID POLICY_ID_QUARTERLY = java.util.UUID.fromString("00000000-0000-0000-0000-000000000003");
+    private static final java.util.UUID POLICY_ID_BALANCE   = java.util.UUID.fromString("00000000-0000-0000-0000-000000000004");
 
     @BeforeEach
     void setUp() {

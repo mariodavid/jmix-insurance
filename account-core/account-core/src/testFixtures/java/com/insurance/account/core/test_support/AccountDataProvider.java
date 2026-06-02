@@ -15,7 +15,7 @@ public class AccountDataProvider implements TestDataProvider<Account> {
 
     @Override
     public void accept(Account account) {
-        account.setPolicyId(UUID.randomUUID().toString());
+        account.setPolicyId(UUID.randomUUID());
         account.setAccountNo("ACT-" + UUID.randomUUID().toString().substring(0, 8));
         account.setAccountBalance(BigDecimal.ZERO);
     }

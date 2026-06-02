@@ -37,6 +37,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.util.ReflectionTestUtils;
+import com.vaadin.flow.data.provider.Query;
+import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
@@ -292,6 +295,85 @@ class QuoteUiTest {
         DataGrid<Quote> reloadedGrid = UiTestUtils.getComponent(
                 (QuoteListView) UiTestUtils.getCurrentView(), "quotesDataGrid");
         assertThat(reloadedGrid.getItems()).isNotNull();
+    }
+
+    @Test
+    void given_existingQuoteWithPartner_when_edited_then_partnerComboBoxIsPrepopulated() {
+        // given
+        PartnerDto partner = dataManager.create(PartnerDto.class);
+        partner.setPartnerNo("PT-00001");
+        partner.setFirstName("Max");
+        partner.setLastName("Mustermann");
+        when(partnerService.getPartner("PT-00001")).thenReturn(partner);
+
+        Quote quote = entityTestData.saveWithDefaults(new QuoteDataProvider());
+        quote.setPartnerNo("PT-00001");
+        Quote reloaded = dataManager.save(quote);
+
+        // when
+        viewNavigators.detailView(UiTestUtils.getCurrentView(), Quote.class)
+                .editEntity(reloaded)
+                .navigate();
+
+        // then
+        QuoteDetailView detailView = UiTestUtils.getCurrentView();
+        EntityComboBox<PartnerDto> partnerComboBox = UiTestUtils.getComponent(detailView, "partnerComboBox");
+        assertThat(partnerComboBox.getValue()).isNotNull();
+        assertThat(partnerComboBox.getValue().getPartnerNo()).isEqualTo("PT-00001");
+    }
+
+    @Test
+    void given_quoteDetailView_when_partnerCleared_then_partnerNoIsSetToNull() {
+        // given
+        viewNavigators.view(UiTestUtils.getCurrentView(), QuoteListView.class).navigate();
+        QuoteListView listView = UiTestUtils.getCurrentView();
+        JmixButton createButton = UiTestUtils.getComponent(listView, "createButton");
+        createButton.click();
+
+        QuoteDetailView detailView = UiTestUtils.getCurrentView();
+        EntityComboBox<PartnerDto> partnerComboBox = UiTestUtils.getComponent(detailView, "partnerComboBox");
+        
+        PartnerDto partner = dataManager.create(PartnerDto.class);
+        partner.setPartnerNo("PT-00001");
+        partnerComboBox.setValue(partner);
+        assertThat(detailView.getEditedEntity().getPartnerNo()).isEqualTo("PT-00001");
+
+        // when
+        partnerComboBox.setValue(null);
+
+        // then
+        assertThat(detailView.getEditedEntity().getPartnerNo()).isNull();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void given_quoteDetailView_when_partnerComboBoxFiltered_then_fetchCallbackIsInvoked() {
+        // given
+        viewNavigators.view(UiTestUtils.getCurrentView(), QuoteListView.class).navigate();
+        QuoteListView listView = UiTestUtils.getCurrentView();
+        JmixButton createButton = UiTestUtils.getComponent(listView, "createButton");
+        createButton.click();
+
+        QuoteDetailView detailView = UiTestUtils.getCurrentView();
+
+        PartnerDto partner = dataManager.create(PartnerDto.class);
+        partner.setPartnerNo("PT-00001");
+        partner.setFirstName("Max");
+        partner.setLastName("Mustermann");
+        when(partnerService.findPartners("Max", 10, 0)).thenReturn(List.of(partner));
+
+        // when
+        Query<PartnerDto, String> query = new Query<>(0, 10, List.of(), null, "Max");
+        Object callbackResult = ReflectionTestUtils.invokeMethod(detailView, "partnerComboBoxItemsFetchCallback", query);
+        if (callbackResult == null) {
+            throw new AssertionError("Partner combo box fetch callback returned null");
+        }
+        Stream<PartnerDto> resultStream = (Stream<PartnerDto>) callbackResult;
+
+        // then
+        List<PartnerDto> result = resultStream.toList();
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getPartnerNo()).isEqualTo("PT-00001");
     }
 
     private List<Quote> gridItems(DataGrid<Quote> dataGrid) {

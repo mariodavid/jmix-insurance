@@ -40,7 +40,7 @@
             <column name="ACCEPTED_AT" type="DATETIME"/>
             <column name="REJECTED_AT" type="DATETIME"/>
             <column name="CREATED_POLICY_NO" type="VARCHAR(255)"/>
-            <column name="CREATED_POLICY_ID" type="VARCHAR(255)"/>
+            <column name="CREATED_POLICY_ID" type="UUID"/>
             <column name="INSURANCE_PRODUCT" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>

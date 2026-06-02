@@ -1,8 +1,6 @@
 package com.insurance.policy.core;
 
 import io.jmix.core.annotation.JmixModule;
-import io.jmix.core.security.InMemoryUserRepository;
-import io.jmix.core.security.UserRepository;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;

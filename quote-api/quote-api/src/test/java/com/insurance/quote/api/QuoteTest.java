@@ -55,7 +55,7 @@ class QuoteTest {
         dto.setValidFrom(LocalDate.of(2025, 1, 1));
         dto.setValidUntil(LocalDate.of(2025, 12, 31));
         dto.setCreatedPolicyNo("HC-2025-000001");
-        dto.setCreatedPolicyId(policyId.toString());
+        dto.setCreatedPolicyId(policyId);
         dto.setAcceptedAt(acceptedDate.atStartOfDay());
 
         MetaClass metaClass = metadata.getClass(QuoteDto.class);
@@ -71,7 +71,7 @@ class QuoteTest {
         assertThat(dto).hasEffectiveDate(LocalDate.of(2025, 1, 1));
         assertThat(dto).hasCalculatedPremium(new BigDecimal("240.00"));
         assertThat(dto).hasCreatedPolicyNo("HC-2025-000001");
-        assertThat(dto).hasCreatedPolicyId(policyId.toString());
+        assertThat(dto).hasCreatedPolicyId(policyId);
         assertThat(dto.getAcceptedAt()).isEqualTo(LocalDateTime.of(2025, 1, 2, 0, 0));
         assertThat(dto.instanceName()).isEqualTo("QT-36001");
     }

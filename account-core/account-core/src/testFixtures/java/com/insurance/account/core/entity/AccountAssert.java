@@ -24,7 +24,7 @@ public class AccountAssert extends AbstractAssert<AccountAssert, Account> {
         return this;
     }
 
-    public AccountAssert hasPolicyId(String expected) {
+    public AccountAssert hasPolicyId(java.util.UUID expected) {
         isNotNull();
         if (!Objects.equals(actual.getPolicyId(), expected)) {
             failWithMessage("Expected account policyId to be <%s> but was <%s>", expected, actual.getPolicyId());
