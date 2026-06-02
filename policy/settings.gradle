@@ -1,0 +1,12 @@
+rootProject.name = 'policy'
+
+include 'policy-api'
+include 'policy-api-starter'
+include 'policy-core'
+include 'policy-core-starter'
+include 'policy-ui'
+include 'policy-ui-starter'
+
+rootProject.children.each { p1 ->
+    p1.buildFileName = "${p1.name}.gradle"
+}

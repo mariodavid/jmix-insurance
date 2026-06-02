@@ -1,0 +1,18 @@
+archivesBaseName = 'product-ui'
+
+dependencies {
+    api project(':product-core')
+
+    compileOnly 'org.eclipse.persistence:org.eclipse.persistence.core'
+
+    implementation 'io.jmix.core:jmix-core-starter'
+    implementation 'io.jmix.flowui:jmix-flowui-starter'
+    implementation 'io.jmix.flowui:jmix-flowui-themes'
+    implementation 'io.jmix.security:jmix-security-flowui-starter'
+}
+
+configurations.implementation {
+    exclude group: 'com.vaadin', module: 'hilla'
+    exclude group: 'com.vaadin', module: 'hilla-dev'
+    exclude group: 'com.vaadin', module: 'copilot'
+}

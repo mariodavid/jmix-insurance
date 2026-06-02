@@ -17,16 +17,11 @@ jmix-insurance/
 ├── insurance-app/          ← Runnable Spring Boot application
 ├── common/                 ← Shared base entity + test support utilities
 ├── security/               ← User entity, roles, DatabaseUserRepository
-├── partner-core/           ← Partner domain (entity, service, UI)
-├── partner-api/            ← PartnerService interface + PartnerDto
-├── policy-core/            ← Policy domain (entity, service, UI, event)
-├── policy-api/             ← PolicyService interface, PolicyDto, events
-├── quote-core/             ← Quote domain (entity, service, UI)
-├── quote-api/              ← QuoteService interface, QuoteDto, enums
-├── account-core/           ← Account domain (entity, service, UI)
-├── account-api/            ← AccountService interface + AccountDto
-├── product-core/           ← Product configuration (no persistence)
-└── product-api/            ← InsuranceProduct, ProductType, enums
+├── partner/                ← Partner API, core, UI, and starters
+├── policy/                 ← Policy API, core, UI, and starters
+├── quote/                  ← Quote API, core, UI, and starters
+├── account/                ← Account API, core, UI, and starters
+└── product/                ← Product API, core, UI, and starters
 ```
 
 ### Domain Add-on Layout

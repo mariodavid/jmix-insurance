@@ -74,11 +74,11 @@ class ArchitectureTest {
 
         @ParameterizedTest(name = "{0}")
         @ValueSource(strings = {
-                "account-core/account-core",
-                "partner-core/partner-core",
-                "policy-core/policy-core",
-                "product-core/product-core",
-                "quote-core/quote-core"
+                "account/account-core",
+                "partner/partner-core",
+                "policy/policy-core",
+                "product/product-core",
+                "quote/quote-core"
         })
         @DisplayName("Core modules do not declare Flow UI dependencies or view resources")
         void coreModuleDoesNotDeclareFlowUiDependenciesOrViews(String modulePath) {

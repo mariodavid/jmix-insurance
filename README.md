@@ -29,16 +29,11 @@ jmix-insurance/
 ├── insurance-app/      ← Runnable Spring Boot application
 ├── common/             ← Shared base entity + test utilities
 ├── security/           ← User entity and roles
-├── partner-core/       ← Partner domain
-├── partner-api/        ← PartnerService interface + DTO
-├── policy-core/        ← Policy domain
-├── policy-api/         ← PolicyService interface + DTO + events
-├── quote-core/         ← Quote domain
-├── quote-api/          ← QuoteService interface + DTO
-├── account-core/       ← Account domain
-├── account-api/        ← AccountService interface + DTO
-├── product-core/       ← Product configuration
-└── product-api/        ← Product enums (InsuranceProduct, ProductType, …)
+├── partner/            ← Partner API, core, UI, and starters
+├── policy/             ← Policy API, core, UI, and starters
+├── quote/              ← Quote API, core, UI, and starters
+├── account/            ← Account API, core, UI, and starters
+└── product/            ← Product API, core, UI, and starters
 ```
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for a detailed description of the module layout, domain model, and key design decisions.

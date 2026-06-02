@@ -1,0 +1,12 @@
+rootProject.name = 'product'
+
+include 'product-api'
+include 'product-api-starter'
+include 'product-core'
+include 'product-core-starter'
+include 'product-ui'
+include 'product-ui-starter'
+
+rootProject.children.each { p1 ->
+    p1.buildFileName = "${p1.name}.gradle"
+}
