@@ -78,7 +78,8 @@ class ArchitectureTest {
                 "partner/partner-core",
                 "policy/policy-core",
                 "product/product-core",
-                "quote/quote-core"
+                "quote/quote-core",
+                "security/security-core"
         })
         @DisplayName("Core modules do not declare Flow UI dependencies or view resources")
         void coreModuleDoesNotDeclareFlowUiDependenciesOrViews(String modulePath) {

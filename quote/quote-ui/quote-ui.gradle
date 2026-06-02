@@ -15,8 +15,9 @@ dependencies {
     }
     testImplementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'io.jmix.flowui:jmix-flowui-test-assist'
-    testImplementation 'com.insurance.security:security-starter:0.0.1-SNAPSHOT'
-    testImplementation 'com.insurance.security:security:0.0.1-SNAPSHOT'
+    testImplementation 'com.insurance.security:security-core-starter:0.0.1-SNAPSHOT'
+    testImplementation 'com.insurance.security:security-ui-starter:0.0.1-SNAPSHOT'
+    testImplementation 'com.insurance.security:security-core:0.0.1-SNAPSHOT'
     testImplementation 'com.insurance.quote:quote-core-starter:0.0.1-SNAPSHOT'
     testImplementation 'com.insurance.policy:policy-api-starter:0.0.1-SNAPSHOT'
     testImplementation testFixtures('com.insurance:common:0.0.1-SNAPSHOT')

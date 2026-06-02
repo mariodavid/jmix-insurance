@@ -1,0 +1,17 @@
+archivesBaseName = 'security-api-starter'
+
+jmix {
+    entitiesEnhancing {
+        enabled = false
+    }
+}
+
+dependencies {
+    api project(':security-api')
+
+    implementation 'io.jmix.core:jmix-core'
+    implementation 'io.jmix.security:jmix-security'
+    implementation 'io.jmix.security:jmix-security-flowui'
+
+    implementation 'org.springframework.boot:spring-boot-autoconfigure'
+}

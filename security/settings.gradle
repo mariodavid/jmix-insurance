@@ -1,7 +1,11 @@
-rootProject.name = 'security-addon'
+rootProject.name = 'security'
 
-include 'security'
-include 'security-starter'
+include 'security-api'
+include 'security-api-starter'
+include 'security-core'
+include 'security-core-starter'
+include 'security-ui'
+include 'security-ui-starter'
 
 rootProject.children.each { p1 ->
     p1.buildFileName = "${p1.name}.gradle"

@@ -16,7 +16,7 @@ The project is a Gradle composite build with 13 sub-builds declared in the root 
 jmix-insurance/
 ├── insurance-app/          ← Runnable Spring Boot application
 ├── common/                 ← Shared base entity + test support utilities
-├── security/               ← User entity, roles, DatabaseUserRepository
+├── security/               ← Security API, core, UI, and starters
 ├── partner/                ← Partner API, core, UI, and starters
 ├── policy/                 ← Policy API, core, UI, and starters
 ├── quote/                  ← Quote API, core, UI, and starters

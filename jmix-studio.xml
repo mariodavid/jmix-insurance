@@ -2,32 +2,6 @@
 <project version="4">
   <component name="JmixDataStoreSettingsManager">
     <moduleSettings>
-      <entry key="account-addon.account-core.main">
-        <ModuleSettings>
-          <option name="dataStoreOptionsV2">
-            <map>
-              <entry key="main">
-                <value>
-                  <DataStoreSettingsV2 />
-                </value>
-              </entry>
-            </map>
-          </option>
-        </ModuleSettings>
-      </entry>
-      <entry key="account-core-addon.account-core.main">
-        <ModuleSettings>
-          <option name="dataStoreOptionsV2">
-            <map>
-              <entry key="main">
-                <value>
-                  <DataStoreSettingsV2 />
-                </value>
-              </entry>
-            </map>
-          </option>
-        </ModuleSettings>
-      </entry>
       <entry key="account.account-core.main">
         <ModuleSettings>
           <option name="dataStoreOptionsV2">
@@ -67,59 +41,7 @@
           </option>
         </ModuleSettings>
       </entry>
-      <entry key="partner-addon.partner-core.main">
-        <ModuleSettings>
-          <option name="dataStoreOptionsV2">
-            <map>
-              <entry key="main">
-                <value>
-                  <DataStoreSettingsV2 />
-                </value>
-              </entry>
-            </map>
-          </option>
-        </ModuleSettings>
-      </entry>
-      <entry key="partner-core-addon.partner-core.main">
-        <ModuleSettings>
-          <option name="dataStoreOptionsV2">
-            <map>
-              <entry key="main">
-                <value>
-                  <DataStoreSettingsV2 />
-                </value>
-              </entry>
-            </map>
-          </option>
-        </ModuleSettings>
-      </entry>
       <entry key="partner.partner-core.main">
-        <ModuleSettings>
-          <option name="dataStoreOptionsV2">
-            <map>
-              <entry key="main">
-                <value>
-                  <DataStoreSettingsV2 />
-                </value>
-              </entry>
-            </map>
-          </option>
-        </ModuleSettings>
-      </entry>
-      <entry key="policy-addon.policy-core.main">
-        <ModuleSettings>
-          <option name="dataStoreOptionsV2">
-            <map>
-              <entry key="main">
-                <value>
-                  <DataStoreSettingsV2 />
-                </value>
-              </entry>
-            </map>
-          </option>
-        </ModuleSettings>
-      </entry>
-      <entry key="policy-core-addon.policy-core.main">
         <ModuleSettings>
           <option name="dataStoreOptionsV2">
             <map>
@@ -145,32 +67,6 @@
           </option>
         </ModuleSettings>
       </entry>
-      <entry key="quote-addon.quote-core.main">
-        <ModuleSettings>
-          <option name="dataStoreOptionsV2">
-            <map>
-              <entry key="main">
-                <value>
-                  <DataStoreSettingsV2 />
-                </value>
-              </entry>
-            </map>
-          </option>
-        </ModuleSettings>
-      </entry>
-      <entry key="quote-core-addon.quote-core.main">
-        <ModuleSettings>
-          <option name="dataStoreOptionsV2">
-            <map>
-              <entry key="main">
-                <value>
-                  <DataStoreSettingsV2 />
-                </value>
-              </entry>
-            </map>
-          </option>
-        </ModuleSettings>
-      </entry>
       <entry key="quote.quote-core.main">
         <ModuleSettings>
           <option name="dataStoreOptionsV2">
@@ -184,7 +80,7 @@
           </option>
         </ModuleSettings>
       </entry>
-      <entry key="security-addon.security.main">
+      <entry key="security.security-core.main">
         <ModuleSettings>
           <option name="dataStoreOptionsV2">
             <map>

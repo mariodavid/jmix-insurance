@@ -18,7 +18,7 @@ import javax.sql.DataSource;
 @PropertySource("classpath:/com/insurance/account/core/test-app.properties")
 @JmixModule(id = "com.insurance.account.core.test", dependsOn = {
         AccountConfiguration.class,
-        com.insurance.security.SecurityConfiguration.class,
+        com.insurance.security.SecurityCoreConfiguration.class,
         com.insurance.partner.core.PartnerConfiguration.class,
         com.insurance.policy.core.PolicyConfiguration.class
 })

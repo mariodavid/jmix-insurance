@@ -1,12 +1,15 @@
 package com.insurance.common.entity;
 
+import io.jmix.core.MetadataTools;
+import io.jmix.core.metamodel.annotation.DependsOnProperties;
+import io.jmix.core.metamodel.annotation.InstanceName;
 import io.jmix.core.metamodel.annotation.JmixEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
-@JmixEntity(name = "common_Address")
+@JmixEntity
 @Table(name = "COMMON_ADDRESS")
 @Entity(name = "common_Address")
 public class Address extends CommonEntity {
@@ -57,5 +60,15 @@ public class Address extends CommonEntity {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    @InstanceName
+    @DependsOnProperties({"street", "houseNumber", "postalCode", "city"})
+    public String getInstanceName(MetadataTools metadataTools) {
+        return String.format("%s %s %s %s",
+                metadataTools.format(street),
+                metadataTools.format(houseNumber),
+                metadataTools.format(postalCode),
+                metadataTools.format(city));
     }
 }

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<menu-config xmlns="http://jmix.io/schema/flowui/menu">
+
+    <menu id="security" title="msg://com.insurance.security.ui/menu.addon"/>
+
+</menu-config>

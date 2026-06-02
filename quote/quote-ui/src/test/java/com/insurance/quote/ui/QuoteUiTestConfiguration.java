@@ -3,7 +3,7 @@ package com.insurance.quote.ui;
 import com.insurance.partner.api.service.PartnerService;
 import com.insurance.policy.api.service.PolicyService;
 import com.insurance.quote.core.QuoteConfiguration;
-import com.insurance.security.SecurityConfiguration;
+import com.insurance.security.ui.SecurityUiConfiguration;
 import io.jmix.core.annotation.JmixModule;
 import org.mockito.Mockito;
 import org.springframework.boot.SpringBootConfiguration;
@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 @PropertySource("classpath:/com/insurance/quote/ui/test-app.properties")
 @JmixModule(id = "com.insurance.quote.ui.test", dependsOn = {
         QuoteUiConfiguration.class,
-        SecurityConfiguration.class,
+        SecurityUiConfiguration.class,
         QuoteConfiguration.class
 })
 public class QuoteUiTestConfiguration {

@@ -1,7 +1,7 @@
 package com.insurance.account.ui;
 
 import com.insurance.policy.api.service.PolicyService;
-import com.insurance.security.SecurityConfiguration;
+import com.insurance.security.ui.SecurityUiConfiguration;
 import io.jmix.core.annotation.JmixModule;
 import org.mockito.Mockito;
 import org.springframework.boot.SpringBootConfiguration;
@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 @PropertySource("classpath:/com/insurance/account/ui/test-app.properties")
 @JmixModule(id = "com.insurance.account.ui.test", dependsOn = {
         AccountUiConfiguration.class,
-        SecurityConfiguration.class,
+        SecurityUiConfiguration.class,
         com.insurance.partner.core.PartnerConfiguration.class,
         com.insurance.policy.core.PolicyConfiguration.class
 })

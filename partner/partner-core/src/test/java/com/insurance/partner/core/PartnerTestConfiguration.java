@@ -16,7 +16,7 @@ import javax.sql.DataSource;
 @EnableAutoConfiguration
 @Import(PartnerConfiguration.class)
 @PropertySource("classpath:/com/insurance/partner/core/test-app.properties")
-@JmixModule(id = "com.insurance.partner.core.test", dependsOn = {PartnerConfiguration.class, com.insurance.security.SecurityConfiguration.class})
+@JmixModule(id = "com.insurance.partner.core.test", dependsOn = {PartnerConfiguration.class, com.insurance.security.SecurityCoreConfiguration.class})
 public class PartnerTestConfiguration {
 
     @Bean

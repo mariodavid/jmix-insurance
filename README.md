@@ -28,7 +28,7 @@ A modular insurance management demo application built with [Jmix 2](https://www.
 jmix-insurance/
 ├── insurance-app/      ← Runnable Spring Boot application
 ├── common/             ← Shared base entity + test utilities
-├── security/           ← User entity and roles
+├── security/           ← Security API, core, UI, and starters
 ├── partner/            ← Partner API, core, UI, and starters
 ├── policy/             ← Policy API, core, UI, and starters
 ├── quote/              ← Quote API, core, UI, and starters
