@@ -38,7 +38,6 @@ import org.springframework.context.ApplicationContext;
         io.jmix.datatoolsflowui.DatatoolsFlowuiConfiguration.class,
         io.jmix.flowuidata.FlowuiDataConfiguration.class,
         io.jmix.localfs.LocalFileStorageConfiguration.class,
-        com.insurance.common.CommonConfiguration.class,
         com.insurance.security.api.SecurityApiConfiguration.class,
         com.insurance.security.SecurityCoreConfiguration.class,
         com.insurance.security.ui.SecurityUiConfiguration.class,

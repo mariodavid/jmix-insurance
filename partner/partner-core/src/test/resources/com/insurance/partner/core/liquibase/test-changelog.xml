@@ -9,7 +9,6 @@
     <include file="/io/jmix/securitydata/liquibase/changelog.xml"/>
 
     <include file="/com/insurance/security/liquibase/changelog.xml"/>
-    <include file="/com/insurance/common/liquibase/changelog.xml"/>
     <include file="/com/insurance/partner/core/liquibase/changelog.xml"/>
 
 </databaseChangeLog>

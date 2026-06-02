@@ -10,7 +10,7 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testFixturesApi 'org.assertj:assertj-core:3.24.2'
-    testFixturesApi testFixtures('com.insurance:common:0.0.1-SNAPSHOT')
+    testFixturesApi 'com.insurance.testsupport:test-support:0.0.1-SNAPSHOT'
     testFixturesApi testFixtures('com.insurance.product:product-api:0.0.1-SNAPSHOT')
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

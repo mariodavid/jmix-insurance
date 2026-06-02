@@ -14,6 +14,12 @@ jmix {
     projectId = 'app'
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 group = 'com.insurance'
 version = '0.0.1-SNAPSHOT'
 
@@ -25,7 +31,6 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.insurance:common-starter:0.0.1-SNAPSHOT'
     implementation 'com.insurance.security:security-api-starter:0.0.1-SNAPSHOT'
     implementation 'com.insurance.security:security-core-starter:0.0.1-SNAPSHOT'
     implementation 'com.insurance.security:security-ui-starter:0.0.1-SNAPSHOT'
@@ -69,7 +74,7 @@ dependencies {
     }
     testImplementation 'io.jmix.flowui:jmix-flowui-test-assist'
     testImplementation 'com.tngtech.archunit:archunit-junit5:1.3.0'
-    testImplementation testFixtures('com.insurance:common:0.0.1-SNAPSHOT')
+    testImplementation 'com.insurance.testsupport:test-support:0.0.1-SNAPSHOT'
     testImplementation testFixtures('com.insurance.security:security-core:0.0.1-SNAPSHOT')
     testImplementation testFixtures('com.insurance.partner:partner-core:0.0.1-SNAPSHOT')
     testImplementation testFixtures('com.insurance.product:product-core:0.0.1-SNAPSHOT')

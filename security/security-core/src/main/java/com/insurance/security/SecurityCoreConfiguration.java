@@ -1,6 +1,5 @@
 package com.insurance.security;
 
-import com.insurance.common.CommonConfiguration;
 import com.insurance.security.api.SecurityApiConfiguration;
 import io.jmix.core.annotation.JmixModule;
 import io.jmix.eclipselink.EclipselinkConfiguration;
@@ -15,7 +14,6 @@ import org.springframework.context.annotation.PropertySource;
 @ConfigurationPropertiesScan
 @JmixModule(dependsOn = {
         SecurityApiConfiguration.class,
-        CommonConfiguration.class,
         EclipselinkConfiguration.class,
         io.jmix.security.SecurityConfiguration.class,
         SecurityDataConfiguration.class

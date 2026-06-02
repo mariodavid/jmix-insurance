@@ -1,7 +1,6 @@
 package com.insurance.policy.core;
 
 import com.insurance.account.api.AccountApiConfiguration;
-import com.insurance.common.CommonConfiguration;
 import com.insurance.partner.api.PartnerApiConfiguration;
 import com.insurance.policy.api.PolicyApiConfiguration;
 import com.insurance.product.api.ProductApiConfiguration;
@@ -15,7 +14,7 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @ComponentScan
 @ConfigurationPropertiesScan
-@JmixModule(dependsOn = {EclipselinkConfiguration.class, AccountApiConfiguration.class, CommonConfiguration.class, PartnerApiConfiguration.class, PolicyApiConfiguration.class, ProductApiConfiguration.class, io.jmix.security.SecurityConfiguration.class})
+@JmixModule(dependsOn = {EclipselinkConfiguration.class, AccountApiConfiguration.class, PartnerApiConfiguration.class, PolicyApiConfiguration.class, ProductApiConfiguration.class, io.jmix.security.SecurityConfiguration.class})
 @PropertySource(name = "com.insurance.policy.core", value = "classpath:/com/insurance/policy/core/module.properties")
 public class PolicyConfiguration {
 }
