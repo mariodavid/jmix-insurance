@@ -10,20 +10,20 @@ import org.springframework.stereotype.Component;
 @Component("quote_QuoteEventListener")
 public class QuoteEventListener {
 
-    private final Sequences sequences;
+  private final Sequences sequences;
 
-    public QuoteEventListener(Sequences sequences) {
-        this.sequences = sequences;
-    }
+  public QuoteEventListener(Sequences sequences) {
+    this.sequences = sequences;
+  }
 
-    @EventListener
-    public void onQuoteSaving(final EntitySavingEvent<Quote> event) {
-        Quote quote = event.getEntity();
-        
-        // Generate unique quoteNo using Jmix Sequences if not present yet
-        if (quote.getQuoteNo() == null || quote.getQuoteNo().trim().isEmpty()) {
-            long nextVal = sequences.createNextValue(Sequence.withName("quote_number_sequence"));
-            quote.setQuoteNo("QT-" + String.format("%05d", nextVal));
-        }
+  @EventListener
+  public void onQuoteSaving(final EntitySavingEvent<Quote> event) {
+    Quote quote = event.getEntity();
+
+    // Generate unique quoteNo using Jmix Sequences if not present yet
+    if (quote.getQuoteNo() == null || quote.getQuoteNo().trim().isEmpty()) {
+      long nextVal = sequences.createNextValue(Sequence.withName("quote_number_sequence"));
+      quote.setQuoteNo("QT-" + String.format("%05d", nextVal));
     }
+  }
 }

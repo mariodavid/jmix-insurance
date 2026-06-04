@@ -4,29 +4,28 @@ import io.jmix.core.metamodel.datatype.EnumClass;
 import org.springframework.lang.Nullable;
 
 public enum QuoteStatus implements EnumClass<String> {
+  PENDING("PENDING"),
+  ACCEPTED("ACCEPTED"),
+  REJECTED("REJECTED");
 
-    PENDING("PENDING"),
-    ACCEPTED("ACCEPTED"),
-    REJECTED("REJECTED");
+  private final String id;
 
-    private final String id;
+  QuoteStatus(String id) {
+    this.id = id;
+  }
 
-    QuoteStatus(String id) {
-        this.id = id;
+  @Override
+  public String getId() {
+    return id;
+  }
+
+  @Nullable
+  public static QuoteStatus fromId(String id) {
+    for (QuoteStatus at : QuoteStatus.values()) {
+      if (at.getId().equals(id)) {
+        return at;
+      }
     }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Nullable
-    public static QuoteStatus fromId(String id) {
-        for (QuoteStatus at : QuoteStatus.values()) {
-            if (at.getId().equals(id)) {
-                return at;
-            }
-        }
-        return null;
-    }
+    return null;
+  }
 }

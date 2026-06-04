@@ -12,5 +12,4 @@ import io.jmix.flowui.view.ViewDescriptor;
 @ViewController(id = "partner_Partner.detail")
 @ViewDescriptor(path = "partner-detail-view.xml")
 @EditedEntityContainer("partnerDc")
-public class PartnerDetailView extends StandardDetailView<Partner> {
-}
+public class PartnerDetailView extends StandardDetailView<Partner> {}

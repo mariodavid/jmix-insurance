@@ -1,7 +1,9 @@
 package com.insurance.app.user;
 
-import com.insurance.security.entity.User;
+import static com.insurance.security.test_support.Assertions.assertThat;
+
 import com.insurance.app.test_support.AuthenticatedAsAdmin;
+import com.insurance.security.entity.User;
 import io.jmix.core.DataManager;
 import io.jmix.core.security.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -13,48 +15,40 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.insurance.security.test_support.Assertions.assertThat;
-
-/**
- * Sample integration test for the User entity.
- */
+/** Sample integration test for the User entity. */
 @SpringBootTest
 @ExtendWith(AuthenticatedAsAdmin.class)
 @ActiveProfiles("test")
 public class UserTest {
 
-    @Autowired
-    DataManager dataManager;
+  @Autowired DataManager dataManager;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+  @Autowired PasswordEncoder passwordEncoder;
 
-    @Autowired
-    UserRepository userRepository;
+  @Autowired UserRepository userRepository;
 
-    User savedUser;
+  User savedUser;
 
-    @Test
-    void test_saveAndLoad() {
-        // Create and save a new User
-        User user = dataManager.create(User.class);
-        user.setUsername("test-user-" + System.currentTimeMillis());
-        user.setPassword(passwordEncoder.encode("test-passwd"));
-        user.setActive(true);
-        savedUser = dataManager.save(user);
+  @Test
+  void test_saveAndLoad() {
+    // Create and save a new User
+    User user = dataManager.create(User.class);
+    user.setUsername("test-user-" + System.currentTimeMillis());
+    user.setPassword(passwordEncoder.encode("test-passwd"));
+    user.setActive(true);
+    savedUser = dataManager.save(user);
 
-        // Check the new user can be loaded
-        User loadedUser = dataManager.load(User.class).id(user.getId()).one();
-        assertThat(loadedUser).hasId(user.getId()).hasUsername(user.getUsername()).isActive();
+    // Check the new user can be loaded
+    User loadedUser = dataManager.load(User.class).id(user.getId()).one();
+    assertThat(loadedUser).hasId(user.getId()).hasUsername(user.getUsername()).isActive();
 
-        // Check the new user is available through UserRepository
-        UserDetails userDetails = userRepository.loadUserByUsername(user.getUsername());
-        assertThat(userDetails.getUsername()).isEqualTo(user.getUsername());
-    }
+    // Check the new user is available through UserRepository
+    UserDetails userDetails = userRepository.loadUserByUsername(user.getUsername());
+    assertThat(userDetails.getUsername()).isEqualTo(user.getUsername());
+  }
 
-    @AfterEach
-    void tearDown() {
-        if (savedUser != null)
-            dataManager.remove(savedUser);
-    }
+  @AfterEach
+  void tearDown() {
+    if (savedUser != null) dataManager.remove(savedUser);
+  }
 }

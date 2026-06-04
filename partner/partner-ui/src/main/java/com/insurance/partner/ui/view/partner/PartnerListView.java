@@ -14,5 +14,4 @@ import io.jmix.flowui.view.ViewDescriptor;
 @ViewDescriptor(path = "partner-list-view.xml")
 @LookupComponent("partnersDataGrid")
 @DialogMode(width = "64em")
-public class PartnerListView extends StandardListView<Partner> {
-}
+public class PartnerListView extends StandardListView<Partner> {}

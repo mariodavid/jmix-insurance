@@ -5,11 +5,11 @@ import com.insurance.partner.core.entity.PartnerAssert;
 
 public class Assertions extends org.assertj.core.api.Assertions {
 
-    public static PartnerAssert assertThat(Partner actual) {
-        return new PartnerAssert(actual);
-    }
+  public static PartnerAssert assertThat(Partner actual) {
+    return new PartnerAssert(actual);
+  }
 
-    protected Assertions() {
-        // empty
-    }
+  protected Assertions() {
+    // empty
+  }
 }

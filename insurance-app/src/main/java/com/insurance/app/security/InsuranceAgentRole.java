@@ -11,16 +11,16 @@ import com.insurance.quote.ui.security.QuoteUiManageRole;
 import io.jmix.security.role.annotation.ResourceRole;
 
 @ResourceRole(name = "Insurance Agent", code = InsuranceAgentRole.CODE)
-public interface InsuranceAgentRole extends 
-        UiMinimalRole, 
-        PartnerCoreManageRole, 
-        PartnerUiManageRole, 
-        QuoteCoreManageRole, 
-        QuoteUiManageRole, 
-        PolicyCoreReadRole, 
-        PolicyUiReadRole, 
-        AccountCoreReadRole, 
+public interface InsuranceAgentRole
+    extends UiMinimalRole,
+        PartnerCoreManageRole,
+        PartnerUiManageRole,
+        QuoteCoreManageRole,
+        QuoteUiManageRole,
+        PolicyCoreReadRole,
+        PolicyUiReadRole,
+        AccountCoreReadRole,
         AccountUiReadRole {
-    
-    String CODE = "insurance-agent";
+
+  String CODE = "insurance-agent";
 }

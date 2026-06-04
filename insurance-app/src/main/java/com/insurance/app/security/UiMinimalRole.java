@@ -9,12 +9,12 @@ import io.jmix.securityflowui.role.annotation.ViewPolicy;
 @ResourceRole(name = "UI: minimal access", code = UiMinimalRole.CODE, scope = SecurityScope.UI)
 public interface UiMinimalRole extends UiMinimalPolicies {
 
-    String CODE = "ui-minimal";
+  String CODE = "ui-minimal";
 
-    @ViewPolicy(viewIds = "app_MainView")
-    void main();
+  @ViewPolicy(viewIds = "app_MainView")
+  void main();
 
-    @ViewPolicy(viewIds = "app_LoginView")
-    @SpecificPolicy(resources = "ui.loginToUi")
-    void login();
+  @ViewPolicy(viewIds = "app_LoginView")
+  @SpecificPolicy(resources = "ui.loginToUi")
+  void login();
 }

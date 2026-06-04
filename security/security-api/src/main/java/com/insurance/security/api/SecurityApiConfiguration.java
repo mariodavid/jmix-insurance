@@ -9,6 +9,7 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @ComponentScan
 @JmixModule(dependsOn = {SecurityConfiguration.class})
-@PropertySource(name = "com.insurance.security.api", value = "classpath:/com/insurance/security/api/module.properties")
-public class SecurityApiConfiguration {
-}
+@PropertySource(
+    name = "com.insurance.security.api",
+    value = "classpath:/com/insurance/security/api/module.properties")
+public class SecurityApiConfiguration {}

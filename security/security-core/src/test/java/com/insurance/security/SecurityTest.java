@@ -1,5 +1,7 @@
 package com.insurance.security;
 
+import static com.insurance.security.test_support.Assertions.assertThat;
+
 import com.insurance.common.test_support.AuthenticatedAsAdmin;
 import com.insurance.common.test_support.EntityTestData;
 import com.insurance.security.entity.User;
@@ -14,52 +16,43 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static com.insurance.security.test_support.Assertions.assertThat;
-
 @SpringBootTest(properties = "spring.main.allow-bean-definition-overriding=true")
 @ExtendWith(AuthenticatedAsAdmin.class)
 class SecurityTest {
 
-    @Autowired
-    private DataManager dataManager;
+  @Autowired private DataManager dataManager;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+  @Autowired private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private UserRepository userRepository;
+  @Autowired private UserRepository userRepository;
 
-    @Autowired
-    private EntityTestData entityTestData;
+  @Autowired private EntityTestData entityTestData;
 
-    private User savedUser;
+  private User savedUser;
 
-    @Test
-    void given_userCreatedWithDataManager_when_saved_then_canBeLoadedByIdAndUsername() {
-        savedUser = entityTestData.saveWithDefaults(new UserDataProvider(), user -> {
-            user.setUsername("security-test-user-" + System.currentTimeMillis());
-            user.setPassword(passwordEncoder.encode("test-passwd"));
-        });
+  @Test
+  void given_userCreatedWithDataManager_when_saved_then_canBeLoadedByIdAndUsername() {
+    savedUser =
+        entityTestData.saveWithDefaults(
+            new UserDataProvider(),
+            user -> {
+              user.setUsername("security-test-user-" + System.currentTimeMillis());
+              user.setPassword(passwordEncoder.encode("test-passwd"));
+            });
 
-        User loaded = dataManager.load(User.class).id(savedUser.getId()).one();
-        UserDetails userDetails = userRepository.loadUserByUsername(savedUser.getUsername());
+    User loaded = dataManager.load(User.class).id(savedUser.getId()).one();
+    UserDetails userDetails = userRepository.loadUserByUsername(savedUser.getUsername());
 
-        assertThat(loaded)
-                .hasId(savedUser.getId())
-                .hasUsername(savedUser.getUsername())
-                .isActive();
-        assertThat(userDetails.getUsername()).isEqualTo(savedUser.getUsername());
+    assertThat(loaded).hasId(savedUser.getId()).hasUsername(savedUser.getUsername()).isActive();
+    assertThat(userDetails.getUsername()).isEqualTo(savedUser.getUsername());
+  }
+
+  @AfterEach
+  void tearDown() {
+    if (savedUser != null) {
+      User user = savedUser;
+      dataManager.load(User.class).id(user.getId()).optional().ifPresent(dataManager::remove);
+      savedUser = null;
     }
-
-    @AfterEach
-    void tearDown() {
-        if (savedUser != null) {
-            User user = savedUser;
-            dataManager.load(User.class)
-                    .id(user.getId())
-                    .optional()
-                    .ifPresent(dataManager::remove);
-            savedUser = null;
-        }
-    }
+  }
 }

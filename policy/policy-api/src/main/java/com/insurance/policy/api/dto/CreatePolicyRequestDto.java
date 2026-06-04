@@ -9,5 +9,4 @@ public record CreatePolicyRequestDto(
     String insuranceProductId,
     LocalDate effectiveDate,
     BigDecimal premium,
-    String paymentFrequencyId
-) {}
+    String paymentFrequencyId) {}

@@ -6,6 +6,4 @@ import org.springframework.context.annotation.Import;
 
 @AutoConfiguration
 @Import({PolicyConfiguration.class})
-public class PolicyAutoConfiguration {
-}
-
+public class PolicyAutoConfiguration {}

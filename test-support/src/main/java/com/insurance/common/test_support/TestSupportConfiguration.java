@@ -5,5 +5,4 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @Import(EntityTestData.class)
-public class TestSupportConfiguration {
-}
+public class TestSupportConfiguration {}

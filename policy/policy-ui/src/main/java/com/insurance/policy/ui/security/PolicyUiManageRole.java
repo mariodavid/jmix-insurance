@@ -6,9 +6,9 @@ import io.jmix.securityflowui.role.annotation.ViewPolicy;
 
 @ResourceRole(name = "Policy UI: Manage", code = PolicyUiManageRole.CODE)
 public interface PolicyUiManageRole {
-    String CODE = "policy-ui-manage";
+  String CODE = "policy-ui-manage";
 
-    @ViewPolicy(viewIds = {"policy_Policy.list", "policy_Policy.detail"})
-    @MenuPolicy(menuIds = {"policy_Policy.list"})
-    void policyUi();
+  @ViewPolicy(viewIds = {"policy_Policy.list", "policy_Policy.detail"})
+  @MenuPolicy(menuIds = {"policy_Policy.list"})
+  void policyUi();
 }

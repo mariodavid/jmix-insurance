@@ -9,9 +9,14 @@ import io.jmix.security.role.annotation.ResourceRole;
 
 @ResourceRole(name = "Policy Core: Manage", code = PolicyCoreManageRole.CODE)
 public interface PolicyCoreManageRole {
-    String CODE = "policy-core-manage";
+  String CODE = "policy-core-manage";
 
-    @EntityAttributePolicy(entityClass = Policy.class, attributes = "*", action = EntityAttributePolicyAction.MODIFY)
-    @EntityPolicy(entityClass = Policy.class, actions = {EntityPolicyAction.ALL})
-    void policyEntity();
+  @EntityAttributePolicy(
+      entityClass = Policy.class,
+      attributes = "*",
+      action = EntityAttributePolicyAction.MODIFY)
+  @EntityPolicy(
+      entityClass = Policy.class,
+      actions = {EntityPolicyAction.ALL})
+  void policyEntity();
 }

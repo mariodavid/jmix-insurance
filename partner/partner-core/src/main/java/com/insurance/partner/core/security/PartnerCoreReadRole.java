@@ -9,9 +9,14 @@ import io.jmix.security.role.annotation.ResourceRole;
 
 @ResourceRole(name = "Partner Core: Read-only", code = PartnerCoreReadRole.CODE)
 public interface PartnerCoreReadRole {
-    String CODE = "partner-core-read";
+  String CODE = "partner-core-read";
 
-    @EntityAttributePolicy(entityClass = Partner.class, attributes = "*", action = EntityAttributePolicyAction.VIEW)
-    @EntityPolicy(entityClass = Partner.class, actions = {EntityPolicyAction.READ})
-    void partnerEntity();
+  @EntityAttributePolicy(
+      entityClass = Partner.class,
+      attributes = "*",
+      action = EntityAttributePolicyAction.VIEW)
+  @EntityPolicy(
+      entityClass = Partner.class,
+      actions = {EntityPolicyAction.READ})
+  void partnerEntity();
 }

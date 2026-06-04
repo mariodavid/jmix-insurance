@@ -6,6 +6,4 @@ import org.springframework.context.annotation.Import;
 
 @AutoConfiguration
 @Import({AccountConfiguration.class})
-public class AccountAutoConfiguration {
-}
-
+public class AccountAutoConfiguration {}

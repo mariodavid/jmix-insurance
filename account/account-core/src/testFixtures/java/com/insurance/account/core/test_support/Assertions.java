@@ -7,15 +7,15 @@ import com.insurance.account.core.entity.AccountDocumentAssert;
 
 public class Assertions extends org.assertj.core.api.Assertions {
 
-    public static AccountAssert assertThat(Account actual) {
-        return new AccountAssert(actual);
-    }
+  public static AccountAssert assertThat(Account actual) {
+    return new AccountAssert(actual);
+  }
 
-    public static AccountDocumentAssert assertThat(AccountDocument actual) {
-        return new AccountDocumentAssert(actual);
-    }
+  public static AccountDocumentAssert assertThat(AccountDocument actual) {
+    return new AccountDocumentAssert(actual);
+  }
 
-    protected Assertions() {
-        // empty
-    }
+  protected Assertions() {
+    // empty
+  }
 }

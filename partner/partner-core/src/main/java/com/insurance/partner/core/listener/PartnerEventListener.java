@@ -10,20 +10,20 @@ import org.springframework.stereotype.Component;
 @Component("partner_PartnerEventListener")
 public class PartnerEventListener {
 
-    private final Sequences sequences;
+  private final Sequences sequences;
 
-    public PartnerEventListener(Sequences sequences) {
-        this.sequences = sequences;
-    }
+  public PartnerEventListener(Sequences sequences) {
+    this.sequences = sequences;
+  }
 
-    @EventListener
-    public void onPartnerSaving(final EntitySavingEvent<Partner> event) {
-        Partner partner = event.getEntity();
-        
-        // Generate unique partnerNo using Jmix Sequences if not present yet
-        if (partner.getPartnerNo() == null || partner.getPartnerNo().trim().isEmpty()) {
-            long nextVal = sequences.createNextValue(Sequence.withName("partner_number_sequence"));
-            partner.setPartnerNo("PT-" + String.format("%05d", nextVal));
-        }
+  @EventListener
+  public void onPartnerSaving(final EntitySavingEvent<Partner> event) {
+    Partner partner = event.getEntity();
+
+    // Generate unique partnerNo using Jmix Sequences if not present yet
+    if (partner.getPartnerNo() == null || partner.getPartnerNo().trim().isEmpty()) {
+      long nextVal = sequences.createNextValue(Sequence.withName("partner_number_sequence"));
+      partner.setPartnerNo("PT-" + String.format("%05d", nextVal));
     }
+  }
 }

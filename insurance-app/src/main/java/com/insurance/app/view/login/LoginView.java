@@ -21,6 +21,10 @@ import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
 import io.jmix.securityflowui.authentication.AuthDetails;
 import io.jmix.securityflowui.authentication.LoginViewSupport;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,101 +34,98 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 @Route(value = "login")
 @ViewController(id = "app_LoginView")
 @ViewDescriptor(path = "login-view.xml")
 public class LoginView extends StandardView implements LocaleChangeObserver {
 
-    private static final Logger log = LoggerFactory.getLogger(LoginView.class);
+  private static final Logger log = LoggerFactory.getLogger(LoginView.class);
 
-    @Autowired
-    private CoreProperties coreProperties;
+  @Autowired private CoreProperties coreProperties;
 
-    @Autowired
-    private LoginViewSupport loginViewSupport;
+  @Autowired private LoginViewSupport loginViewSupport;
 
-    @Autowired
-    private MessageTools messageTools;
+  @Autowired private MessageTools messageTools;
 
-    @ViewComponent
-    private JmixLoginForm login;
+  @ViewComponent private JmixLoginForm login;
 
-    @ViewComponent
-    private MessageBundle messageBundle;
+  @ViewComponent private MessageBundle messageBundle;
 
-    @Value("${ui.login.defaultUsername:}")
-    private String defaultUsername;
+  @Value("${ui.login.defaultUsername:}")
+  private String defaultUsername;
 
-    @Value("${ui.login.defaultPassword:}")
-    private String defaultPassword;
+  @Value("${ui.login.defaultPassword:}")
+  private String defaultPassword;
 
-    @Subscribe
-    public void onInit(final InitEvent event) {
-        initLocales();
-        initDefaultCredentials();
+  @Subscribe
+  public void onInit(final InitEvent event) {
+    initLocales();
+    initDefaultCredentials();
+  }
+
+  private void initLocales() {
+    LinkedHashMap<Locale, String> locales =
+        coreProperties.getAvailableLocales().stream()
+            .collect(
+                Collectors.toMap(
+                    Function.identity(),
+                    messageTools::getLocaleDisplayName,
+                    (s1, s2) -> s1,
+                    LinkedHashMap::new));
+
+    ComponentUtils.setItemsMap(login, locales);
+
+    login.setSelectedLocale(VaadinSession.getCurrent().getLocale());
+  }
+
+  private void initDefaultCredentials() {
+    if (StringUtils.isNotBlank(defaultUsername)) {
+      login.setUsername(defaultUsername);
     }
 
-    private void initLocales() {
-        LinkedHashMap<Locale, String> locales = coreProperties.getAvailableLocales().stream()
-                .collect(Collectors.toMap(Function.identity(), messageTools::getLocaleDisplayName, (s1, s2) -> s1,
-                        LinkedHashMap::new));
-
-        ComponentUtils.setItemsMap(login, locales);
-
-        login.setSelectedLocale(VaadinSession.getCurrent().getLocale());
+    if (StringUtils.isNotBlank(defaultPassword)) {
+      login.setPassword(defaultPassword);
     }
+  }
 
-    private void initDefaultCredentials() {
-        if (StringUtils.isNotBlank(defaultUsername)) {
-            login.setUsername(defaultUsername);
-        }
-
-        if (StringUtils.isNotBlank(defaultPassword)) {
-            login.setPassword(defaultPassword);
-        }
+  @Subscribe("login")
+  public void onLogin(final LoginEvent event) {
+    try {
+      loginViewSupport.authenticate(
+          AuthDetails.of(event.getUsername(), event.getPassword())
+              .withLocale(login.getSelectedLocale())
+              .withRememberMe(login.isRememberMe()));
+    } catch (final BadCredentialsException
+        | DisabledException
+        | LockedException
+        | AccessDeniedException e) {
+      log.warn("Login failed for user '{}': {}", event.getUsername(), e.toString());
+      event.getSource().setError(true);
     }
+  }
 
-    @Subscribe("login")
-    public void onLogin(final LoginEvent event) {
-        try {
-            loginViewSupport.authenticate(
-                    AuthDetails.of(event.getUsername(), event.getPassword())
-                            .withLocale(login.getSelectedLocale())
-                            .withRememberMe(login.isRememberMe())
-            );
-        } catch (final BadCredentialsException | DisabledException | LockedException | AccessDeniedException e) {
-            log.warn("Login failed for user '{}': {}", event.getUsername(), e.toString());
-            event.getSource().setError(true);
-        }
-    }
+  @Override
+  public void localeChange(final LocaleChangeEvent event) {
+    UI.getCurrent().getPage().setTitle(messageBundle.getMessage("LoginView.title"));
 
-    @Override
-    public void localeChange(final LocaleChangeEvent event) {
-        UI.getCurrent().getPage().setTitle(messageBundle.getMessage("LoginView.title"));
+    final JmixLoginI18n loginI18n = JmixLoginI18n.createDefault();
 
-        final JmixLoginI18n loginI18n = JmixLoginI18n.createDefault();
+    final JmixLoginI18n.JmixForm form = new JmixLoginI18n.JmixForm();
+    form.setTitle(messageBundle.getMessage("loginForm.headerTitle"));
+    form.setUsername(messageBundle.getMessage("loginForm.username"));
+    form.setPassword(messageBundle.getMessage("loginForm.password"));
+    form.setSubmit(messageBundle.getMessage("loginForm.submit"));
+    form.setForgotPassword(messageBundle.getMessage("loginForm.forgotPassword"));
+    form.setRememberMe(messageBundle.getMessage("loginForm.rememberMe"));
+    loginI18n.setForm(form);
 
-        final JmixLoginI18n.JmixForm form = new JmixLoginI18n.JmixForm();
-        form.setTitle(messageBundle.getMessage("loginForm.headerTitle"));
-        form.setUsername(messageBundle.getMessage("loginForm.username"));
-        form.setPassword(messageBundle.getMessage("loginForm.password"));
-        form.setSubmit(messageBundle.getMessage("loginForm.submit"));
-        form.setForgotPassword(messageBundle.getMessage("loginForm.forgotPassword"));
-        form.setRememberMe(messageBundle.getMessage("loginForm.rememberMe"));
-        loginI18n.setForm(form);
+    final LoginI18n.ErrorMessage errorMessage = new LoginI18n.ErrorMessage();
+    errorMessage.setTitle(messageBundle.getMessage("loginForm.errorTitle"));
+    errorMessage.setMessage(messageBundle.getMessage("loginForm.badCredentials"));
+    errorMessage.setUsername(messageBundle.getMessage("loginForm.errorUsername"));
+    errorMessage.setPassword(messageBundle.getMessage("loginForm.errorPassword"));
+    loginI18n.setErrorMessage(errorMessage);
 
-        final LoginI18n.ErrorMessage errorMessage = new LoginI18n.ErrorMessage();
-        errorMessage.setTitle(messageBundle.getMessage("loginForm.errorTitle"));
-        errorMessage.setMessage(messageBundle.getMessage("loginForm.badCredentials"));
-        errorMessage.setUsername(messageBundle.getMessage("loginForm.errorUsername"));
-        errorMessage.setPassword(messageBundle.getMessage("loginForm.errorPassword"));
-        loginI18n.setErrorMessage(errorMessage);
-
-        login.setI18n(loginI18n);
-    }
+    login.setI18n(loginI18n);
+  }
 }

@@ -1,5 +1,7 @@
 package com.insurance.app.quote;
 
+import static com.insurance.app.test_support.assertion.InsuranceAssertions.assertThat;
+
 import com.insurance.account.core.entity.Account;
 import com.insurance.account.core.entity.AccountDocument;
 import com.insurance.app.test_support.BaseIntegrationTest;
@@ -13,111 +15,116 @@ import com.insurance.quote.core.test_support.QuoteDataProvider;
 import io.jmix.core.DataManager;
 import io.jmix.core.Id;
 import io.jmix.core.querycondition.PropertyCondition;
+import java.math.BigDecimal;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import static com.insurance.app.test_support.assertion.InsuranceAssertions.assertThat;
-
 /**
- * Testet die vollständige Akzeptanzkette: QuoteService.accept() → PolicyService → PolicyCreatedEvent → AccountService
+ * Testet die vollständige Akzeptanzkette: QuoteService.accept() → PolicyService →
+ * PolicyCreatedEvent → AccountService
  */
 class QuoteAcceptanceFlowTest extends BaseIntegrationTest {
 
-    @Autowired
-    private QuoteService quoteService;
+  @Autowired private QuoteService quoteService;
 
-    @Autowired
-    private DataManager dataManager;
+  @Autowired private DataManager dataManager;
 
-    @Autowired
-    private EntityTestData entityTestData;
+  @Autowired private EntityTestData entityTestData;
 
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
+  @Autowired private DatabaseCleanup databaseCleanup;
 
-    @BeforeEach
-    void setUp() {
-        databaseCleanup.removeAllEntities();
-    }
+  @BeforeEach
+  void setUp() {
+    databaseCleanup.removeAllEntities();
+  }
 
-    @Test
-    void given_acceptedQuote_when_policyLoaded_then_policyDataMatchesQuote() {
-        // given
-        BigDecimal premium = new BigDecimal("300.00");
-        Quote quote = entityTestData.saveWithDefaults(new QuoteDataProvider(), q -> {
-            q.setPaymentFrequency(PaymentFrequency.YEARLY);
-            q.setCalculatedPremium(premium);
-        });
+  @Test
+  void given_acceptedQuote_when_policyLoaded_then_policyDataMatchesQuote() {
+    // given
+    BigDecimal premium = new BigDecimal("300.00");
+    Quote quote =
+        entityTestData.saveWithDefaults(
+            new QuoteDataProvider(),
+            q -> {
+              q.setPaymentFrequency(PaymentFrequency.YEARLY);
+              q.setCalculatedPremium(premium);
+            });
 
-        // when
-        quoteService.accept(Id.of(quote));
+    // when
+    quoteService.accept(Id.of(quote));
 
-        // then
-        Quote reloaded = dataManager.load(Quote.class).id(quote.getId()).one();
-        Policy policy = loadPolicyByNo(reloaded.getCreatedPolicyNo());
+    // then
+    Quote reloaded = dataManager.load(Quote.class).id(quote.getId()).one();
+    Policy policy = loadPolicyByNo(reloaded.getCreatedPolicyNo());
 
-        assertThat(policy)
-                .hasPolicyNo(reloaded.getCreatedPolicyNo())
-                .hasCoverageStart(quote.getEffectiveDate())
-                .hasPremium(premium);
-    }
+    assertThat(policy)
+        .hasPolicyNo(reloaded.getCreatedPolicyNo())
+        .hasCoverageStart(quote.getEffectiveDate())
+        .hasPremium(premium);
+  }
 
-    @Test
-    void given_acceptedQuote_when_accountLoaded_then_balanceEqualsNegativePremium() {
-        // given
-        BigDecimal premium = new BigDecimal("480.00");
-        Quote quote = entityTestData.saveWithDefaults(new QuoteDataProvider(), q -> {
-            q.setPaymentFrequency(PaymentFrequency.YEARLY);
-            q.setCalculatedPremium(premium);
-        });
+  @Test
+  void given_acceptedQuote_when_accountLoaded_then_balanceEqualsNegativePremium() {
+    // given
+    BigDecimal premium = new BigDecimal("480.00");
+    Quote quote =
+        entityTestData.saveWithDefaults(
+            new QuoteDataProvider(),
+            q -> {
+              q.setPaymentFrequency(PaymentFrequency.YEARLY);
+              q.setCalculatedPremium(premium);
+            });
 
-        // when
-        quoteService.accept(Id.of(quote));
+    // when
+    quoteService.accept(Id.of(quote));
 
-        // then
-        Quote reloaded = dataManager.load(Quote.class).id(quote.getId()).one();
-        Account account = loadAccountByNo(reloaded.getCreatedPolicyNo());
+    // then
+    Quote reloaded = dataManager.load(Quote.class).id(quote.getId()).one();
+    Account account = loadAccountByNo(reloaded.getCreatedPolicyNo());
 
-        assertThat(account)
-                .hasAccountNo(reloaded.getCreatedPolicyNo())
-                .hasBalance(premium.negate());
-    }
+    assertThat(account).hasAccountNo(reloaded.getCreatedPolicyNo()).hasBalance(premium.negate());
+  }
 
-    @Test
-    void given_acceptedQuoteWithMonthlyFrequency_when_accountLoaded_then_twelveDocumentsCreated() {
-        // given
-        Quote quote = entityTestData.saveWithDefaults(new QuoteDataProvider(), q -> {
-            q.setPaymentFrequency(PaymentFrequency.MONTHLY);
-            q.setCalculatedPremium(new BigDecimal("120.00"));
-        });
+  @Test
+  void given_acceptedQuoteWithMonthlyFrequency_when_accountLoaded_then_twelveDocumentsCreated() {
+    // given
+    Quote quote =
+        entityTestData.saveWithDefaults(
+            new QuoteDataProvider(),
+            q -> {
+              q.setPaymentFrequency(PaymentFrequency.MONTHLY);
+              q.setCalculatedPremium(new BigDecimal("120.00"));
+            });
 
-        // when
-        quoteService.accept(Id.of(quote));
+    // when
+    quoteService.accept(Id.of(quote));
 
-        // then
-        Quote reloaded = dataManager.load(Quote.class).id(quote.getId()).one();
-        Account account = loadAccountByNo(reloaded.getCreatedPolicyNo());
-        List<AccountDocument> docs = dataManager.load(AccountDocument.class)
-                .query("select d from account_AccountDocument d where d.account = :account")
-                .parameter("account", account)
-                .list();
+    // then
+    Quote reloaded = dataManager.load(Quote.class).id(quote.getId()).one();
+    Account account = loadAccountByNo(reloaded.getCreatedPolicyNo());
+    List<AccountDocument> docs =
+        dataManager
+            .load(AccountDocument.class)
+            .query("select d from account_AccountDocument d where d.account = :account")
+            .parameter("account", account)
+            .list();
 
-        assertThat(docs).hasSize(12);
-    }
+    assertThat(docs).hasSize(12);
+  }
 
-    private Policy loadPolicyByNo(String policyNo) {
-        return dataManager.load(Policy.class)
-                .condition(PropertyCondition.equal("policyNo", policyNo))
-                .one();
-    }
+  private Policy loadPolicyByNo(String policyNo) {
+    return dataManager
+        .load(Policy.class)
+        .condition(PropertyCondition.equal("policyNo", policyNo))
+        .one();
+  }
 
-    private Account loadAccountByNo(String accountNo) {
-        return dataManager.load(Account.class)
-                .condition(PropertyCondition.equal("accountNo", accountNo))
-                .one();
-    }
+  private Account loadAccountByNo(String accountNo) {
+    return dataManager
+        .load(Account.class)
+        .condition(PropertyCondition.equal("accountNo", accountNo))
+        .one();
+  }
 }

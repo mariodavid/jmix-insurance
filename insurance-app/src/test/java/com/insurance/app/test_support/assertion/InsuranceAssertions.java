@@ -13,26 +13,25 @@ import com.insurance.quote.core.test_support.QuoteAssert;
 
 public class InsuranceAssertions extends org.assertj.core.api.Assertions {
 
-    public static PartnerAssert assertThat(Partner actual) {
-        return new PartnerAssert(actual);
-    }
+  public static PartnerAssert assertThat(Partner actual) {
+    return new PartnerAssert(actual);
+  }
 
-    public static PolicyAssert assertThat(Policy actual) {
-        return new PolicyAssert(actual);
-    }
+  public static PolicyAssert assertThat(Policy actual) {
+    return new PolicyAssert(actual);
+  }
 
-    public static QuoteAssert assertThat(Quote actual) {
-        return new QuoteAssert(actual);
-    }
+  public static QuoteAssert assertThat(Quote actual) {
+    return new QuoteAssert(actual);
+  }
 
-    public static AccountAssert assertThat(Account actual) {
-        return new AccountAssert(actual);
-    }
+  public static AccountAssert assertThat(Account actual) {
+    return new AccountAssert(actual);
+  }
 
-    public static AccountDocumentAssert assertThat(AccountDocument actual) {
-        return new AccountDocumentAssert(actual);
-    }
+  public static AccountDocumentAssert assertThat(AccountDocument actual) {
+    return new AccountDocumentAssert(actual);
+  }
 
-    protected InsuranceAssertions() {
-    }
+  protected InsuranceAssertions() {}
 }

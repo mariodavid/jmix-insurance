@@ -11,6 +11,7 @@ import org.springframework.context.annotation.PropertySource;
 @ComponentScan
 @ConfigurationPropertiesScan
 @JmixModule(dependsOn = EclipselinkConfiguration.class)
-@PropertySource(name = "com.insurance.partner.api", value = "classpath:/com/insurance/partner/api/module.properties")
-public class PartnerApiConfiguration {
-}
+@PropertySource(
+    name = "com.insurance.partner.api",
+    value = "classpath:/com/insurance/partner/api/module.properties")
+public class PartnerApiConfiguration {}

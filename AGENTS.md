@@ -99,3 +99,37 @@ For each reusable UI fragment:
 - Compare resource role menu policies against actual `menu.xml` item ids or view ids.
 - For update tasks, compare touched artifacts against their previous constraints and defaults before reporting completion.
 - If tests cannot be run, state the exact blocker and what was validated instead.
+
+## Fast Micro-Feedback Verification (Harness Shortcuts)
+
+To maximize development velocity, avoid running full root builds (`./gradlew check` or `./gradlew test`), which analyze all 12 modules and can take several minutes. Instead, use these target-specific Gradle shortcuts:
+
+1. **Auto-Format Code**: Before compiling or running checks, run the formatter to automatically correct any code style or spacing errors:
+   ```shell
+   ./gradlew spotlessApply
+   ```
+
+2. **Targeted Layer Compile**: Verify that the layer you are working on compiles in isolation (takes ~5 seconds):
+   ```shell
+   ./gradlew :<module>:<layer>:compileJava
+   # Example:
+   ./gradlew :partner:partner-core:compileJava
+   ```
+
+3. **Targeted Module Verification**: Compile and run checks/tests for a single module in isolation (~30 seconds):
+   ```shell
+   ./gradlew :<module>:check
+   # Example:
+   ./gradlew :partner:check
+   ```
+
+4. **Modularity & Guardrails Verification**: Ensure your changes did not violate Jmix rules, Lombok restrictions, or package boundary layers:
+   ```shell
+   ./gradlew :insurance-app:test --tests "com.insurance.app.arch.ArchitectureTest"
+   ```
+
+5. **Full Project Verification**: Before final check-in, run the full validation suite:
+   ```shell
+   ./gradlew check
+   ```
+

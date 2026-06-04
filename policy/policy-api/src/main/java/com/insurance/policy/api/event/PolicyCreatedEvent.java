@@ -1,50 +1,50 @@
 package com.insurance.policy.api.event;
 
-import org.springframework.context.ApplicationEvent;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
+import org.springframework.context.ApplicationEvent;
 
 public class PolicyCreatedEvent extends ApplicationEvent {
-    
-    private final UUID policyId;
-    private final String policyNo;
-    private final LocalDate coverageStart;
-    private final BigDecimal premium;
-    private final String paymentFrequencyId;
 
-    public PolicyCreatedEvent(Object source,
-                              UUID policyId,
-                              String policyNo,
-                              LocalDate coverageStart,
-                              BigDecimal premium,
-                              String paymentFrequencyId) {
-        super(source);
-        this.policyId = policyId;
-        this.policyNo = policyNo;
-        this.coverageStart = coverageStart;
-        this.premium = premium;
-        this.paymentFrequencyId = paymentFrequencyId;
-    }
+  private final UUID policyId;
+  private final String policyNo;
+  private final LocalDate coverageStart;
+  private final BigDecimal premium;
+  private final String paymentFrequencyId;
 
-    public UUID getPolicyId() {
-        return policyId;
-    }
+  public PolicyCreatedEvent(
+      Object source,
+      UUID policyId,
+      String policyNo,
+      LocalDate coverageStart,
+      BigDecimal premium,
+      String paymentFrequencyId) {
+    super(source);
+    this.policyId = policyId;
+    this.policyNo = policyNo;
+    this.coverageStart = coverageStart;
+    this.premium = premium;
+    this.paymentFrequencyId = paymentFrequencyId;
+  }
 
-    public String getPolicyNo() {
-        return policyNo;
-    }
+  public UUID getPolicyId() {
+    return policyId;
+  }
 
-    public LocalDate getCoverageStart() {
-        return coverageStart;
-    }
+  public String getPolicyNo() {
+    return policyNo;
+  }
 
-    public BigDecimal getPremium() {
-        return premium;
-    }
+  public LocalDate getCoverageStart() {
+    return coverageStart;
+  }
 
-    public String getPaymentFrequencyId() {
-        return paymentFrequencyId;
-    }
+  public BigDecimal getPremium() {
+    return premium;
+  }
+
+  public String getPaymentFrequencyId() {
+    return paymentFrequencyId;
+  }
 }

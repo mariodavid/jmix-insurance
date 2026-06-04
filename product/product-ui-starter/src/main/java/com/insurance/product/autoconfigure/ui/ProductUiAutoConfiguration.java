@@ -6,5 +6,4 @@ import org.springframework.context.annotation.Import;
 
 @AutoConfiguration
 @Import({ProductUiConfiguration.class})
-public class ProductUiAutoConfiguration {
-}
+public class ProductUiAutoConfiguration {}

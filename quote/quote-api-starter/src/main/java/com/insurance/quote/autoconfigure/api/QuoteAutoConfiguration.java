@@ -6,6 +6,4 @@ import org.springframework.context.annotation.Import;
 
 @AutoConfiguration
 @Import({QuoteApiConfiguration.class})
-public class QuoteAutoConfiguration {
-}
-
+public class QuoteAutoConfiguration {}

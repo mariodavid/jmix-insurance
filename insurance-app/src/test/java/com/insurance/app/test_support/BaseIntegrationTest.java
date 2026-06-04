@@ -7,5 +7,4 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @ExtendWith(AuthenticatedAsAdmin.class)
 @ActiveProfiles("test")
-public abstract class BaseIntegrationTest {
-}
+public abstract class BaseIntegrationTest {}

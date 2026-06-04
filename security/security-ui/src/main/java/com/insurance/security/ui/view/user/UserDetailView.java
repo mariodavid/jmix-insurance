@@ -17,12 +17,11 @@ import io.jmix.flowui.view.Subscribe;
 import io.jmix.flowui.view.ViewComponent;
 import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Route(value = "users/:id", layout = DefaultMainViewParent.class)
 @ViewController(id = "app_User.detail")
@@ -30,71 +29,64 @@ import java.util.TimeZone;
 @EditedEntityContainer("userDc")
 public class UserDetailView extends StandardDetailView<User> {
 
-    @ViewComponent
-    private TypedTextField<String> usernameField;
-    @ViewComponent
-    private PasswordField passwordField;
-    @ViewComponent
-    private PasswordField confirmPasswordField;
-    @ViewComponent
-    private ComboBox<String> timeZoneField;
-    @ViewComponent
-    private MessageBundle messageBundle;
-    @Autowired
-    private Notifications notifications;
+  @ViewComponent private TypedTextField<String> usernameField;
+  @ViewComponent private PasswordField passwordField;
+  @ViewComponent private PasswordField confirmPasswordField;
+  @ViewComponent private ComboBox<String> timeZoneField;
+  @ViewComponent private MessageBundle messageBundle;
+  @Autowired private Notifications notifications;
 
-    @Autowired
-    private EntityStates entityStates;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+  @Autowired private EntityStates entityStates;
+  @Autowired private PasswordEncoder passwordEncoder;
 
-    private boolean newEntity;
+  private boolean newEntity;
 
-    @Subscribe
-    public void onInit(final InitEvent event) {
-        timeZoneField.setItems(List.of(TimeZone.getAvailableIDs()));
+  @Subscribe
+  public void onInit(final InitEvent event) {
+    timeZoneField.setItems(List.of(TimeZone.getAvailableIDs()));
+  }
+
+  @Subscribe
+  public void onInitEntity(final InitEntityEvent<User> event) {
+    usernameField.setReadOnly(false);
+    passwordField.setVisible(true);
+    confirmPasswordField.setVisible(true);
+  }
+
+  @Subscribe
+  public void onReady(final ReadyEvent event) {
+    if (entityStates.isNew(getEditedEntity())) {
+      usernameField.focus();
     }
+  }
 
-    @Subscribe
-    public void onInitEntity(final InitEntityEvent<User> event) {
-        usernameField.setReadOnly(false);
-        passwordField.setVisible(true);
-        confirmPasswordField.setVisible(true);
+  @Subscribe
+  public void onValidation(final ValidationEvent event) {
+    if (entityStates.isNew(getEditedEntity())
+        && !Objects.equals(passwordField.getValue(), confirmPasswordField.getValue())) {
+      event.getErrors().add(messageBundle.getMessage("passwordsDoNotMatch"));
     }
+  }
 
-    @Subscribe
-    public void onReady(final ReadyEvent event) {
-        if (entityStates.isNew(getEditedEntity())) {
-            usernameField.focus();
-        }
+  @Subscribe
+  public void onBeforeSave(final BeforeSaveEvent event) {
+    if (entityStates.isNew(getEditedEntity())) {
+      getEditedEntity().setPassword(passwordEncoder.encode(passwordField.getValue()));
+
+      newEntity = true;
     }
+  }
 
-    @Subscribe
-    public void onValidation(final ValidationEvent event) {
-        if (entityStates.isNew(getEditedEntity())
-                && !Objects.equals(passwordField.getValue(), confirmPasswordField.getValue())) {
-            event.getErrors().add(messageBundle.getMessage("passwordsDoNotMatch"));
-        }
+  @Subscribe
+  public void onAfterSave(final AfterSaveEvent event) {
+    if (newEntity) {
+      notifications
+          .create(messageBundle.getMessage("noAssignedRolesNotification"))
+          .withThemeVariant(NotificationVariant.LUMO_WARNING)
+          .withPosition(Notification.Position.TOP_END)
+          .show();
+
+      newEntity = false;
     }
-
-    @Subscribe
-    public void onBeforeSave(final BeforeSaveEvent event) {
-        if (entityStates.isNew(getEditedEntity())) {
-            getEditedEntity().setPassword(passwordEncoder.encode(passwordField.getValue()));
-
-            newEntity = true;
-        }
-    }
-
-    @Subscribe
-    public void onAfterSave(final AfterSaveEvent event) {
-        if (newEntity) {
-            notifications.create(messageBundle.getMessage("noAssignedRolesNotification"))
-                    .withThemeVariant(NotificationVariant.LUMO_WARNING)
-                    .withPosition(Notification.Position.TOP_END)
-                    .show();
-
-            newEntity = false;
-        }
-    }
+  }
 }
