@@ -3,18 +3,25 @@
       focusComponent="login"
       title="msg://LoginView.title">
     <layout justifyContent="CENTER" alignItems="CENTER" classNames="jmix-login-main-layout">
-        <loginForm id="login"
-                   forgotPasswordButtonVisible="false">
-            <form title="msg://loginForm.headerTitle"
-                  username="msg://loginForm.username"
-                  password="msg://loginForm.password"
-                  rememberMe="msg://loginForm.rememberMe"
-                  submit="msg://loginForm.submit"
-                  forgotPassword="msg://loginForm.forgotPassword"/>
-            <errorMessage title="msg://loginForm.errorTitle"
-                          message="msg://loginForm.badCredentials"
-                          username="msg://loginForm.errorUsername"
-                          password="msg://loginForm.errorPassword"/>
-        </loginForm>
+        <vbox classNames="login-card" width="auto" height="auto" padding="true" spacing="true" alignItems="CENTER">
+            <hbox classNames="login-brand" alignItems="CENTER" gap="true">
+                <div classNames="app-logo-box">
+                    <span classNames="app-logo-glyph"/>
+                </div>
+                <span text="msg://loginForm.headerTitle" classNames="login-app-title"/>
+            </hbox>
+            <loginForm id="login"
+                       forgotPasswordButtonVisible="false">
+                <form username="msg://loginForm.username"
+                      password="msg://loginForm.password"
+                      rememberMe="msg://loginForm.rememberMe"
+                      submit="msg://loginForm.submit"
+                      forgotPassword="msg://loginForm.forgotPassword"/>
+                <errorMessage title="msg://loginForm.errorTitle"
+                              message="msg://loginForm.badCredentials"
+                              username="msg://loginForm.errorUsername"
+                              password="msg://loginForm.errorPassword"/>
+            </loginForm>
+        </vbox>
     </layout>
 </view>

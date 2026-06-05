@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <menu-config xmlns="http://jmix.io/schema/flowui/menu">
 
-    <menu id="quote" title="msg://com.insurance.quote.ui/menu.addon">
-        <item view="quote_Quote.list"/>
-    </menu>
+    <item view="quote_Quote.list" icon="FILE_TEXT" classNames="quote-menu-item"/>
 
 </menu-config>

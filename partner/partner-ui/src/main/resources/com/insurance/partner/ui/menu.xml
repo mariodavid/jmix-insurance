@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <menu-config xmlns="http://jmix.io/schema/flowui/menu">
-
-    <menu id="partner" title="msg://com.insurance.partner.ui/menu.addon">
-        <item view="partner_Partner.list"/>
-    </menu>
-
+    <item view="partner_Partner.list" icon="USER" classNames="partner-menu-item"/>
 </menu-config>

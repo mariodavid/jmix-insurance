@@ -1,0 +1,38 @@
+.account-theme {
+    /* Lumo primary color overrides */
+    --lumo-primary-color: #0D9488;
+    --lumo-primary-text-color: #0D9488;
+    --lumo-primary-color-50pct: rgba(13, 148, 136, 0.5);
+    --lumo-primary-color-10pct: rgba(13, 148, 136, 0.1);
+    --lumo-primary-contrast-color: #FFFFFF;
+
+    /* Theme domain variables */
+    --theme-accent-color: #0D9488;
+    --theme-ink-color: #0F766E;
+    --theme-strong-color: #D3EFEA;
+    --theme-tint-color: #ECF8F6;
+    --theme-border-color: #A6DDD6;
+}
+
+/* Header highlight for Account */
+.account-theme .jmix-main-view-top-menu-view-header-box {
+    background-color: var(--theme-strong-color) !important;
+    border-bottom: 1px solid var(--theme-border-color) !important;
+}
+
+.account-theme .jmix-main-view-top-menu-view-title {
+    color: var(--theme-ink-color) !important;
+    font-weight: 700;
+}
+
+/* Tab menu item selected border for Account */
+.account-theme jmix-horizontal-menu::part(item)[selected],
+.account-theme vaadin-tab[selected] {
+    border-bottom: 2px solid var(--theme-accent-color) !important;
+    color: var(--theme-accent-color) !important;
+}
+
+/* Background tint for the workspace content */
+.account-theme vaadin-app-layout::part(content) {
+    background-color: var(--theme-tint-color) !important;
+}

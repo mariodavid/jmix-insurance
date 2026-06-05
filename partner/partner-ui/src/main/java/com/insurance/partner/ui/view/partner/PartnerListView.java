@@ -1,6 +1,7 @@
 package com.insurance.partner.ui.view.partner;
 
 import com.insurance.partner.core.entity.Partner;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.router.Route;
 import io.jmix.flowui.view.DefaultMainViewParent;
 import io.jmix.flowui.view.DialogMode;
@@ -14,4 +15,5 @@ import io.jmix.flowui.view.ViewDescriptor;
 @ViewDescriptor(path = "partner-list-view.xml")
 @LookupComponent("partnersDataGrid")
 @DialogMode(width = "64em")
+@CssImport("./partner/styles.css")
 public class PartnerListView extends StandardListView<Partner> {}

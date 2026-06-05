@@ -1,0 +1,38 @@
+.policy-theme {
+    /* Lumo primary color overrides */
+    --lumo-primary-color: #4F46E5;
+    --lumo-primary-text-color: #4F46E5;
+    --lumo-primary-color-50pct: rgba(79, 70, 229, 0.5);
+    --lumo-primary-color-10pct: rgba(79, 70, 229, 0.1);
+    --lumo-primary-contrast-color: #FFFFFF;
+
+    /* Theme domain variables */
+    --theme-accent-color: #4F46E5;
+    --theme-ink-color: #4338CA;
+    --theme-strong-color: #E2E2FB;
+    --theme-tint-color: #F1F1FD;
+    --theme-border-color: #C4C2F5;
+}
+
+/* Header highlight for Policy */
+.policy-theme .jmix-main-view-top-menu-view-header-box {
+    background-color: var(--theme-strong-color) !important;
+    border-bottom: 1px solid var(--theme-border-color) !important;
+}
+
+.policy-theme .jmix-main-view-top-menu-view-title {
+    color: var(--theme-ink-color) !important;
+    font-weight: 700;
+}
+
+/* Tab menu item selected border for Policy */
+.policy-theme jmix-horizontal-menu::part(item)[selected],
+.policy-theme vaadin-tab[selected] {
+    border-bottom: 2px solid var(--theme-accent-color) !important;
+    color: var(--theme-accent-color) !important;
+}
+
+/* Background tint for the workspace content */
+.policy-theme vaadin-app-layout::part(content) {
+    background-color: var(--theme-tint-color) !important;
+}

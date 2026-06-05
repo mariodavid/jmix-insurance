@@ -1,0 +1,43 @@
+.partner-theme {
+    /* Lumo primary color overrides */
+    --lumo-primary-color: #9333EA;
+    --lumo-primary-text-color: #9333EA;
+    --lumo-primary-color-50pct: rgba(147, 51, 234, 0.5);
+    --lumo-primary-color-10pct: rgba(147, 51, 234, 0.1);
+    --lumo-primary-contrast-color: #FFFFFF;
+
+    /* Theme domain variables */
+    --theme-accent-color: #9333EA;
+    --theme-ink-color: #7E22CE;
+    --theme-strong-color: #EFDEFB;
+    --theme-tint-color: #F8F0FD;
+    --theme-border-color: #E0C4F6;
+}
+
+/* Header highlight for Partner */
+.partner-theme .jmix-main-view-top-menu-view-header-box {
+    background-color: var(--theme-strong-color) !important;
+    border-bottom: 1px solid var(--theme-border-color) !important;
+}
+
+.partner-theme .jmix-main-view-top-menu-view-title {
+    color: var(--theme-ink-color) !important;
+    font-weight: 700;
+}
+
+/* Tab menu item selected border for Partner */
+.partner-theme jmix-horizontal-menu::part(item)[selected],
+.partner-theme vaadin-tab[selected] {
+    border-bottom: 2px solid var(--theme-accent-color) !important;
+    color: var(--theme-accent-color) !important;
+}
+
+/* Background tint for the workspace content */
+.partner-theme vaadin-app-layout::part(content) {
+    background-color: var(--theme-tint-color) !important;
+}
+
+/* Vertical indicator for selected row in grid */
+.partner-theme vaadin-grid::part(selected-row-cell) {
+    border-left: 3px solid var(--theme-accent-color) !important;
+}

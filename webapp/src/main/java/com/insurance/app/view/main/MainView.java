@@ -2,6 +2,7 @@ package com.insurance.app.view.main;
 
 import com.google.common.base.Strings;
 import com.insurance.security.entity.User;
+import com.insurance.theme.ModuleTheme;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.avatar.AvatarVariant;
@@ -15,6 +16,7 @@ import io.jmix.flowui.app.main.StandardMainView;
 import io.jmix.flowui.view.Install;
 import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -26,6 +28,69 @@ public class MainView extends StandardMainView {
   @Autowired private Messages messages;
   @Autowired private UiComponents uiComponents;
   @Autowired private CurrentUserSubstitution currentUserSubstitution;
+
+  @Autowired(required = false)
+  private List<ModuleTheme> moduleThemes;
+
+  @Override
+  protected void updateTitle() {
+    super.updateTitle();
+
+    String viewTitle = getTitleFromOpenedView();
+    io.jmix.flowui.component.UiComponentUtils.findComponent(getContent(), "viewHeaderBox")
+        .ifPresent(component -> component.setVisible(!Strings.isNullOrEmpty(viewTitle)));
+
+    // Clean up previous theme classes dynamically
+    getElement().getClassList().stream()
+        .filter(className -> className.endsWith("-theme"))
+        .toList()
+        .forEach(className -> getElement().getClassList().remove(className));
+
+    Component activeView = getContent().getContent();
+    String viewId = getActiveViewId(activeView);
+
+    ModuleTheme activeTheme = null;
+    if (viewId != null && moduleThemes != null) {
+      activeTheme =
+          moduleThemes.stream()
+              .filter(theme -> viewId.startsWith(theme.getModulePrefix() + "_"))
+              .findFirst()
+              .orElse(null);
+    }
+
+    if (activeTheme != null) {
+      getElement().getClassList().add(activeTheme.getThemeClass());
+    }
+
+    final ModuleTheme finalTheme = activeTheme;
+    io.jmix.flowui.component.UiComponentUtils.findComponent(getContent(), "viewHeaderIconContainer")
+        .ifPresent(
+            component -> {
+              com.vaadin.flow.component.html.Div container =
+                  (com.vaadin.flow.component.html.Div) component;
+              container.removeAll();
+              if (finalTheme != null) {
+                Component icon = finalTheme.getHeaderIcon();
+                if (icon != null) {
+                  container.add(icon);
+                  container.setVisible(true);
+                  return;
+                }
+              }
+              container.setVisible(false);
+            });
+  }
+
+  private String getActiveViewId(Component activeView) {
+    if (activeView == null) {
+      return null;
+    }
+    ViewController annotation = activeView.getClass().getAnnotation(ViewController.class);
+    if (annotation == null) {
+      return null;
+    }
+    return annotation.id().isEmpty() ? annotation.value() : annotation.id();
+  }
 
   @Install(to = "userMenu", subject = "buttonRenderer")
   private Component userMenuButtonRenderer(final UserDetails userDetails) {

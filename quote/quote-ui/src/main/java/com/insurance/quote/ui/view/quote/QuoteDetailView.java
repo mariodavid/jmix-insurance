@@ -6,6 +6,8 @@ import com.insurance.product.api.dto.InsuranceProduct;
 import com.insurance.quote.api.dto.QuoteStatus;
 import com.insurance.quote.core.entity.Quote;
 import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.router.Route;
 import io.jmix.core.TimeSource;
@@ -35,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @ViewController(id = "quote_Quote.detail")
 @ViewDescriptor(path = "quote-detail-view.xml")
 @EditedEntityContainer("quoteDc")
+@CssImport("./quote/styles.css")
 public class QuoteDetailView extends StandardDetailView<Quote> {
 
   @Autowired private TimeSource timeSource;
@@ -47,6 +50,10 @@ public class QuoteDetailView extends StandardDetailView<Quote> {
 
   @ViewComponent private EntityComboBox<PartnerDto> partnerComboBox;
 
+  @ViewComponent private TextField firstNameField;
+
+  @ViewComponent private TextField lastNameField;
+
   @ViewComponent private Action calculatePremiumAction;
 
   @Autowired private PartnerService partnerService;
@@ -54,15 +61,19 @@ public class QuoteDetailView extends StandardDetailView<Quote> {
   @Subscribe
   public void onBeforeShow(final BeforeShowEvent event) {
     Quote quote = getEditedEntity();
+
     if (quote.getPartnerNo() != null) {
       PartnerDto partnerDto = partnerService.getPartner(quote.getPartnerNo());
       if (partnerDto != null) {
         partnerComboBox.setValue(partnerDto);
+        firstNameField.setValue(partnerDto.getFirstName() != null ? partnerDto.getFirstName() : "");
+        lastNameField.setValue(partnerDto.getLastName() != null ? partnerDto.getLastName() : "");
       }
     }
 
     if (quote.getStatus() != QuoteStatus.PENDING) {
       setReadOnly(true);
+      partnerComboBox.setReadOnly(true);
       calculatePremiumAction.setEnabled(false);
     } else if (quote.getCalculatedPremium() != null) {
       saveAndCloseButton.setEnabled(true);
@@ -139,8 +150,12 @@ public class QuoteDetailView extends StandardDetailView<Quote> {
     PartnerDto value = event.getValue();
     if (value != null) {
       getEditedEntity().setPartnerNo(value.getPartnerNo());
+      firstNameField.setValue(value.getFirstName() != null ? value.getFirstName() : "");
+      lastNameField.setValue(value.getLastName() != null ? value.getLastName() : "");
     } else {
       getEditedEntity().setPartnerNo(null);
+      firstNameField.setValue("");
+      lastNameField.setValue("");
     }
   }
 }

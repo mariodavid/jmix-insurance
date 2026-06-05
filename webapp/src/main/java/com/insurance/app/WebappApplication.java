@@ -26,7 +26,7 @@ import org.springframework.core.env.Environment;
 
 @Push
 @Theme(value = "webapp")
-@PWA(name = "Insurance App", shortName = "Insurance App", offline = false)
+@PWA(name = "Jmix Insurance", shortName = "Jmix Insurance", offline = false)
 @JmixModule(
     dependsOn = {
       io.jmix.eclipselink.EclipselinkConfiguration.class,

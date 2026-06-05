@@ -1,0 +1,33 @@
+plugins {
+    id 'io.jmix' version '2.8.1'
+    id 'java-library'
+    id 'maven-publish'
+}
+
+group = 'com.insurance.theme'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven {
+        url = 'https://global.repo.jmix.io/repository/public'
+    }
+}
+
+dependencies {
+    implementation 'io.jmix.flowui:jmix-flowui-starter'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}

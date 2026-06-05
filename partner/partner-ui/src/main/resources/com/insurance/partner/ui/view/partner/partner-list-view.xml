@@ -13,17 +13,21 @@
     <facets>
         <dataLoadCoordinator auto="true"/>
         <urlQueryParameters>
+            <genericFilter component="genericFilter"/>
             <pagination component="pagination"/>
         </urlQueryParameters>
     </facets>
     <layout>
-        <hbox id="buttonsPanel" classNames="buttons-panel">
-            <button id="createButton" action="partnersDataGrid.create"/>
+        <genericFilter id="genericFilter" dataLoader="partnersDl">
+            <properties include=".*"/>
+        </genericFilter>
+        <hbox id="buttonsPanel" classNames="buttons-panel align-items-center mb-s">
+            <button id="createButton" action="partnersDataGrid.create" themeNames="primary"/>
             <button id="editButton" action="partnersDataGrid.edit"/>
             <button id="removeButton" action="partnersDataGrid.remove"/>
-            <simplePagination id="pagination" dataLoader="partnersDl"/>
+            <simplePagination id="pagination" dataLoader="partnersDl" classNames="ms-auto"/>
         </hbox>
-        <dataGrid id="partnersDataGrid" dataContainer="partnersDc" width="100%" height="100%">
+        <dataGrid id="partnersDataGrid" dataContainer="partnersDc" width="100%" height="100%" classNames="theme-grid">
             <actions>
                 <action id="create" type="list_create"/>
                 <action id="edit" type="list_edit"/>

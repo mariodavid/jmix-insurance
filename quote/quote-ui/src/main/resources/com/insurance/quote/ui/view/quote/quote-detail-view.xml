@@ -18,38 +18,66 @@
         <action id="closeAction" type="detail_close"/>
     </actions>
     <layout>
-        <formLayout id="form" dataContainer="quoteDc">
-            <responsiveSteps>
-                <responsiveStep minWidth="0" columns="1"/>
-                <responsiveStep minWidth="40em" columns="2"/>
-            </responsiveSteps>
-            <textField id="quoteNoField" property="quoteNo" readOnly="true"/>
-            <datePicker id="validFromField" property="validFrom"/>
-            <datePicker id="validUntilField" property="validUntil"/>
-            <hr colspan="2"/>
-            <entityComboBox id="partnerComboBox" label="msg://com.insurance.quote.ui.view.quote/partnerComboBox.label" metaClass="partner_api_PartnerDto" required="true">
-                <actions>
-                    <action id="entityClear" type="entity_clear"/>
-                </actions>
-            </entityComboBox>
-            <hr colspan="2"/>
-            <select id="productTypeField" property="productType"/>
-            <select id="productVariantField" property="productVariant"/>
-            <datePicker id="effectiveDateField" property="effectiveDate"/>
-            <integerField id="squareMetersField" property="squareMeters"/>
-            <select id="paymentFrequencyField" property="paymentFrequency"/>
-            <hr colspan="2"/>
-            <select id="insuranceProductField" property="insuranceProduct" readOnly="true"/>
-            <textField id="calculatedPremiumField" property="calculatedPremium" readOnly="true">
-                <suffix>
-                    <span text="EUR"/>
-                </suffix>
-            </textField>
-            <hr colspan="2"/>
-        </formLayout>
-        <hbox id="detailActions">
+        <hbox width="100%" gap="true">
+            <!-- Left Column: Quote Details -->
+            <details id="quoteDetails" themeNames="filled" summaryText="msg://quoteDetailsCard.title" width="100%" opened="true">
+                <formLayout id="form" dataContainer="quoteDc">
+                    <responsiveSteps>
+                        <responsiveStep minWidth="0" columns="1"/>
+                        <responsiveStep minWidth="30em" columns="2"/>
+                    </responsiveSteps>
+                    <select id="insuranceProductField" property="insuranceProduct" readOnly="true"/>
+                    <textField id="quoteNoField" property="quoteNo" readOnly="true"/>
+                    <select id="statusField" property="status" readOnly="true"/>
+                    <datePicker id="effectiveDateField" property="effectiveDate"/>
+                    <integerField id="squareMetersField" property="squareMeters"/>
+                    <textField id="calculatedPremiumField" property="calculatedPremium" readOnly="true">
+                        <suffix>
+                            <span text="EUR"/>
+                        </suffix>
+                    </textField>
+                    
+                    <select id="productTypeField" property="productType"/>
+                    <select id="productVariantField" property="productVariant"/>
+                    <select id="paymentFrequencyField" property="paymentFrequency"/>
+                    <datePicker id="validFromField" property="validFrom"/>
+                    <datePicker id="validUntilField" property="validUntil"/>
+                </formLayout>
+            </details>
+
+            <!-- Right Column: Applicant & Created Policy -->
+            <vbox padding="false" width="300px" height="100%" expand="createdPolicyDetails">
+                <!-- Applicant Card -->
+                <details id="applicantDetails" themeNames="filled" summaryText="msg://applicantCard.title" width="100%" opened="true">
+                    <formLayout>
+                        <responsiveSteps>
+                            <responsiveStep minWidth="0" columns="1"/>
+                        </responsiveSteps>
+                        <entityComboBox id="partnerComboBox" label="msg://com.insurance.quote.ui.view.quote/partnerComboBox.label" metaClass="partner_api_PartnerDto" required="true">
+                            <actions>
+                                <action id="entityClear" type="entity_clear"/>
+                            </actions>
+                        </entityComboBox>
+                        <textField id="firstNameField" label="msg://firstName.label" readOnly="true"/>
+                        <textField id="lastNameField" label="msg://lastName.label" readOnly="true"/>
+                    </formLayout>
+                </details>
+
+                <!-- Created Policy Card -->
+                <details id="createdPolicyDetails" themeNames="filled" summaryText="msg://createdPolicyCard.title" width="100%" opened="true" height="100%">
+                    <formLayout dataContainer="quoteDc">
+                        <responsiveSteps>
+                            <responsiveStep minWidth="0" columns="1"/>
+                        </responsiveSteps>
+                        <textField id="createdPolicyNoField" property="createdPolicyNo" readOnly="true"/>
+                    </formLayout>
+                </details>
+            </vbox>
+        </hbox>
+
+        <hbox id="detailActions" classNames="mt-m">
             <button id="calculatePremium" action="calculatePremiumAction"/>
-            <button id="saveAndCloseButton" action="saveAction" enabled="false"/>
+            <button id="saveAndCloseButton" action="saveAction" enabled="false" themeNames="primary"/>
             <button id="closeButton" action="closeAction"/>
         </hbox>
     </layout>

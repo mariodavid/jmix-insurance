@@ -4,6 +4,7 @@ import com.insurance.quote.api.dto.QuoteDto;
 import com.insurance.quote.api.dto.QuoteStatus;
 import com.insurance.quote.api.service.QuoteService;
 import com.insurance.quote.core.entity.Quote;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.data.selection.SelectionEvent;
 import com.vaadin.flow.router.Route;
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @ViewDescriptor(path = "quote-list-view.xml")
 @LookupComponent("quotesDataGrid")
 @DialogMode(width = "64em")
+@CssImport("./quote/styles.css")
 public class QuoteListView extends StandardListView<Quote> {
 
   @ViewComponent private DataGrid<Quote> quotesDataGrid;

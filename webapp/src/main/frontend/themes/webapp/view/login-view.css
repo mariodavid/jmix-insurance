@@ -1,5 +1,35 @@
 /* Predefined styles for the LoginView */
 
 .jmix-login-main-layout {
-  background-color: var(--lumo-shade-5pct);
+  background: radial-gradient(circle at top left, var(--lumo-primary-color-10pct), transparent),
+              radial-gradient(circle at bottom right, var(--lumo-primary-color-10pct), transparent),
+              var(--lumo-shade-5pct);
+}
+
+.login-card {
+  background: var(--lumo-base-color);
+  padding: var(--lumo-space-xl) !important;
+  border-radius: var(--lumo-border-radius-l);
+  box-shadow: var(--lumo-box-shadow-l);
+  border: 1px solid var(--lumo-contrast-10pct);
+}
+
+.login-brand {
+  margin-bottom: var(--lumo-space-s);
+}
+
+.login-app-title {
+  font-size: var(--lumo-font-size-xl);
+  font-weight: 700;
+  color: var(--lumo-header-text-color);
+}
+
+/* Hide default vaadin login form title */
+vaadin-login-form::part(form-title) {
+  display: none !important;
+}
+
+/* Style default vaadin login form layout to fit cleanly in our card */
+vaadin-login-form {
+  padding: 0 !important;
 }

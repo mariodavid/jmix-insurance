@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <menu-config xmlns="http://jmix.io/schema/flowui/menu">
 
-    <menu id="policy" title="msg://com.insurance.policy.ui/menu.addon">
-        <item view="policy_Policy.list"/>
-    </menu>
+    <item view="policy_Policy.list" icon="SHIELD" classNames="policy-menu-item"/>
 
 </menu-config>

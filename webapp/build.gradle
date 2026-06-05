@@ -50,6 +50,8 @@ dependencies {
     implementation 'com.insurance.partner:partner-ui-starter:0.0.1-SNAPSHOT'
     implementation 'com.insurance.partner:partner-api-starter:0.0.1-SNAPSHOT'
 
+    implementation 'com.insurance.theme:theme:0.0.1-SNAPSHOT'
+
     implementation 'com.insurance.product:product-core-starter:0.0.1-SNAPSHOT'
     implementation 'com.insurance.product:product-api-starter:0.0.1-SNAPSHOT'
 

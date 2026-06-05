@@ -29,9 +29,31 @@ vaadin-app-layout.jmix-main-view-top-menu-app-layout::part(navbar) {
   margin: 0 var(--lumo-space-m);
 }
 
-.jmix-main-view-top-menu-logo {
-  width: var(--lumo-size-m);
-  height: var(--lumo-size-m);
+.app-logo-box {
+  background-color: var(--lumo-primary-color);
+  border-radius: 7px;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.25s ease;
+  box-shadow: var(--lumo-box-shadow-xs);
+}
+
+.app-logo-glyph {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  background-color: #ffffff;
+  -webkit-mask-image: url('../icons/app-logo-glyph.svg');
+  mask-image: url('../icons/app-logo-glyph.svg');
+  -webkit-mask-size: 28px 28px;
+  mask-size: 28px 28px;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
 }
 
 .jmix-main-view-top-menu-user-box {
@@ -42,13 +64,71 @@ vaadin-app-layout.jmix-main-view-top-menu-app-layout::part(navbar) {
 }
 
 .jmix-main-view-top-menu-view-header-box {
-  border-bottom: 1px solid var(--lumo-contrast-10pct);
-  padding: 0;
   width: 100%;
+  transition: background-color 0.25s ease, border-color 0.25s ease !important;
+  padding: var(--lumo-space-xs) 0 !important;
+  border-bottom: 1px solid var(--lumo-contrast-10pct);
 }
 
 .jmix-main-view-top-menu-view-title {
   font-size: var(--lumo-font-size-l);
   margin: var(--lumo-space-s) var(--lumo-space-m);
 }
+
+/* Active navigation item selected border highlights */
+jmix-horizontal-menu::part(item)[selected],
+vaadin-tab[selected] {
+    font-weight: bold !important;
+}
+
+/* Active navigation item selected color highlights */
+jmix-horizontal-menu::part(item)[selected]:has(.account-menu-item),
+jmix-horizontal-menu::part(item)[selected]:has(.account-menu-item) vaadin-icon {
+    color: #0D9488 !important;
+}
+jmix-horizontal-menu::part(item)[selected]:has(.account-menu-item) {
+    border-bottom: 2px solid #0D9488 !important;
+}
+
+jmix-horizontal-menu::part(item)[selected]:has(.quote-menu-item),
+jmix-horizontal-menu::part(item)[selected]:has(.quote-menu-item) vaadin-icon {
+    color: #D97706 !important;
+}
+jmix-horizontal-menu::part(item)[selected]:has(.quote-menu-item) {
+    border-bottom: 2px solid #D97706 !important;
+}
+
+jmix-horizontal-menu::part(item)[selected]:has(.policy-menu-item),
+jmix-horizontal-menu::part(item)[selected]:has(.policy-menu-item) vaadin-icon {
+    color: #4F46E5 !important;
+}
+jmix-horizontal-menu::part(item)[selected]:has(.policy-menu-item) {
+    border-bottom: 2px solid #4F46E5 !important;
+}
+
+jmix-horizontal-menu::part(item)[selected]:has(.partner-menu-item),
+jmix-horizontal-menu::part(item)[selected]:has(.partner-menu-item) vaadin-icon {
+    color: #9333EA !important;
+}
+jmix-horizontal-menu::part(item)[selected]:has(.partner-menu-item) {
+    border-bottom: 2px solid #9333EA !important;
+}
+
+jmix-horizontal-menu::part(item)[selected]:has(.security-menu-item),
+jmix-horizontal-menu::part(item)[selected]:has(.security-menu-item) vaadin-icon {
+    color: var(--lumo-primary-color) !important;
+}
+jmix-horizontal-menu::part(item)[selected]:has(.security-menu-item) {
+    border-bottom: 2px solid var(--lumo-primary-color) !important;
+}
+
+/* Make horizontal menu icons smaller */
+jmix-horizontal-menu vaadin-icon,
+jmix-horizontal-menu::part(item) vaadin-icon {
+    width: 15px !important;
+    height: 15px !important;
+    margin-right: var(--lumo-space-xs) !important;
+}
+
+
 

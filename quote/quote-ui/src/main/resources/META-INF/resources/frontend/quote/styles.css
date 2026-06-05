@@ -1,0 +1,38 @@
+.quote-theme {
+    /* Lumo primary color overrides */
+    --lumo-primary-color: #D97706;
+    --lumo-primary-text-color: #D97706;
+    --lumo-primary-color-50pct: rgba(217, 119, 6, 0.5);
+    --lumo-primary-color-10pct: rgba(217, 119, 6, 0.1);
+    --lumo-primary-contrast-color: #FFFFFF;
+
+    /* Theme domain variables */
+    --theme-accent-color: #D97706;
+    --theme-ink-color: #B45309;
+    --theme-strong-color: #FAE7C9;
+    --theme-tint-color: #FDF6EA;
+    --theme-border-color: #EFD299;
+}
+
+/* Header highlight for Quote */
+.quote-theme .jmix-main-view-top-menu-view-header-box {
+    background-color: var(--theme-strong-color) !important;
+    border-bottom: 1px solid var(--theme-border-color) !important;
+}
+
+.quote-theme .jmix-main-view-top-menu-view-title {
+    color: var(--theme-ink-color) !important;
+    font-weight: 700;
+}
+
+/* Tab menu item selected border for Quote */
+.quote-theme jmix-horizontal-menu::part(item)[selected],
+.quote-theme vaadin-tab[selected] {
+    border-bottom: 2px solid var(--theme-accent-color) !important;
+    color: var(--theme-accent-color) !important;
+}
+
+/* Background tint for the workspace content */
+.quote-theme vaadin-app-layout::part(content) {
+    background-color: var(--theme-tint-color) !important;
+}

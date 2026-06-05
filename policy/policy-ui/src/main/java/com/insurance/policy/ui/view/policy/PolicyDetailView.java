@@ -5,6 +5,7 @@ import com.insurance.partner.api.dto.PartnerDto;
 import com.insurance.partner.api.service.PartnerService;
 import com.insurance.policy.core.entity.Policy;
 import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
@@ -31,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @ViewController(id = "policy_Policy.detail")
 @ViewDescriptor(path = "policy-detail-view.xml")
 @EditedEntityContainer("policyDc")
+@CssImport("./policy/styles.css")
 public class PolicyDetailView extends StandardDetailView<Policy> {
 
   private static final Logger log = LoggerFactory.getLogger(PolicyDetailView.class);
