@@ -45,8 +45,8 @@
             <actions>
                 <action id="createAction" type="list_create"/>
                 <action id="editAction" type="list_edit"/>
-                <action id="rejectAction" text="msg://reject" type="list_itemTracking" icon="BAN"/>
-                <action id="acceptAction" text="msg://accept" type="list_itemTracking" icon="CHECK_CIRCLE"/>
+                <action id="rejectAction" text="msg://reject" icon="BAN" enabled="false"/>
+                <action id="acceptAction" text="msg://accept" icon="CHECK_CIRCLE" enabled="false"/>
             </actions>
             <columns resizable="true">
                 <column property="quoteNo"/>

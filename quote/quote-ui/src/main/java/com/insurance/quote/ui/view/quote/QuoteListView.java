@@ -1,8 +1,11 @@
 package com.insurance.quote.ui.view.quote;
 
 import com.insurance.quote.api.dto.QuoteDto;
+import com.insurance.quote.api.dto.QuoteStatus;
 import com.insurance.quote.api.service.QuoteService;
 import com.insurance.quote.core.entity.Quote;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.data.selection.SelectionEvent;
 import com.vaadin.flow.router.Route;
 import io.jmix.core.Id;
 import io.jmix.flowui.Notifications;
@@ -34,6 +37,25 @@ public class QuoteListView extends StandardListView<Quote> {
 
   @ViewComponent private MessageBundle messageBundle;
 
+  @Subscribe
+  public void onBeforeShow(final BeforeShowEvent event) {
+    updateActionsState();
+  }
+
+  @Subscribe("quotesDataGrid")
+  public void onQuotesDataGridSelection(final SelectionEvent<Grid<Quote>, Quote> event) {
+    updateActionsState();
+  }
+
+  private void updateActionsState() {
+    Quote quote = quotesDataGrid.getSingleSelectedItem();
+    boolean isPending = quote != null && quote.getStatus() == QuoteStatus.PENDING;
+    boolean hasPremium = quote != null && quote.getCalculatedPremium() != null;
+
+    quotesDataGrid.getAction("acceptAction").setEnabled(isPending && hasPremium);
+    quotesDataGrid.getAction("rejectAction").setEnabled(isPending);
+  }
+
   @Subscribe("quotesDataGrid.rejectAction")
   public void onQuotesDataGridRejectAction(final ActionPerformedEvent event) {
     Quote quote = quotesDataGrid.getSingleSelectedItem();
@@ -46,6 +68,7 @@ public class QuoteListView extends StandardListView<Quote> {
           .withType(Notifications.Type.SUCCESS)
           .show();
       getViewData().loadAll();
+      updateActionsState();
     }
   }
 
@@ -62,6 +85,7 @@ public class QuoteListView extends StandardListView<Quote> {
           .withType(Notifications.Type.SUCCESS)
           .show();
       getViewData().loadAll();
+      updateActionsState();
     }
   }
 }

@@ -186,7 +186,7 @@ public class ArchitectureRules {
     Path fileName = userDir.getFileName();
     if (fileName != null
         && List.of(
-                "insurance-app",
+                "webapp",
                 "quote",
                 "partner",
                 "policy",

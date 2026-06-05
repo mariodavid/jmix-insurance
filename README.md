@@ -26,7 +26,7 @@ A modular insurance management demo application built with [Jmix 2](https://www.
 
 ```
 jmix-insurance/
-├── insurance-app/      ← Runnable Spring Boot application
+├── webapp/             ← Runnable Spring Boot application
 ├── common/             ← Shared base entity + test utilities
 ├── security/           ← Security API, core, UI, and starters
 ├── partner/            ← Partner API, core, UI, and starters
@@ -48,7 +48,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for a detailed description of the module 
 ### Run the Application
 
 ```bash
-./gradlew :insurance-app:bootRun
+./gradlew :webapp:bootRun
 ```
 
 The application starts at `http://localhost:8080`.  
@@ -59,7 +59,7 @@ The embedded HSQLDB database is stored under `.jmix/hsqldb/` in the project root
 ### Run the Tests
 
 ```bash
-./gradlew :insurance-app:test
+./gradlew :webapp:test
 ```
 
 Run all module tests plus Checkstyle, SpotBugs and aggregate JaCoCo coverage from the root composite build:
@@ -84,6 +84,6 @@ Run the same checks from a clean workspace:
 
 ## Development
 
-The project follows the Jmix composite build pattern. Each domain add-on can be opened and built independently. The `insurance-app` assembles all add-ons at runtime by including their `*-starter` artifacts.
+The project follows the Jmix composite build pattern. Each domain add-on can be opened and built independently. The `webapp` assembles all add-ons at runtime by including their `*-starter` artifacts.
 
 Coding guidelines and skill routing are documented in [CLAUDE.md](CLAUDE.md).

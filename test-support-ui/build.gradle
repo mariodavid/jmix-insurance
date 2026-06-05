@@ -1,0 +1,30 @@
+plugins {
+    id 'java-library'
+}
+
+group = 'com.insurance.testsupportui'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven {
+        url = 'https://global.repo.jmix.io/repository/public'
+    }
+}
+
+dependencies {
+    api platform("io.jmix.bom:jmix-bom:2.8.1")
+    api 'io.jmix.core:jmix-core-starter'
+    api 'io.jmix.flowui:jmix-flowui-starter'
+    api 'io.jmix.flowui:jmix-flowui-test-assist'
+    api 'org.assertj:assertj-core:3.24.2'
+    api('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}

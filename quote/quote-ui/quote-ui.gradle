@@ -21,6 +21,7 @@ dependencies {
     testImplementation 'com.insurance.quote:quote-core-starter:0.0.1-SNAPSHOT'
     testImplementation 'com.insurance.policy:policy-api-starter:0.0.1-SNAPSHOT'
     testImplementation 'com.insurance.testsupport:test-support:0.0.1-SNAPSHOT'
+    testImplementation 'com.insurance.testsupportui:test-support-ui:0.0.1-SNAPSHOT'
     testImplementation testFixtures('com.insurance.quote:quote-core:0.0.1-SNAPSHOT')
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

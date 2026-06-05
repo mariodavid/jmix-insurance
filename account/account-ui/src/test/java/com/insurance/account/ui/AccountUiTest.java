@@ -1,18 +1,18 @@
 package com.insurance.account.ui;
 
 import static com.insurance.account.core.test_support.Assertions.assertThat;
-import static com.insurance.account.core.test_support.Assertions.assertThatThrownBy;
 
 import com.insurance.account.core.entity.Account;
 import com.insurance.account.core.entity.AccountDocument;
 import com.insurance.account.core.service.AccountServiceCore;
 import com.insurance.account.ui.view.account.AccountDetailView;
 import com.insurance.account.ui.view.account.AccountListView;
+import com.insurance.common.test_support_ui.DataGridInteractions;
+import com.insurance.common.test_support_ui.UiTestSupport;
+import com.insurance.common.test_support_ui.ViewInteractions;
 import com.insurance.product.api.dto.PaymentFrequency;
 import io.jmix.core.DataManager;
 import io.jmix.flowui.ViewNavigators;
-import io.jmix.flowui.component.grid.DataGrid;
-import io.jmix.flowui.data.grid.DataGridItems;
 import io.jmix.flowui.kit.component.button.JmixButton;
 import io.jmix.flowui.testassist.FlowuiTestAssistConfiguration;
 import io.jmix.flowui.testassist.UiTest;
@@ -61,12 +61,13 @@ class AccountUiTest {
         POLICY_ID, "HC-2025-000065", COVERAGE_START, PREMIUM, PaymentFrequency.YEARLY);
 
     // when
-    viewNavigators.view(UiTestUtils.getCurrentView(), AccountListView.class).navigate();
+    ViewInteractions viewInteractions = ViewInteractions.forNavigation(viewNavigators);
+    AccountListView listView = viewInteractions.navigate(AccountListView.class);
 
     // then
-    AccountListView listView = UiTestUtils.getCurrentView();
-    DataGrid<Account> accountsDataGrid = UiTestUtils.getComponent(listView, "accountsDataGrid");
-    assertThat(gridItems(accountsDataGrid))
+    DataGridInteractions<Account> accountsDataGrid =
+        DataGridInteractions.of(listView, Account.class, "accountsDataGrid");
+    assertThat(accountsDataGrid.items())
         .anySatisfy(
             account -> {
               assertThat(account)
@@ -85,16 +86,17 @@ class AccountUiTest {
     Account reloaded = dataManager.load(Account.class).id(account.getId()).one();
 
     // when
+    ViewInteractions viewInteractions = ViewInteractions.forNavigation(viewNavigators);
     viewNavigators
         .detailView(UiTestUtils.getCurrentView(), Account.class)
         .editEntity(reloaded)
         .navigate();
 
     // then
-    AccountDetailView detailView = UiTestUtils.getCurrentView();
-    DataGrid<AccountDocument> documentsDataGrid =
-        UiTestUtils.getComponent(detailView, "documentsDataGrid");
-    List<AccountDocument> documents = gridItems(documentsDataGrid);
+    AccountDetailView detailView = viewInteractions.findOpenView(AccountDetailView.class);
+    DataGridInteractions<AccountDocument> documentsDataGrid =
+        DataGridInteractions.of(detailView, AccountDocument.class, "documentsDataGrid");
+    List<AccountDocument> documents = documentsDataGrid.items();
 
     assertThat(documents).hasSize(4);
     assertThat(documents)
@@ -108,20 +110,13 @@ class AccountUiTest {
 
   @Test
   void given_accountListView_when_opened_then_manualAccountCreationIsNotOffered() {
-    viewNavigators.view(UiTestUtils.getCurrentView(), AccountListView.class).navigate();
-
-    AccountListView listView = UiTestUtils.getCurrentView();
-    JmixButton readButton = UiTestUtils.getComponent(listView, "readButton");
+    ViewInteractions viewInteractions = ViewInteractions.forNavigation(viewNavigators);
+    AccountListView listView = viewInteractions.navigate(AccountListView.class);
+    JmixButton readButton = UiTestSupport.findButtonByText(listView, "Read");
 
     assertThat(readButton).isNotNull();
-    assertThatThrownBy(() -> UiTestUtils.getComponent(listView, "createButton"))
-        .isInstanceOf(IllegalArgumentException.class);
+    JmixButton createButton = UiTestSupport.findButtonByText(listView, "Create");
+    assertThat(createButton).isNull();
     assertThat(dataManager.load(Account.class).all().list()).isEmpty();
-  }
-
-  private <T> List<T> gridItems(DataGrid<T> dataGrid) {
-    DataGridItems<T> items = dataGrid.getItems();
-    assertThat(items).isNotNull();
-    return items.getItems().stream().toList();
   }
 }

@@ -11,6 +11,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.insurance.common.test_support.EntityTestData;
+import com.insurance.common.test_support_ui.DataGridInteractions;
+import com.insurance.common.test_support_ui.FormInteractions;
+import com.insurance.common.test_support_ui.UiTestSupport;
+import com.insurance.common.test_support_ui.ViewInteractions;
 import com.insurance.partner.api.dto.PartnerDto;
 import com.insurance.partner.api.service.PartnerService;
 import com.insurance.policy.api.dto.PolicyDto;
@@ -25,17 +29,12 @@ import com.insurance.quote.ui.view.quote.QuoteDetailView;
 import com.insurance.quote.ui.view.quote.QuoteListView;
 import com.vaadin.flow.data.provider.Query;
 import io.jmix.core.DataManager;
+import io.jmix.core.Messages;
 import io.jmix.core.Metadata;
 import io.jmix.core.MetadataTools;
 import io.jmix.flowui.Notifications;
 import io.jmix.flowui.ViewNavigators;
 import io.jmix.flowui.component.combobox.EntityComboBox;
-import io.jmix.flowui.component.datepicker.TypedDatePicker;
-import io.jmix.flowui.component.grid.DataGrid;
-import io.jmix.flowui.component.select.JmixSelect;
-import io.jmix.flowui.component.textfield.JmixIntegerField;
-import io.jmix.flowui.component.textfield.TypedTextField;
-import io.jmix.flowui.data.grid.DataGridItems;
 import io.jmix.flowui.kit.component.button.JmixButton;
 import io.jmix.flowui.testassist.FlowuiTestAssistConfiguration;
 import io.jmix.flowui.testassist.UiTest;
@@ -80,6 +79,8 @@ class QuoteUiTest {
 
   @Autowired private MetadataTools metadataTools;
 
+  @Autowired private Messages messages;
+
   @BeforeEach
   void setUp() {
     reset(policyService, partnerService);
@@ -102,41 +103,29 @@ class QuoteUiTest {
     when(partnerService.findPartners(anyString(), anyInt(), anyInt())).thenReturn(List.of(partner));
     when(partnerService.getPartner("PT-00001")).thenReturn(partner);
 
-    viewNavigators.view(UiTestUtils.getCurrentView(), QuoteListView.class).navigate();
-    QuoteListView listView = UiTestUtils.getCurrentView();
-    JmixButton createButton = UiTestUtils.getComponent(listView, "createButton");
+    ViewInteractions viewInteractions = ViewInteractions.forNavigation(viewNavigators);
+    QuoteListView listView = viewInteractions.navigate(QuoteListView.class);
+    JmixButton createButton = UiTestSupport.findButtonByText(listView, "Create");
+    assertThat(createButton).isNotNull();
     createButton.click();
 
     // when
-    QuoteDetailView detailView = UiTestUtils.getCurrentView();
+    QuoteDetailView detailView = viewInteractions.findOpenView(QuoteDetailView.class);
 
-    EntityComboBox<PartnerDto> partnerComboBox =
-        UiTestUtils.getComponent(detailView, "partnerComboBox");
-    partnerComboBox.setValue(partner);
+    FormInteractions form = FormInteractions.of(detailView);
+    form.setFieldValueByLabel("Partner", partner);
+    form.setFieldValueByLabel("Product Type", ProductType.HOME_CONTENT);
+    form.setFieldValueByLabel("Product Variant", ProductVariant.SMALL);
+    form.setFieldValueByLabel("Payment Frequency", PaymentFrequency.YEARLY);
+    form.setFieldValueByLabel("Effective Date", LocalDate.of(2025, 1, 1));
+    form.setFieldValueByLabel("Square Meters", 60);
 
-    JmixSelect<ProductType> productTypeField =
-        UiTestUtils.getComponent(detailView, "productTypeField");
-    productTypeField.setValue(ProductType.HOME_CONTENT);
-
-    JmixSelect<ProductVariant> productVariantField =
-        UiTestUtils.getComponent(detailView, "productVariantField");
-    productVariantField.setValue(ProductVariant.SMALL);
-
-    JmixSelect<PaymentFrequency> paymentFrequencyField =
-        UiTestUtils.getComponent(detailView, "paymentFrequencyField");
-    paymentFrequencyField.setValue(PaymentFrequency.YEARLY);
-
-    TypedDatePicker<LocalDate> effectiveDateField =
-        UiTestUtils.getComponent(detailView, "effectiveDateField");
-    effectiveDateField.setValue(LocalDate.of(2025, 1, 1));
-
-    JmixIntegerField squareMetersField = UiTestUtils.getComponent(detailView, "squareMetersField");
-    squareMetersField.setValue(60);
-
-    JmixButton calculateButton = UiTestUtils.getComponent(detailView, "calculatePremium");
+    JmixButton calculateButton = UiTestSupport.findButtonByText(detailView, "Calculate Premium");
+    assertThat(calculateButton).isNotNull();
     calculateButton.click();
 
-    JmixButton saveAndCloseButton = UiTestUtils.getComponent(detailView, "saveAndCloseButton");
+    JmixButton saveAndCloseButton = UiTestSupport.findButtonByText(detailView, "OK");
+    assertThat(saveAndCloseButton).isNotNull();
     saveAndCloseButton.click();
 
     // then
@@ -146,88 +135,74 @@ class QuoteUiTest {
     assertThat(saved.getValidUntil()).isNotNull();
     assertThat(saved.getValidFrom()).isBefore(saved.getValidUntil());
 
-    QuoteListView navigatedListView = UiTestUtils.getCurrentView();
-    DataGrid<Quote> quotesDataGrid = UiTestUtils.getComponent(navigatedListView, "quotesDataGrid");
-    assertThat(gridItems(quotesDataGrid))
+    QuoteListView navigatedListView = viewInteractions.findOpenView(QuoteListView.class);
+    DataGridInteractions<Quote> quotesDataGrid =
+        DataGridInteractions.of(navigatedListView, Quote.class, "quotesDataGrid");
+    assertThat(quotesDataGrid.items())
         .anySatisfy(q -> assertThat(q.getId()).isEqualTo(saved.getId()));
   }
 
   @Test
   void given_quoteDetailView_when_premiumCalculated_then_calculatedPremiumIsSetAndSaveEnabled() {
     // given
-    viewNavigators.view(UiTestUtils.getCurrentView(), QuoteListView.class).navigate();
-    QuoteListView listView = UiTestUtils.getCurrentView();
-    JmixButton createButton = UiTestUtils.getComponent(listView, "createButton");
+    ViewInteractions viewInteractions = ViewInteractions.forNavigation(viewNavigators);
+    QuoteListView listView = viewInteractions.navigate(QuoteListView.class);
+    JmixButton createButton = UiTestSupport.findButtonByText(listView, "Create");
+    assertThat(createButton).isNotNull();
     createButton.click();
 
-    QuoteDetailView detailView = UiTestUtils.getCurrentView();
+    QuoteDetailView detailView = viewInteractions.findOpenView(QuoteDetailView.class);
 
-    JmixSelect<ProductType> productTypeField =
-        UiTestUtils.getComponent(detailView, "productTypeField");
-    productTypeField.setValue(ProductType.HOME_CONTENT);
-
-    JmixSelect<ProductVariant> productVariantField =
-        UiTestUtils.getComponent(detailView, "productVariantField");
-    productVariantField.setValue(ProductVariant.SMALL);
-
-    TypedDatePicker<LocalDate> effectiveDateField =
-        UiTestUtils.getComponent(detailView, "effectiveDateField");
-    effectiveDateField.setValue(LocalDate.of(2025, 1, 1));
-
-    JmixIntegerField squareMetersField = UiTestUtils.getComponent(detailView, "squareMetersField");
-    squareMetersField.setValue(60);
+    FormInteractions form = FormInteractions.of(detailView);
+    form.setFieldValueByLabel("Product Type", ProductType.HOME_CONTENT);
+    form.setFieldValueByLabel("Product Variant", ProductVariant.SMALL);
+    form.setFieldValueByLabel("Effective Date", LocalDate.of(2025, 1, 1));
+    form.setFieldValueByLabel("Square Meters", 60);
 
     // when
-    JmixButton calculateButton = UiTestUtils.getComponent(detailView, "calculatePremium");
+    JmixButton calculateButton = UiTestSupport.findButtonByText(detailView, "Calculate Premium");
+    assertThat(calculateButton).isNotNull();
     calculateButton.click();
 
     // then
-    JmixButton saveAndCloseButton = UiTestUtils.getComponent(detailView, "saveAndCloseButton");
+    JmixButton saveAndCloseButton = UiTestSupport.findButtonByText(detailView, "OK");
+    assertThat(saveAndCloseButton).isNotNull();
     assertThat(saveAndCloseButton.isEnabled()).isTrue();
 
-    TypedTextField<BigDecimal> premiumField =
-        UiTestUtils.getComponent(detailView, "calculatedPremiumField");
-    assertThat(premiumField.getTypedValue()).isNotNull();
-    assertThat(premiumField.getTypedValue().compareTo(BigDecimal.ZERO)).isGreaterThan(0);
+    Object premiumVal = form.getFieldValueByLabel("Calculated Premium");
+    assertThat(premiumVal).isNotNull();
+    assertThat(((BigDecimal) premiumVal).compareTo(BigDecimal.ZERO)).isGreaterThan(0);
   }
 
   @Test
   void given_quoteDetailView_when_noMatchingProductFound_then_saveRemainsDisabled() {
     // given
-    viewNavigators.view(UiTestUtils.getCurrentView(), QuoteListView.class).navigate();
-    QuoteListView listView = UiTestUtils.getCurrentView();
-    JmixButton createButton = UiTestUtils.getComponent(listView, "createButton");
+    ViewInteractions viewInteractions = ViewInteractions.forNavigation(viewNavigators);
+    QuoteListView listView = viewInteractions.navigate(QuoteListView.class);
+    JmixButton createButton = UiTestSupport.findButtonByText(listView, "Create");
+    assertThat(createButton).isNotNull();
     createButton.click();
 
-    QuoteDetailView detailView = UiTestUtils.getCurrentView();
+    QuoteDetailView detailView = viewInteractions.findOpenView(QuoteDetailView.class);
 
-    JmixSelect<ProductType> productTypeField =
-        UiTestUtils.getComponent(detailView, "productTypeField");
-    productTypeField.setValue(ProductType.HOME_CONTENT);
-
-    JmixSelect<ProductVariant> productVariantField =
-        UiTestUtils.getComponent(detailView, "productVariantField");
-    productVariantField.setValue(ProductVariant.SMALL);
-
-    // Datum vor gültigem Produktzeitraum — kein Produkt gefunden
-    TypedDatePicker<LocalDate> effectiveDateField =
-        UiTestUtils.getComponent(detailView, "effectiveDateField");
-    effectiveDateField.setValue(LocalDate.of(2000, 1, 1));
-
-    JmixIntegerField squareMetersField = UiTestUtils.getComponent(detailView, "squareMetersField");
-    squareMetersField.setValue(60);
+    FormInteractions form = FormInteractions.of(detailView);
+    form.setFieldValueByLabel("Product Type", ProductType.HOME_CONTENT);
+    form.setFieldValueByLabel("Product Variant", ProductVariant.SMALL);
+    form.setFieldValueByLabel("Effective Date", LocalDate.of(2000, 1, 1));
+    form.setFieldValueByLabel("Square Meters", 60);
 
     // when
-    JmixButton calculateButton = UiTestUtils.getComponent(detailView, "calculatePremium");
+    JmixButton calculateButton = UiTestSupport.findButtonByText(detailView, "Calculate Premium");
+    assertThat(calculateButton).isNotNull();
     calculateButton.click();
 
     // then
-    JmixButton saveAndCloseButton = UiTestUtils.getComponent(detailView, "saveAndCloseButton");
+    JmixButton saveAndCloseButton = UiTestSupport.findButtonByText(detailView, "OK");
+    assertThat(saveAndCloseButton).isNotNull();
     assertThat(saveAndCloseButton.isEnabled()).isFalse();
 
-    TypedTextField<BigDecimal> premiumField =
-        UiTestUtils.getComponent(detailView, "calculatedPremiumField");
-    assertThat(premiumField.getTypedValue()).isNull();
+    Object premiumVal = form.getFieldValueByLabel("Calculated Premium");
+    assertThat(premiumVal).isNull();
 
     NotificationInfo notification = openedNotifications.getLastNotification();
     assertThat(notification).isNotNull();
@@ -245,19 +220,22 @@ class QuoteUiTest {
     policyDto.setPolicyNo("HC-2025-000001");
     when(policyService.createPolicy(any())).thenReturn(policyDto);
 
-    viewNavigators.view(UiTestUtils.getCurrentView(), QuoteListView.class).navigate();
-    QuoteListView listView = UiTestUtils.getCurrentView();
+    ViewInteractions viewInteractions = ViewInteractions.forNavigation(viewNavigators);
+    QuoteListView listView = viewInteractions.navigate(QuoteListView.class);
 
-    DataGrid<Quote> quotesDataGrid = UiTestUtils.getComponent(listView, "quotesDataGrid");
+    DataGridInteractions<Quote> quotesDataGrid =
+        DataGridInteractions.of(listView, Quote.class, "quotesDataGrid");
     Quote gridQuote =
-        gridItems(quotesDataGrid).stream()
+        quotesDataGrid.items().stream()
             .filter(q -> q.getId().equals(quote.getId()))
             .findFirst()
             .orElseThrow();
     quotesDataGrid.select(gridQuote);
 
     // when
-    JmixButton acceptButton = UiTestUtils.getComponent(listView, "acceptButton");
+    String acceptLabel = "Accept";
+    JmixButton acceptButton = UiTestSupport.findButtonByText(listView, acceptLabel);
+    assertThat(acceptButton).isNotNull();
     acceptButton.click();
 
     // then
@@ -266,9 +244,12 @@ class QuoteUiTest {
     assertThat(reloaded.getAcceptedAt()).isNotNull();
     assertThat(reloaded.getCreatedPolicyNo()).isEqualTo("HC-2025-000001");
 
-    DataGrid<Quote> reloadedGrid =
-        UiTestUtils.getComponent((QuoteListView) UiTestUtils.getCurrentView(), "quotesDataGrid");
-    assertThat(reloadedGrid.getItems()).isNotNull();
+    DataGridInteractions<Quote> reloadedGrid =
+        DataGridInteractions.of(
+            (QuoteListView) viewInteractions.findOpenView(QuoteListView.class),
+            Quote.class,
+            "quotesDataGrid");
+    assertThat(reloadedGrid.items()).isNotEmpty();
   }
 
   @Test
@@ -276,19 +257,22 @@ class QuoteUiTest {
     // given
     Quote quote = entityTestData.saveWithDefaults(new QuoteDataProvider());
 
-    viewNavigators.view(UiTestUtils.getCurrentView(), QuoteListView.class).navigate();
-    QuoteListView listView = UiTestUtils.getCurrentView();
+    ViewInteractions viewInteractions = ViewInteractions.forNavigation(viewNavigators);
+    QuoteListView listView = viewInteractions.navigate(QuoteListView.class);
 
-    DataGrid<Quote> quotesDataGrid = UiTestUtils.getComponent(listView, "quotesDataGrid");
+    DataGridInteractions<Quote> quotesDataGrid =
+        DataGridInteractions.of(listView, Quote.class, "quotesDataGrid");
     Quote gridQuote =
-        gridItems(quotesDataGrid).stream()
+        quotesDataGrid.items().stream()
             .filter(q -> q.getId().equals(quote.getId()))
             .findFirst()
             .orElseThrow();
     quotesDataGrid.select(gridQuote);
 
     // when
-    JmixButton rejectButton = UiTestUtils.getComponent(listView, "rejectButton");
+    String rejectLabel = "Reject";
+    JmixButton rejectButton = UiTestSupport.findButtonByText(listView, rejectLabel);
+    assertThat(rejectButton).isNotNull();
     rejectButton.click();
 
     // then
@@ -299,9 +283,89 @@ class QuoteUiTest {
     assertThat(reloaded.getCreatedPolicyNo()).isNull();
     verify(policyService, never()).createPolicy(any());
 
-    DataGrid<Quote> reloadedGrid =
-        UiTestUtils.getComponent((QuoteListView) UiTestUtils.getCurrentView(), "quotesDataGrid");
-    assertThat(reloadedGrid.getItems()).isNotNull();
+    DataGridInteractions<Quote> reloadedGrid =
+        DataGridInteractions.of(
+            (QuoteListView) viewInteractions.findOpenView(QuoteListView.class),
+            Quote.class,
+            "quotesDataGrid");
+    assertThat(reloadedGrid.items()).isNotEmpty();
+  }
+
+  @Test
+  void given_quoteListView_when_acceptedQuoteSelected_then_acceptAndRejectButtonsAreDisabled() {
+    // given
+    Quote quote = entityTestData.saveWithDefaults(new QuoteDataProvider());
+    quote.setStatus(QuoteStatus.ACCEPTED);
+    quote.setCreatedPolicyNo("HC-2025-000001");
+    Quote acceptedQuote = dataManager.save(quote);
+
+    ViewInteractions viewInteractions = ViewInteractions.forNavigation(viewNavigators);
+    QuoteListView listView = viewInteractions.navigate(QuoteListView.class);
+
+    DataGridInteractions<Quote> quotesDataGrid =
+        DataGridInteractions.of(listView, Quote.class, "quotesDataGrid");
+    Quote gridQuote =
+        quotesDataGrid.items().stream()
+            .filter(q -> q.getId().equals(acceptedQuote.getId()))
+            .findFirst()
+            .orElseThrow();
+
+    // when
+    quotesDataGrid.select(gridQuote);
+    String acceptLabel = "Accept";
+    String rejectLabel = "Reject";
+    JmixButton acceptButton = UiTestSupport.findButtonByText(listView, acceptLabel);
+    JmixButton rejectButton = UiTestSupport.findButtonByText(listView, rejectLabel);
+    assertThat(acceptButton).isNotNull();
+    assertThat(rejectButton).isNotNull();
+    assertThat(acceptButton.isEnabled()).isFalse();
+    assertThat(rejectButton.isEnabled()).isFalse();
+  }
+
+  @Test
+  void given_pendingQuote_when_accepted_then_successNotificationContainsFormattedPolicyNo() {
+    // given
+    Quote quote = entityTestData.saveWithDefaults(new QuoteDataProvider());
+    quote.setStatus(QuoteStatus.PENDING);
+    quote.setCalculatedPremium(BigDecimal.valueOf(100));
+    Quote pendingQuote = dataManager.save(quote);
+
+    PolicyDto policyDto = dataManager.create(PolicyDto.class);
+    policyDto.setId(UUID.randomUUID());
+    policyDto.setPolicyNo("HC-2025-000001");
+    when(policyService.createPolicy(any())).thenReturn(policyDto);
+
+    ViewInteractions viewInteractions = ViewInteractions.forNavigation(viewNavigators);
+    QuoteListView listView = viewInteractions.navigate(QuoteListView.class);
+
+    DataGridInteractions<Quote> quotesDataGrid =
+        DataGridInteractions.of(listView, Quote.class, "quotesDataGrid");
+    Quote gridQuote =
+        quotesDataGrid.items().stream()
+            .filter(q -> q.getId().equals(pendingQuote.getId()))
+            .findFirst()
+            .orElseThrow();
+
+    // check enabled first
+    quotesDataGrid.select(gridQuote);
+    String acceptLabel = "Accept";
+    String rejectLabel = "Reject";
+    JmixButton acceptButton = UiTestSupport.findButtonByText(listView, acceptLabel);
+    JmixButton rejectButton = UiTestSupport.findButtonByText(listView, rejectLabel);
+    assertThat(acceptButton).isNotNull();
+    assertThat(rejectButton).isNotNull();
+    assertThat(acceptButton.isEnabled()).isTrue();
+    assertThat(rejectButton.isEnabled()).isTrue();
+
+    // when
+    acceptButton.click();
+
+    // then
+    NotificationInfo notification = openedNotifications.getLastNotification();
+    assertThat(notification).isNotNull();
+    assertThat(notification.getType()).isEqualTo(Notifications.Type.SUCCESS);
+    assertThat(notification.getTitle()).isEqualTo("Quote accepted");
+    assertThat(notification.getMessage()).isEqualTo("Policy issued: HC-2025-000001");
   }
 
   @Test
@@ -318,15 +382,17 @@ class QuoteUiTest {
     Quote reloaded = dataManager.save(quote);
 
     // when
+    ViewInteractions viewInteractions = ViewInteractions.forNavigation(viewNavigators);
     viewNavigators
         .detailView(UiTestUtils.getCurrentView(), Quote.class)
         .editEntity(reloaded)
         .navigate();
 
     // then
-    QuoteDetailView detailView = UiTestUtils.getCurrentView();
+    QuoteDetailView detailView = viewInteractions.findOpenView(QuoteDetailView.class);
+    FormInteractions form = FormInteractions.of(detailView);
     EntityComboBox<PartnerDto> partnerComboBox =
-        UiTestUtils.getComponent(detailView, "partnerComboBox");
+        form.entityComboBoxField("partnerComboBox", PartnerDto.class);
     assertThat(partnerComboBox.getValue()).isNotNull();
     assertThat(partnerComboBox.getValue().getPartnerNo()).isEqualTo("PT-00001");
   }
@@ -334,14 +400,16 @@ class QuoteUiTest {
   @Test
   void given_quoteDetailView_when_partnerCleared_then_partnerNoIsSetToNull() {
     // given
-    viewNavigators.view(UiTestUtils.getCurrentView(), QuoteListView.class).navigate();
-    QuoteListView listView = UiTestUtils.getCurrentView();
-    JmixButton createButton = UiTestUtils.getComponent(listView, "createButton");
+    ViewInteractions viewInteractions = ViewInteractions.forNavigation(viewNavigators);
+    QuoteListView listView = viewInteractions.navigate(QuoteListView.class);
+    JmixButton createButton = UiTestSupport.findButtonByText(listView, "Create");
+    assertThat(createButton).isNotNull();
     createButton.click();
 
-    QuoteDetailView detailView = UiTestUtils.getCurrentView();
+    QuoteDetailView detailView = viewInteractions.findOpenView(QuoteDetailView.class);
+    FormInteractions form = FormInteractions.of(detailView);
     EntityComboBox<PartnerDto> partnerComboBox =
-        UiTestUtils.getComponent(detailView, "partnerComboBox");
+        form.entityComboBoxField("partnerComboBox", PartnerDto.class);
 
     PartnerDto partner = dataManager.create(PartnerDto.class);
     partner.setPartnerNo("PT-00001");
@@ -361,7 +429,8 @@ class QuoteUiTest {
     // given
     viewNavigators.view(UiTestUtils.getCurrentView(), QuoteListView.class).navigate();
     QuoteListView listView = UiTestUtils.getCurrentView();
-    JmixButton createButton = UiTestUtils.getComponent(listView, "createButton");
+    JmixButton createButton = UiTestSupport.findButtonByText(listView, "Create");
+    assertThat(createButton).isNotNull();
     createButton.click();
 
     QuoteDetailView detailView = UiTestUtils.getCurrentView();
@@ -385,12 +454,6 @@ class QuoteUiTest {
     List<PartnerDto> result = resultStream.toList();
     assertThat(result).hasSize(1);
     assertThat(result.getFirst().getPartnerNo()).isEqualTo("PT-00001");
-  }
-
-  private List<Quote> gridItems(DataGrid<Quote> dataGrid) {
-    DataGridItems<Quote> items = dataGrid.getItems();
-    assertThat(items).isNotNull();
-    return items.getItems().stream().toList();
   }
 
   private <T> void deleteAll(Class<T> entityClass) {

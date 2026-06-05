@@ -126,11 +126,10 @@ To maximize development velocity, avoid running full root builds (`./gradlew che
 
 4. **Modularity & Guardrails Verification**: Ensure your changes did not violate Jmix rules, Lombok restrictions, or package boundary layers:
    ```shell
-   ./gradlew :insurance-app:test --tests "com.insurance.app.arch.ArchitectureTest"
+   ./gradlew :webapp:test --tests "com.insurance.app.arch.ArchitectureTest"
    ```
 
 5. **Full Project Verification**: Before final check-in, run the full validation suite:
    ```shell
    ./gradlew check
-   ```
 

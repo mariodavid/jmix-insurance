@@ -1,12 +1,12 @@
 ---
 name: insurance-testing
-description: Project-specific testing guide for jmix-insurance. Covers the established patterns for integration tests in insurance-app: BaseIntegrationTest, DatabaseCleanup, *Factory + *Data test data setup, InsuranceAssertions custom assertions, Given/When/Then structure, and cross-module flow tests. Use this skill when writing or reviewing tests in this project.
+description: Project-specific testing guide for jmix-insurance. Covers the established patterns for integration tests in webapp: BaseIntegrationTest, DatabaseCleanup, *Factory + *Data test data setup, InsuranceAssertions custom assertions, Given/When/Then structure, and cross-module flow tests. Use this skill when writing or reviewing tests in this project.
 ---
 
 # Insurance Project Testing Guide
 
 This guide documents how tests are written in the `jmix-insurance` project.
-All integration tests live in `insurance-app/src/test`.
+All integration tests live in `webapp/src/test`.
 
 ## Base Class
 
@@ -265,8 +265,8 @@ assertThat(account).hasDocumentCount(4);
 
 ```bash
 # Single class
-./gradlew :insurance-app:test --tests "com.insurance.app.partner.PartnerServiceTest"
+./gradlew :webapp:test --tests "com.insurance.app.partner.PartnerServiceTest"
 
 # Full suite
-./gradlew :insurance-app:test
+./gradlew :webapp:test
 ```

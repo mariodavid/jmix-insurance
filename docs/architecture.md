@@ -14,7 +14,7 @@ The project is a Gradle composite build with 12 sub-builds declared in the root 
 
 ```
 jmix-insurance/
-├── insurance-app/          ← Runnable Spring Boot application
+├── webapp/                 ← Runnable Spring Boot application
 ├── test-support/           ← Standalone test support library (EntityTestData, Assertions, etc.)
 ├── security/               ← Security API, core, UI, and starters
 ├── partner/                ← Partner API, core, UI, and starters
@@ -62,7 +62,7 @@ Each domain module follows a consistent four-artifact pattern:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        insurance-app                            │
+│                            webapp                               │
 │  Spring Boot application, assembles all domain add-ons          │
 │  LoginView / MainView / app menu / Liquibase master changelog   │
 └────────────┬──────┬─────────┬──────┬─────────┬──────┬───────────┘
@@ -88,7 +88,7 @@ quote-core    → policy-api, partner-api, product-api
 policy-core   → partner-api, account-api, product-api
 account-core  → policy-api, product-api
 partner-core  → partner-api
-insurance-app → all *-starter artifacts
+webapp → all *-starter artifacts
 ```
 
 All inter-domain communication goes through **API interfaces** (`*Service` + DTOs). Core modules never import from another core module directly. All generic test fixtures (e.g. `EntityTestData`, JUnit extensions) are inherited at test-scope from the standalone `test-support` library.
@@ -252,7 +252,7 @@ Liquibase changelogs are decentralized: each module owns its changelog and inclu
 ### Master Changelog Assembly Order
 
 ```
-insurance-app/liquibase/changelog.xml
+webapp/liquibase/changelog.xml
   ├── /io/jmix/data/liquibase/changelog.xml           (Jmix platform)
   ├── /io/jmix/flowuidata/liquibase/changelog.xml
   ├── /io/jmix/securitydata/liquibase/changelog.xml
@@ -283,8 +283,8 @@ insurance-app/liquibase/changelog.xml
 
 | Layer | Annotation | Location |
 |---|---|---|
-| Integration (service) | `@SpringBootTest` + `@ActiveProfiles("test")` | `insurance-app/src/test` |
-| UI integration | `@UiTest` + `FlowuiTestAssistConfiguration` | `insurance-app/src/test` |
+| Integration (service) | `@SpringBootTest` + `@ActiveProfiles("test")` | `webapp/src/test` |
+| UI integration | `@UiTest` + `FlowuiTestAssistConfiguration` | `webapp/src/test` |
 
 ### Infrastructure
 

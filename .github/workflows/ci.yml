@@ -83,11 +83,11 @@ jobs:
       - name: Build application JAR
         run: |
           chmod +x ./gradlew
-          ./gradlew :insurance-app:bootJar -Pvaadin.productionMode=true
+          ./gradlew :webapp:bootJar -Pvaadin.productionMode=true
 
       - name: Upload application JAR
         uses: actions/upload-artifact@v4
         with:
-          name: insurance-app-jar
-          path: insurance-app/build/libs/*.jar
+          name: webapp-jar
+          path: webapp/build/libs/*.jar
           if-no-files-found: error

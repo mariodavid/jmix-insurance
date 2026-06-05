@@ -11,14 +11,17 @@ import com.vaadin.flow.router.Route;
 import io.jmix.core.TimeSource;
 import io.jmix.flowui.Notifications;
 import io.jmix.flowui.component.combobox.EntityComboBox;
+import io.jmix.flowui.kit.action.Action;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
 import io.jmix.flowui.kit.component.button.JmixButton;
+import io.jmix.flowui.model.InstanceContainer;
 import io.jmix.flowui.view.DefaultMainViewParent;
 import io.jmix.flowui.view.EditedEntityContainer;
 import io.jmix.flowui.view.Install;
 import io.jmix.flowui.view.MessageBundle;
 import io.jmix.flowui.view.StandardDetailView;
 import io.jmix.flowui.view.Subscribe;
+import io.jmix.flowui.view.Target;
 import io.jmix.flowui.view.ViewComponent;
 import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
@@ -44,6 +47,8 @@ public class QuoteDetailView extends StandardDetailView<Quote> {
 
   @ViewComponent private EntityComboBox<PartnerDto> partnerComboBox;
 
+  @ViewComponent private Action calculatePremiumAction;
+
   @Autowired private PartnerService partnerService;
 
   @Subscribe
@@ -54,6 +59,13 @@ public class QuoteDetailView extends StandardDetailView<Quote> {
       if (partnerDto != null) {
         partnerComboBox.setValue(partnerDto);
       }
+    }
+
+    if (quote.getStatus() != QuoteStatus.PENDING) {
+      setReadOnly(true);
+      calculatePremiumAction.setEnabled(false);
+    } else if (quote.getCalculatedPremium() != null) {
+      saveAndCloseButton.setEnabled(true);
     }
   }
 
@@ -71,6 +83,17 @@ public class QuoteDetailView extends StandardDetailView<Quote> {
     saveAndCloseButton.setEnabled(false);
 
     Quote quote = getEditedEntity();
+    if (quote.getProductType() == null
+        || quote.getProductVariant() == null
+        || quote.getEffectiveDate() == null
+        || quote.getSquareMeters() == null) {
+      notifications
+          .create(messageBundle.getMessage("missingFieldsForCalculation"))
+          .withType(Notifications.Type.WARNING)
+          .show();
+      return;
+    }
+
     Optional<InsuranceProduct> matchingProduct =
         InsuranceProduct.findFirstMatchingProduct(
             quote.getProductType(), quote.getProductVariant(), quote.getEffectiveDate());
@@ -90,6 +113,15 @@ public class QuoteDetailView extends StandardDetailView<Quote> {
     quote.setCalculatedPremium(calculatedPremium);
 
     saveAndCloseButton.setEnabled(true);
+  }
+
+  @Subscribe(id = "quoteDc", target = Target.DATA_CONTAINER)
+  public void onQuoteDcItemPropertyChange(
+      final InstanceContainer.ItemPropertyChangeEvent<Quote> event) {
+    if (java.util.List.of("productType", "productVariant", "effectiveDate", "squareMeters")
+        .contains(event.getProperty())) {
+      saveAndCloseButton.setEnabled(false);
+    }
   }
 
   @Install(to = "partnerComboBox", subject = "itemsFetchCallback")
