@@ -35,7 +35,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 class AccountUiTest {
 
   private static final LocalDate COVERAGE_START = LocalDate.of(2025, 1, 1);
+  private static final LocalDate COVERAGE_END = LocalDate.of(2026, 1, 1);
   private static final BigDecimal PREMIUM = new BigDecimal("120.00");
+  private static final String PARTNER_NO = "PT-2025-000065";
   private static final java.util.UUID POLICY_ID =
       java.util.UUID.fromString("00000000-0000-0000-0000-000000000065");
 
@@ -58,7 +60,13 @@ class AccountUiTest {
   void given_accountCreated_when_accountListOpened_then_accountIsVisible() {
     // given
     accountService.createAccount(
-        POLICY_ID, "HC-2025-000065", COVERAGE_START, PREMIUM, PaymentFrequency.YEARLY);
+        POLICY_ID,
+        "HC-2025-000065",
+        PARTNER_NO,
+        COVERAGE_START,
+        COVERAGE_END,
+        PREMIUM,
+        PaymentFrequency.YEARLY);
 
     // when
     ViewInteractions viewInteractions = ViewInteractions.forNavigation(viewNavigators);
@@ -73,6 +81,7 @@ class AccountUiTest {
               assertThat(account)
                   .hasAccountNo("HC-2025-000065")
                   .hasPolicyId(POLICY_ID)
+                  .hasPolicyPartnerNo(PARTNER_NO)
                   .hasBalance(PREMIUM.negate());
             });
   }
@@ -82,7 +91,13 @@ class AccountUiTest {
     // given
     Account account =
         accountService.createAccount(
-            POLICY_ID, "HC-2025-000066", COVERAGE_START, PREMIUM, PaymentFrequency.QUARTERLY);
+            POLICY_ID,
+            "HC-2025-000066",
+            PARTNER_NO,
+            COVERAGE_START,
+            COVERAGE_END,
+            PREMIUM,
+            PaymentFrequency.QUARTERLY);
     Account reloaded = dataManager.load(Account.class).id(account.getId()).one();
 
     // when

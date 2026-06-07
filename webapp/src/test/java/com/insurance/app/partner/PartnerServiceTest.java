@@ -70,8 +70,18 @@ class PartnerServiceTest extends BaseIntegrationTest {
   @Test
   void given_twoPartners_when_searchByLastName_then_onlyMatchingPartnerReturned() {
     // given
-    entityTestData.saveWithDefaults(new PartnerDataProvider(), p -> p.setLastName("Mayer"));
-    entityTestData.saveWithDefaults(new PartnerDataProvider(), p -> p.setLastName("Müller"));
+    entityTestData.saveWithDefaults(
+        new PartnerDataProvider(),
+        p -> {
+          p.setPartnerNo("PT-91001");
+          p.setLastName("Mayer");
+        });
+    entityTestData.saveWithDefaults(
+        new PartnerDataProvider(),
+        p -> {
+          p.setPartnerNo("PT-91002");
+          p.setLastName("Müller");
+        });
 
     // when
     List<PartnerDto> result = partnerService.findPartners("Mayer", 10, 0);

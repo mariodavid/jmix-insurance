@@ -1,10 +1,8 @@
 package com.insurance.account.ui;
 
-import com.insurance.policy.api.service.PolicyService;
 import com.insurance.security.ui.SecurityUiConfiguration;
 import io.jmix.core.annotation.JmixModule;
 import javax.sql.DataSource;
-import org.mockito.Mockito;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -23,8 +21,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
     dependsOn = {
       AccountUiConfiguration.class,
       SecurityUiConfiguration.class,
-      com.insurance.partner.core.PartnerConfiguration.class,
-      com.insurance.policy.core.PolicyConfiguration.class
+      com.insurance.partner.core.PartnerConfiguration.class
     })
 public class AccountUiTestConfiguration {
 
@@ -35,11 +32,5 @@ public class AccountUiTestConfiguration {
         .generateUniqueName(true)
         .setType(EmbeddedDatabaseType.HSQL)
         .build();
-  }
-
-  @Bean
-  @Primary
-  PolicyService policyService() {
-    return Mockito.mock(PolicyService.class);
   }
 }

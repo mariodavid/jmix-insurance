@@ -1,5 +1,3 @@
-archivesBaseName = 'quote-core'
-
 dependencies {
     api 'com.insurance.quote:quote-api-starter:0.0.1-SNAPSHOT'
 

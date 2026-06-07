@@ -1,5 +1,3 @@
-archivesBaseName = 'security-core'
-
 
 dependencies {
     api project(':security-api')

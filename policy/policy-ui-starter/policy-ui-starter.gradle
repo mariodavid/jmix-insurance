@@ -1,5 +1,3 @@
-archivesBaseName = 'policy-ui-starter'
-
 jmix {
     entitiesEnhancing {
         enabled = false

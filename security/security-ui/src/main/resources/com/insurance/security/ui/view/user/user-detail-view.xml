@@ -4,7 +4,7 @@
       focusComponent="form">
     <data>
         <instance id="userDc"
-                  class="com.insurance.security.entity.User">
+                  class="com.insurance.security.core.entity.User">
             <fetchPlan extends="_base"/>
             <loader/>
         </instance>
@@ -20,7 +20,7 @@
         <formLayout id="form" dataContainer="userDc">
             <textField id="usernameField" property="username" readOnly="true"/>
             <passwordField id="passwordField"
-                           label="msg://com.insurance.security.entity/User.password"
+                           label="msg://com.insurance.security.core.entity/User.password"
                            required="true"
                            visible="false"/>
             <passwordField id="confirmPasswordField"

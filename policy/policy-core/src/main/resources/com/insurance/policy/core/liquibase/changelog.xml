@@ -6,5 +6,6 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <include file="/com/insurance/policy/core/liquibase/changelog/010-init-policy.xml"/>
+    <include file="/com/insurance/policy/core/liquibase/changelog/020-policy-partner-reference.xml"/>
 
 </databaseChangeLog>

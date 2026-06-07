@@ -1,5 +1,3 @@
-archivesBaseName = 'product-core'
-
 dependencies {
     api 'com.insurance.product:product-api-starter:0.0.1-SNAPSHOT'
 

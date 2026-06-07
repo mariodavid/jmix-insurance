@@ -1,10 +1,10 @@
-archivesBaseName = 'policy-ui'
-
 dependencies {
     api project(':policy-core')
+    api project(':policy-ui-api')
 
     compileOnly 'org.eclipse.persistence:org.eclipse.persistence.core'
 
+    implementation 'com.insurance.partner:partner-ui-api:0.0.1-SNAPSHOT'
     implementation 'com.insurance.theme:theme:0.0.1-SNAPSHOT'
     implementation 'io.jmix.core:jmix-core-starter'
     implementation 'io.jmix.flowui:jmix-flowui-starter'

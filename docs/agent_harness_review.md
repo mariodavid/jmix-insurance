@@ -1,5 +1,9 @@
 # Coding Agent Harness Review — jmix-insurance
 
+> Historical snapshot: this review is kept as background material. The current architecture and
+> agent-harness contract live in [docs/architecture.md](architecture.md), while the implementation
+> backlog lives in [plans/codex-review.md](../plans/codex-review.md) and `tasks/`.
+
 This document reviews the current architecture, modularization boundaries, and verification tools of the `jmix-insurance` project from the perspective of establishing a robust, safe, and highly efficient **Agent Development Harness**. 
 
 A **Coding Agent Harness** is a structured combination of:

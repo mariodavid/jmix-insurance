@@ -150,10 +150,12 @@ public class QuoteDetailView extends StandardDetailView<Quote> {
     PartnerDto value = event.getValue();
     if (value != null) {
       getEditedEntity().setPartnerNo(value.getPartnerNo());
+      getEditedEntity().setPartnerId(value.getId());
       firstNameField.setValue(value.getFirstName() != null ? value.getFirstName() : "");
       lastNameField.setValue(value.getLastName() != null ? value.getLastName() : "");
     } else {
       getEditedEntity().setPartnerNo(null);
+      getEditedEntity().setPartnerId(null);
       firstNameField.setValue("");
       lastNameField.setValue("");
     }

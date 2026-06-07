@@ -19,7 +19,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
     id = "com.insurance.partner.core.test",
     dependsOn = {
       PartnerConfiguration.class,
-      com.insurance.security.SecurityCoreConfiguration.class
+      com.insurance.security.core.SecurityCoreConfiguration.class
     })
 public class PartnerTestConfiguration {
 

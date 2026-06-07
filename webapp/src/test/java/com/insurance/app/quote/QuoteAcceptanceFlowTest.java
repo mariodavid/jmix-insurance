@@ -1,6 +1,7 @@
 package com.insurance.app.quote;
 
 import static com.insurance.app.test_support.assertion.InsuranceAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.insurance.account.core.entity.Account;
 import com.insurance.account.core.entity.AccountDocument;
@@ -114,6 +115,23 @@ class QuoteAcceptanceFlowTest extends BaseIntegrationTest {
     assertThat(docs).hasSize(12);
   }
 
+  @Test
+  void given_acceptedQuote_when_acceptedAgain_then_noSecondPolicyOrAccountIsCreated() {
+    // given
+    Quote quote = entityTestData.saveWithDefaults(new QuoteDataProvider());
+    quoteService.accept(Id.of(quote));
+
+    // when / then
+    assertThatThrownBy(() -> quoteService.accept(Id.of(quote)))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("Only PENDING quotes");
+
+    org.assertj.core.api.Assertions.assertThat(dataManager.load(Policy.class).all().list())
+        .hasSize(1);
+    org.assertj.core.api.Assertions.assertThat(dataManager.load(Account.class).all().list())
+        .hasSize(1);
+  }
+
   private Policy loadPolicyByNo(String policyNo) {
     return dataManager
         .load(Policy.class)
@@ -124,7 +142,7 @@ class QuoteAcceptanceFlowTest extends BaseIntegrationTest {
   private Account loadAccountByNo(String accountNo) {
     return dataManager
         .load(Account.class)
-        .condition(PropertyCondition.equal("accountNo", accountNo))
+        .condition(PropertyCondition.equal("policy.policyNo", accountNo))
         .one();
   }
 }

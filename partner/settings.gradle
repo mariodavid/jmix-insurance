@@ -4,6 +4,7 @@ include 'partner-api'
 include 'partner-api-starter'
 include 'partner-core'
 include 'partner-core-starter'
+include 'partner-ui-api'
 include 'partner-ui'
 include 'partner-ui-starter'
 

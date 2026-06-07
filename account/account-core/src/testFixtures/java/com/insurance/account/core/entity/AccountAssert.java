@@ -1,6 +1,7 @@
 package com.insurance.account.core.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import org.assertj.core.api.AbstractAssert;
@@ -29,6 +30,30 @@ public class AccountAssert extends AbstractAssert<AccountAssert, Account> {
     if (!Objects.equals(actual.getPolicyId(), expected)) {
       failWithMessage(
           "Expected account policyId to be <%s> but was <%s>", expected, actual.getPolicyId());
+    }
+    return this;
+  }
+
+  public AccountAssert hasPolicyPartnerNo(String expected) {
+    isNotNull();
+    if (!Objects.equals(actual.getPartnerNo(), expected)) {
+      failWithMessage(
+          "Expected account policy partnerNo to be <%s> but was <%s>",
+          expected, actual.getPartnerNo());
+    }
+    return this;
+  }
+
+  public AccountAssert hasAccountingPeriod(LocalDate expectedStart, LocalDate expectedEnd) {
+    isNotNull();
+    if (!Objects.equals(actual.getAccountingPeriodStart(), expectedStart)
+        || !Objects.equals(actual.getAccountingPeriodEnd(), expectedEnd)) {
+      failWithMessage(
+          "Expected account accounting period to be <%s> - <%s> but was <%s> - <%s>",
+          expectedStart,
+          expectedEnd,
+          actual.getAccountingPeriodStart(),
+          actual.getAccountingPeriodEnd());
     }
     return this;
   }

@@ -3,6 +3,7 @@ package com.insurance.policy.api;
 import static com.insurance.policy.api.dto.Assertions.assertThat;
 
 import com.insurance.policy.api.dto.CreatePolicyRequestDto;
+import com.insurance.policy.api.dto.PartnerPolicySummaryDto;
 import com.insurance.policy.api.dto.PolicyDto;
 import com.insurance.policy.api.event.PolicyCreatedEvent;
 import io.jmix.core.DataManager;
@@ -71,6 +72,24 @@ class PolicyTest {
   }
 
   @Test
+  void
+      given_partnerPolicySummaryDto_when_createdThroughDataManager_then_metadataFieldsAreSettableAndReadable() {
+    PartnerPolicySummaryDto dto = dataManager.create(PartnerPolicySummaryDto.class);
+    dto.setPolicyNo("HC-2025-000002");
+    dto.setCoverageEnd(LocalDate.of(2026, 1, 1));
+
+    MetaClass metaClass = metadata.getClass(PartnerPolicySummaryDto.class);
+
+    assertThat(dto.getId()).isNotNull();
+    assertThat(metaClass.getProperty("id")).isNotNull();
+    assertThat(metaClass.getProperty("policyNo")).isNotNull();
+    assertThat(metaClass.getProperty("coverageEnd")).isNotNull();
+    assertThat(dto.getPolicyNo()).isEqualTo("HC-2025-000002");
+    assertThat(dto.getCoverageEnd()).isEqualTo(LocalDate.of(2026, 1, 1));
+    assertThat(dto.instanceName()).isEqualTo("HC-2025-000002");
+  }
+
+  @Test
   void given_policyCreatedEvent_when_created_then_payloadContainsAccountFlowData() {
     UUID policyId = UUID.randomUUID();
     PolicyCreatedEvent event =
@@ -78,13 +97,17 @@ class PolicyTest {
             this,
             policyId,
             "HC-2025-000001",
+            "PT-2025-000001",
             LocalDate.of(2025, 1, 1),
+            LocalDate.of(2026, 1, 1),
             new BigDecimal("240.00"),
             "YEARLY");
 
     assertThat(event.getPolicyId()).isEqualTo(policyId);
     assertThat(event.getPolicyNo()).isEqualTo("HC-2025-000001");
+    assertThat(event.getPartnerNo()).isEqualTo("PT-2025-000001");
     assertThat(event.getCoverageStart()).isEqualTo(LocalDate.of(2025, 1, 1));
+    assertThat(event.getCoverageEnd()).isEqualTo(LocalDate.of(2026, 1, 1));
     assertThat(event.getPremium()).isEqualByComparingTo("240.00");
     assertThat(event.getPaymentFrequencyId()).isEqualTo("YEARLY");
   }

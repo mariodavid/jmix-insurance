@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <menu-config xmlns="http://jmix.io/schema/flowui/menu">
 
-    <item view="app_User.list" title="msg://com.insurance.security.ui.view.user/UserListView.title" icon="LOCK" classNames="security-menu-item"/>
+    <menu id="security" title="msg://com.insurance.security.ui/menu.addon" icon="LOCK" classNames="security-menu-item">
+        <item view="security_User.list" title="msg://com.insurance.security.ui.view.user/UserListView.title"/>
+    </menu>
 
 
 </menu-config>

@@ -43,8 +43,9 @@
                 <action id="readAction" type="list_read"/>
             </actions>
             <columns resizable="true">
-                <column property="accountNo"/>
-                <column property="policyId"/>
+                <column property="policy.policyNo"/>
+                <column property="policy.partnerNo"/>
+                <column property="accountingPeriodEnd"/>
                 <column property="accountBalance"/>
             </columns>
         </dataGrid>

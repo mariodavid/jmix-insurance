@@ -42,10 +42,21 @@ public class ViewInteractions {
 
   @SuppressWarnings("unchecked")
   public <T extends StandardView> T navigate(Class<T> viewClass) {
-    viewNavigators.view(viewClass).navigate();
+    viewNavigators.view(UiTestUtils.getCurrentView(), viewClass).navigate();
     View<?> currentView = UiTestUtils.getCurrentView();
     assertThat(currentView).isInstanceOf(viewClass);
     return (T) currentView;
+  }
+
+  public View<?> navigate(String viewId) {
+    viewNavigators.view(UiTestUtils.getCurrentView(), viewId).navigate();
+    return findOpenView(viewId);
+  }
+
+  public View<?> findOpenView(String viewId) {
+    View<?> currentView = UiTestUtils.getCurrentView();
+    assertThat(currentView.getId()).contains(viewId);
+    return currentView;
   }
 
   public <S extends StandardDetailView<E>, E> S openDetailForCreation(

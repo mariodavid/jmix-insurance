@@ -10,7 +10,7 @@ The application covers four core insurance domains — **Partners**, **Quotes**,
 
 ## Module Structure
 
-The project is a Gradle composite build with 12 sub-builds declared in the root `settings.gradle`.
+The project is a Gradle composite build with 13 sub-builds declared in the root `settings.gradle`.
 
 ```
 jmix-insurance/
@@ -21,16 +21,19 @@ jmix-insurance/
 ├── policy/                 ← Policy API, core, UI, and starters
 ├── quote/                  ← Quote API, core, UI, and starters
 ├── account/                ← Account API, core, UI, and starters
-└── product/                ← Product API, core, UI, and starters
+├── product/                ← Product API, core, UI, and starters
+├── theme/                  ← Shared Jmix theme add-on
+├── ui-sections/            ← Shared Flow UI section contract library
+└── test-support-ui/        ← Flow UI test helper library
 ```
 
 ### Domain Add-on Layout
 
-Each domain module follows a consistent four-artifact pattern:
+Each domain module follows a consistent six-artifact pattern:
 
 | Artifact | Contents |
 |---|---|
-| `<domain>-api` | Service interface, DTOs, events — no persistence |
+| `<domain>-api` | Service interface, DTOs, events — no JPA entities or Liquibase |
 | `<domain>-api-starter` | Spring Boot auto-configuration for the api artifact |
 | `<domain>-core` | JPA entities, service implementations, event listeners |
 | `<domain>-core-starter` | Spring Boot auto-configuration for the core artifact |
@@ -38,6 +41,7 @@ Each domain module follows a consistent four-artifact pattern:
 | `<domain>-ui-starter` | Spring Boot auto-configuration for the ui artifact |
 
 - The `product-*` modules are exceptions: `product-api` contains only enum DTOs (no persistence needed), and `product-core` contains only `ProductConfiguration` with no entities.
+- Host UI modules may add a small `<domain>-ui-api` artifact when other modules need to contribute UI into a host-owned view. `partner-ui-api` and `policy-ui-api` expose typed `ViewSection` contracts; they are UI-specific and intentionally separate from the domain `*-api` modules.
 - The `test-support` module is a standalone standard Java library module rather than a full Jmix add-on. It is added to the test classpath dependencies of domain modules.
 
 ---
@@ -85,9 +89,13 @@ Domain dependencies (read as "depends on"):
 
 ```
 quote-core    → policy-api, partner-api, product-api
-policy-core   → partner-api, account-api, product-api
+policy-core   → product-api
 account-core  → policy-api, product-api
 partner-core  → partner-api
+partner-ui-api → ui-sections
+policy-ui-api → ui-sections
+policy-ui → partner-ui-api, policy-ui-api
+partner-ui/account-ui → partner-ui-api, policy-ui-api
 webapp → all *-starter artifacts
 ```
 
@@ -115,7 +123,9 @@ Each persistent entity directly declares its own Jmix standard auditing and soft
 - `String lastModifiedBy`, `OffsetDateTime lastModifiedDate` (@LastModifiedBy, @LastModifiedDate)
 - `String deletedBy`, `OffsetDateTime deletedDate` (soft-delete fields)
 
-`User` (`APP_USER`) implements `JmixUserDetails` directly.
+`User` has Jmix entity name `security_User`, maps to table `APP_USER`, and implements
+`JmixUserDetails` directly. The table name remains historical; the Jmix entity name follows the
+security module prefix contract.
 
 ### Entity Details
 
@@ -208,19 +218,40 @@ The application uses **Jmix Flow UI** (Vaadin Flow with Jmix view framework). Ea
 | `partner_Partner.list` | `/partners` | `StandardListView<Partner>` |
 | `partner_Partner.detail` | `/partners/:id` | `StandardDetailView<Partner>` |
 | `policy_Policy.list` | `/policies` | `StandardListView<Policy>` (read-only, no create) |
-| `policy_Policy.detail` | `/policies/:id` | Detail + partner info panel + live account balance |
+| `policy_Policy.detail` | `/policies/:id` | Detail + cross-module partner/account sections |
 | `quote_Quote.list` | `/quotes` | `StandardListView<Quote>` + accept/reject actions |
 | `quote_Quote.detail` | `/quotes/:id` | Detail with partner combo, premium calculator |
 | `account_Account.list` | `/accounts` | `StandardListView<Account>` |
 | `account_Account.detail` | `/accounts/:id` | Detail + AccountDocument grid |
-| `app_User.list` | `/users` | `StandardListView<User>` |
-| `app_User.detail` | `/users/:id` | Detail with password management |
+| `security_User.list` | `/users` | `StandardListView<User>` |
+| `security_User.detail` | `/users/:id` | Detail with password management |
 
 ### Notable UI Interactions
 
 - **Quote detail**: Populates a `EntityComboBox<PartnerDto>` lazily from `PartnerService.findPartners()`. The premium is only calculated on user demand; `saveAndCloseButton` is disabled until the premium is calculated.
-- **Policy detail**: Calls `AccountService.getAccountBalance()` reactively when the user changes the effective-date picker.
+- **Policy detail**: Owns the policy layout and renders cross-module right-column sections. `partner-ui` contributes the policy-holder section, and `account-ui` contributes the live account-balance section.
+- **Partner detail**: Owns the partner layout and renders cross-module right-column sections. `policy-ui` and `account-ui` contribute `PartnerSection` beans whose content is implemented as Jmix fragments; `partner-ui` owns the `details` wrapper, ordering, spacing, and title rendering.
 - **Quote list**: Custom `rejectAction` and `acceptAction` call the service layer and refresh the grid.
+
+### Cross-Module UI Sections
+
+Reusable cross-module view sections use the generic `ui-sections` contract:
+
+```java
+public interface ViewSection<C> {
+  String titleMessageKey();
+
+  Component createContent(C context, FragmentOwner fragmentOwner);
+}
+```
+
+Host views define typed contracts in their UI API artifact, for example
+`PartnerSection extends ViewSection<PartnerViewContext>` or
+`PolicySection extends ViewSection<PolicyViewContext>`. The concrete context contains only stable
+host-view data such as business keys and ids. Contributor modules inject their own services, create
+their own Jmix fragments with the provided `FragmentOwner`, and return only the content component.
+The host view renders the surrounding `details` component and resolves the section title from the
+contributor's message bundle.
 
 ---
 
@@ -232,6 +263,9 @@ The application uses **Jmix Flow UI** (Vaadin Flow with Jmix view framework). Ea
 |---|---|---|
 | `system-full-access` | All | Full entity, attribute, view, menu, and specific policy access |
 | `ui-minimal` | UI | Access to `app_MainView`, `app_LoginView`, `ui.loginToUi` resource |
+| `insurance-agent` | UI/entity | Manages Partner and Quote; reads Policy and Account |
+| `insurance-backoffice` | UI/entity | Manages Partner, Quote, Policy, and Account |
+| `security-core-manage` / `security-ui-manage` | UI/entity | Manages `security_User` entity and User list/detail views |
 
 ### Authentication
 
@@ -293,6 +327,41 @@ webapp/liquibase/changelog.xml
 - `*DataProvider` — `Consumer<Entity>` implementations in `testFixtures` of each module; provide sensible defaults for required fields.
 - `EntityTestData` — generic factory/save helper using `DataManager` with validation before save. Auto-configured via `TestSupportConfiguration` whenever `test-support` is in the test classpath.
 - `InsuranceAssertions` — AssertJ entry point with domain-specific fluent assertions for `Partner`, `Policy`, `Quote`, and `Account`.
+
+---
+
+## Agent Harness
+
+The repo is intended to be safe for autonomous coding agents. The fast deterministic loop is:
+
+```shell
+./gradlew spotlessApply
+./gradlew :<module>:<layer>:compileJava
+./gradlew :<module>:check
+./gradlew :webapp:test --tests "com.insurance.app.arch.ArchitectureTest"
+```
+
+Use the root `./gradlew check` as the final broad validation. The architecture test is the
+canonical guardrail for:
+
+- API/core/UI package boundaries.
+- No Flow UI leakage into core modules.
+- No direct foreign persistent entity-name references across domain modules.
+- No cross-module UI implementation dependencies; domain UI modules must use foreign `*-api`,
+  foreign `*-ui-api`, shared `ui-sections`, or the `webapp` composition root.
+- Persistent Jmix entity names prefixed by each domain build's `jmixDomainProjectId`.
+- No Lombok on persistent entities and no constructor-created Jmix entities.
+- View/menu security policies that reference real view and menu ids.
+- Domain builds delegating shared build quality rules to `gradle/jmix-domain-conventions.gradle`.
+
+Project-specific skills live in `.skills/`. The most important app-specific skills are:
+
+- `insurance-testing` for `BaseIntegrationTest`, `EntityTestData`, test fixtures, cleanup, and UI helper patterns.
+- `insurance-security-roles` for domain role policies and app persona composition.
+
+Agents must preserve these boundaries: use domain APIs rather than foreign core entities, keep
+business logic in services/listeners, keep user-visible text in message bundles, and update role,
+menu, view, changelog, and tests together when a user-facing Jmix surface changes.
 
 ---
 

@@ -40,7 +40,9 @@ class AccountTest {
   @Autowired private DataSource dataSource;
 
   private static final LocalDate COVERAGE_START = LocalDate.of(2025, 1, 1);
+  private static final LocalDate COVERAGE_END = LocalDate.of(2026, 1, 1);
   private static final BigDecimal PREMIUM = new BigDecimal("120.00");
+  private static final String PARTNER_NO = "PT-2025-000001";
   private static final java.util.UUID POLICY_ID_YEARLY =
       java.util.UUID.fromString("00000000-0000-0000-0000-000000000001");
   private static final java.util.UUID POLICY_ID_MONTHLY =
@@ -90,12 +92,23 @@ class AccountTest {
     // when
     Account saved =
         accountService.createAccount(
-            POLICY_ID_YEARLY, "HC-2025-000001", COVERAGE_START, PREMIUM, PaymentFrequency.YEARLY);
+            POLICY_ID_YEARLY,
+            "HC-2025-000001",
+            PARTNER_NO,
+            COVERAGE_START,
+            COVERAGE_END,
+            PREMIUM,
+            PaymentFrequency.YEARLY);
     cleanup.add(saved);
 
     // then
     Account account = loadWithDocuments("HC-2025-000001");
-    assertThat(account).hasBalance(PREMIUM.negate()).hasDocumentCount(1);
+    assertThat(account)
+        .hasPolicyId(POLICY_ID_YEARLY)
+        .hasPolicyPartnerNo(PARTNER_NO)
+        .hasAccountingPeriod(COVERAGE_START, COVERAGE_END)
+        .hasBalance(PREMIUM.negate())
+        .hasDocumentCount(1);
 
     AccountDocument document = account.getDocuments().get(0);
     assertThat(document)
@@ -111,7 +124,9 @@ class AccountTest {
         accountService.createAccount(
             POLICY_ID_QUARTERLY,
             "HC-2025-000003",
+            PARTNER_NO,
             COVERAGE_START,
+            COVERAGE_END,
             PREMIUM,
             PaymentFrequency.QUARTERLY);
     cleanup.add(saved);
@@ -134,7 +149,13 @@ class AccountTest {
     // when
     Account saved =
         accountService.createAccount(
-            POLICY_ID_MONTHLY, "HC-2025-000002", COVERAGE_START, PREMIUM, PaymentFrequency.MONTHLY);
+            POLICY_ID_MONTHLY,
+            "HC-2025-000002",
+            PARTNER_NO,
+            COVERAGE_START,
+            COVERAGE_END,
+            PREMIUM,
+            PaymentFrequency.MONTHLY);
     cleanup.add(saved);
 
     // then
@@ -157,7 +178,9 @@ class AccountTest {
         accountService.createAccount(
             POLICY_ID_BALANCE,
             "HC-2025-000004",
+            PARTNER_NO,
             COVERAGE_START,
+            COVERAGE_END,
             PREMIUM,
             PaymentFrequency.QUARTERLY);
     cleanup.add(saved);
@@ -176,7 +199,13 @@ class AccountTest {
     assertThatThrownBy(
             () ->
                 accountService.createAccount(
-                    POLICY_ID_YEARLY, null, COVERAGE_START, PREMIUM, PaymentFrequency.YEARLY))
+                    POLICY_ID_YEARLY,
+                    null,
+                    PARTNER_NO,
+                    COVERAGE_START,
+                    COVERAGE_END,
+                    PREMIUM,
+                    PaymentFrequency.YEARLY))
         .isInstanceOf(RuntimeException.class);
 
     assertThat(dataManager.load(Account.class).all().list()).isEmpty();
@@ -198,7 +227,7 @@ class AccountTest {
   private Account loadWithDocuments(String accountNo) {
     return dataManager
         .load(Account.class)
-        .condition(PropertyCondition.equal("accountNo", accountNo))
+        .condition(PropertyCondition.equal("policy.policyNo", accountNo))
         .fetchPlan(fp -> fp.addFetchPlan(FetchPlan.BASE).add("documents", FetchPlan.BASE))
         .one();
   }

@@ -1,5 +1,3 @@
-archivesBaseName = 'quote-api-starter'
-
 jmix {
     entitiesEnhancing {
         enabled = false

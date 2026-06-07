@@ -4,11 +4,11 @@
       focusComponent="usersDataGrid">
     <data>
         <collection id="usersDc"
-                    class="com.insurance.security.entity.User">
+                    class="com.insurance.security.core.entity.User">
             <fetchPlan extends="_base"/>
             <loader id="usersDl" readOnly="true">
                 <query>
-                    <![CDATA[select e from app_User e order by e.username]]>
+                    <![CDATA[select e from security_User e order by e.username]]>
                 </query>
             </loader>
         </collection>

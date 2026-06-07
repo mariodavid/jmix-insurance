@@ -36,3 +36,7 @@
 .account-theme vaadin-app-layout::part(content) {
     background-color: var(--theme-tint-color) !important;
 }
+
+.account-scroll-box {
+    overflow-y: auto;
+}

@@ -1,5 +1,3 @@
-archivesBaseName = 'policy-core'
-
 dependencies {
     api 'com.insurance.policy:policy-api-starter:0.0.1-SNAPSHOT'
 

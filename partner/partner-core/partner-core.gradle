@@ -1,5 +1,3 @@
-archivesBaseName = 'partner-core'
-
 dependencies {
     api 'com.insurance.partner:partner-api-starter:0.0.1-SNAPSHOT'
 

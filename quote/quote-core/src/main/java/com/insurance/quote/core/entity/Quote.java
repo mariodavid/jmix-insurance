@@ -7,10 +7,12 @@ import com.insurance.product.api.dto.ProductVariant;
 import com.insurance.quote.api.dto.QuoteStatus;
 import io.jmix.core.annotation.DeletedBy;
 import io.jmix.core.annotation.DeletedDate;
+import io.jmix.core.entity.annotation.EmbeddedParameters;
 import io.jmix.core.entity.annotation.JmixGeneratedValue;
 import io.jmix.core.metamodel.annotation.InstanceName;
 import io.jmix.core.metamodel.annotation.JmixEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -64,9 +66,10 @@ public class Quote {
   @Column(name = "DELETED_DATE")
   private OffsetDateTime deletedDate;
 
-  @Column(name = "PARTNER_NO", nullable = false)
+  @EmbeddedParameters(nullAllowed = false)
+  @Embedded
   @NotNull
-  private String partnerNo;
+  private QuotePartnerReference partner;
 
   @Column(name = "QUOTE_NO", nullable = false, unique = true)
   @NotNull
@@ -94,11 +97,9 @@ public class Quote {
   @Column(name = "REJECTED_AT")
   private LocalDateTime rejectedAt;
 
-  @Column(name = "CREATED_POLICY_NO")
-  private String createdPolicyNo;
-
-  @Column(name = "CREATED_POLICY_ID")
-  private UUID createdPolicyId;
+  @EmbeddedParameters(nullAllowed = false)
+  @Embedded
+  private QuotePolicyReference createdPolicy;
 
   @Column(name = "INSURANCE_PRODUCT", nullable = false)
   @NotNull
@@ -124,28 +125,60 @@ public class Quote {
   @NotNull
   private LocalDate validUntil;
 
+  public QuotePartnerReference getPartner() {
+    return partner;
+  }
+
+  public void setPartner(QuotePartnerReference partner) {
+    this.partner = partner;
+  }
+
+  public QuotePolicyReference getCreatedPolicy() {
+    return createdPolicy;
+  }
+
+  public void setCreatedPolicy(QuotePolicyReference createdPolicy) {
+    this.createdPolicy = createdPolicy;
+  }
+
   public String getPartnerNo() {
-    return partnerNo;
+    return partner != null ? partner.getPartnerNo() : null;
   }
 
   public void setPartnerNo(String partnerNo) {
-    this.partnerNo = partnerNo;
+    if (partner != null) {
+      partner.setPartnerNo(partnerNo);
+    }
+  }
+
+  public UUID getPartnerId() {
+    return partner != null ? partner.getPartnerId() : null;
+  }
+
+  public void setPartnerId(UUID partnerId) {
+    if (partner != null) {
+      partner.setPartnerId(partnerId);
+    }
   }
 
   public UUID getCreatedPolicyId() {
-    return createdPolicyId;
+    return createdPolicy != null ? createdPolicy.getPolicyId() : null;
   }
 
   public void setCreatedPolicyId(UUID createdPolicyId) {
-    this.createdPolicyId = createdPolicyId;
+    if (createdPolicy != null) {
+      createdPolicy.setPolicyId(createdPolicyId);
+    }
   }
 
   public String getCreatedPolicyNo() {
-    return createdPolicyNo;
+    return createdPolicy != null ? createdPolicy.getPolicyNo() : null;
   }
 
   public void setCreatedPolicyNo(String createdPolicyNo) {
-    this.createdPolicyNo = createdPolicyNo;
+    if (createdPolicy != null) {
+      createdPolicy.setPolicyNo(createdPolicyNo);
+    }
   }
 
   public LocalDateTime getRejectedAt() {

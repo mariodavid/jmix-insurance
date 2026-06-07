@@ -21,7 +21,8 @@ public interface AccountService {
    * @param policyNo the policy number used as the account number
    * @param effectiveDate the date for which the balance should be calculated
    * @return the calculated balance, or {@link BigDecimal#ZERO} if no account exists
-   * @throws IllegalArgumentException if the requested date is after the policy coverage end
+   * @throws IllegalArgumentException if the requested date is after the account's policy snapshot
+   *     period
    */
   BigDecimal getAccountBalance(String policyNo, LocalDate effectiveDate);
 }

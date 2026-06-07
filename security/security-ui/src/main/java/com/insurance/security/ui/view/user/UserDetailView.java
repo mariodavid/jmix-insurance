@@ -1,6 +1,6 @@
 package com.insurance.security.ui.view.user;
 
-import com.insurance.security.entity.User;
+import com.insurance.security.core.entity.User;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Route(value = "users/:id", layout = DefaultMainViewParent.class)
-@ViewController(id = "app_User.detail")
+@ViewController(id = "security_User.detail")
 @ViewDescriptor(path = "user-detail-view.xml")
 @EditedEntityContainer("userDc")
 public class UserDetailView extends StandardDetailView<User> {

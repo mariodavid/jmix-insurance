@@ -118,7 +118,7 @@ class PolicyUiTest {
   private Account loadAccountByNo(String accountNo) {
     return dataManager
         .load(Account.class)
-        .condition(PropertyCondition.equal("accountNo", accountNo))
+        .condition(PropertyCondition.equal("policy.policyNo", accountNo))
         .one();
   }
 }

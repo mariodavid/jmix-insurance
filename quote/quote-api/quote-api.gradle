@@ -1,5 +1,3 @@
-archivesBaseName = 'quote-api'
-
 dependencies {
     api 'com.insurance.product:product-api-starter:0.0.1-SNAPSHOT'
     implementation 'io.jmix.core:jmix-core-starter'

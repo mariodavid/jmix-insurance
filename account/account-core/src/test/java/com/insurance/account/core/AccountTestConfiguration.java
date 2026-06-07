@@ -19,9 +19,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
     id = "com.insurance.account.core.test",
     dependsOn = {
       AccountConfiguration.class,
-      com.insurance.security.SecurityCoreConfiguration.class,
-      com.insurance.partner.core.PartnerConfiguration.class,
-      com.insurance.policy.core.PolicyConfiguration.class
+      com.insurance.security.core.SecurityCoreConfiguration.class
     })
 public class AccountTestConfiguration {
 
@@ -32,10 +30,5 @@ public class AccountTestConfiguration {
         .generateUniqueName(true)
         .setType(EmbeddedDatabaseType.HSQL)
         .build();
-  }
-
-  @Bean
-  com.insurance.policy.api.service.PolicyService policyService() {
-    return org.mockito.Mockito.mock(com.insurance.policy.api.service.PolicyService.class);
   }
 }

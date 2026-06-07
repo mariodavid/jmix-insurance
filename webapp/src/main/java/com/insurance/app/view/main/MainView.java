@@ -1,7 +1,7 @@
 package com.insurance.app.view.main;
 
 import com.google.common.base.Strings;
-import com.insurance.security.entity.User;
+import com.insurance.security.core.entity.User;
 import com.insurance.theme.ModuleTheme;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -13,6 +13,7 @@ import io.jmix.core.Messages;
 import io.jmix.core.usersubstitution.CurrentUserSubstitution;
 import io.jmix.flowui.UiComponents;
 import io.jmix.flowui.app.main.StandardMainView;
+import io.jmix.flowui.component.horizontalmenu.HorizontalMenu;
 import io.jmix.flowui.view.Install;
 import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
@@ -62,6 +63,14 @@ public class MainView extends StandardMainView {
       getElement().getClassList().add(activeTheme.getThemeClass());
     }
 
+    io.jmix.flowui.component.UiComponentUtils.findComponent(getContent(), "horizontalMenu")
+        .ifPresent(
+            component -> {
+              if (component instanceof HorizontalMenu menu) {
+                highlightActiveMenuItem(menu, viewId);
+              }
+            });
+
     final ModuleTheme finalTheme = activeTheme;
     io.jmix.flowui.component.UiComponentUtils.findComponent(getContent(), "viewHeaderIconContainer")
         .ifPresent(
@@ -79,6 +88,26 @@ public class MainView extends StandardMainView {
               }
               container.setVisible(false);
             });
+  }
+
+  private void highlightActiveMenuItem(HorizontalMenu menu, String viewId) {
+    if (viewId == null) {
+      return;
+    }
+    String prefix = viewId.contains("_") ? viewId.substring(0, viewId.indexOf("_")) : viewId;
+
+    for (HorizontalMenu.AbstractMenuItem<?> item : menu.getMenuItems()) {
+      item.getElement().getClassList().remove("menu-item-active");
+
+      String itemId = item.getId().orElse("");
+      if (!itemId.isEmpty()) {
+        String itemPrefix =
+            itemId.contains("_") ? itemId.substring(0, itemId.indexOf("_")) : itemId;
+        if (itemPrefix.equals(prefix)) {
+          item.getElement().getClassList().add("menu-item-active");
+        }
+      }
+    }
   }
 
   private String getActiveViewId(Component activeView) {

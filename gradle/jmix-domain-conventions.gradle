@@ -1,0 +1,110 @@
+if (!rootProject.ext.has('jmixDomainProjectId')) {
+    throw new GradleException("Domain builds must define ext.jmixDomainProjectId before applying jmix-domain-conventions.gradle")
+}
+
+def domainProjectId = rootProject.ext.jmixDomainProjectId
+def apiProjectId = rootProject.ext.has('jmixDomainApiProjectId')
+        ? rootProject.ext.jmixDomainApiProjectId
+        : "${domainProjectId}_api"
+def jmixBomVersion = rootProject.ext.has('jmixBomVersion') ? rootProject.ext.jmixBomVersion : '2.8.1'
+
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+    apply plugin: 'io.jmix'
+    apply plugin: 'java-test-fixtures'
+    apply plugin: 'jacoco'
+    apply from: "${rootDir}/../gradle/static-analysis.gradle"
+
+    repositories {
+        mavenCentral()
+        maven {
+            url = 'https://global.repo.jmix.io/repository/public'
+        }
+    }
+
+    jmix {
+        bomVersion = jmixBomVersion
+        projectId = project.name.contains('-api') ? apiProjectId : domainProjectId
+    }
+
+    dependencies {
+        testFixturesImplementation platform("io.jmix.bom:jmix-bom:${jmixBomVersion}")
+    }
+
+    group = rootProject.group
+    version = rootProject.version
+
+    base {
+        archivesName = project.name
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+        withSourcesJar()
+    }
+
+    artifacts {
+        archives sourcesJar
+    }
+
+    publishing {
+        repositories {
+            maven {
+                url = 'https://myrepo/releases/'
+                credentials {
+                    username = rootProject.hasProperty('uploadUser') ? rootProject['uploadUser'] : 'admin'
+                    password = rootProject.hasProperty('uploadPassword') ? rootProject['uploadPassword'] : 'admin'
+                }
+                allowInsecureProtocol = true
+            }
+        }
+        publications {
+            javaMaven(MavenPublication) {
+                artifactId = project.name
+                from components.java
+            }
+        }
+    }
+
+    // remove after https://youtrack.jetbrains.com/issue/IDEA-227215 is fixed
+    tasks.withType(GenerateModuleMetadata) {
+        enabled = false
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.compilerArgs.add("-parameters")
+    }
+
+    tasks.withType(Test).configureEach {
+        systemProperty 'liquibase.duplicateFileMode', 'WARN'
+        finalizedBy jacocoTestReport
+    }
+
+    jacoco {
+        toolVersion = "0.8.11"
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.required = true
+            html.required = true
+        }
+    }
+}
+
+tasks.named('check') {
+    dependsOn subprojects.collect { it.tasks.named('check') }
+}
+
+tasks.named('clean') {
+    dependsOn subprojects.collect { it.tasks.named('clean') }
+}
+
+tasks.register('test') {
+    group = 'verification'
+    description = 'Runs tests for all subprojects.'
+    dependsOn subprojects.collect { it.tasks.matching { task -> task.name == 'test' } }
+}

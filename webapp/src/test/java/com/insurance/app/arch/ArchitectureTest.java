@@ -1,6 +1,15 @@
 package com.insurance.app.arch;
 
-import com.insurance.common.test_support.ArchitectureRules;
+import com.insurance.common.test_support.architecture.ArchitectureProject;
+import com.insurance.common.test_support.architecture.CoreModuleFileRules;
+import com.insurance.common.test_support.architecture.JavaPackageDependencyRules;
+import com.insurance.common.test_support.architecture.JmixDomainBoundaryRules;
+import com.insurance.common.test_support.architecture.JmixDomainBuildRules;
+import com.insurance.common.test_support.architecture.JmixDomainReferenceRules;
+import com.insurance.common.test_support.architecture.JmixEntityRules;
+import com.insurance.common.test_support.architecture.JmixLiquibaseRules;
+import com.insurance.common.test_support.architecture.JmixSecurityRoleRules;
+import com.insurance.common.test_support.architecture.JmixUiDependencyRules;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.junit.ArchTests;
@@ -13,10 +22,30 @@ import org.junit.jupiter.params.provider.ValueSource;
 @AnalyzeClasses(packages = "com.insurance")
 class ArchitectureTest {
 
-  @ArchTest static final ArchTests sharedRules = ArchTests.in(ArchitectureRules.class);
+  @ArchTest
+  static final ArchTests javaPackageDependencyRules =
+      ArchTests.in(JavaPackageDependencyRules.class);
+
+  @ArchTest static final ArchTests jmixEntityRules = ArchTests.in(JmixEntityRules.class);
+
+  @ArchTest
+  static final ArchTests jmixDomainBoundaryRules = ArchTests.in(JmixDomainBoundaryRules.class);
+
+  @ArchTest static final ArchTests jmixDomainBuildRules = ArchTests.in(JmixDomainBuildRules.class);
+
+  @ArchTest
+  static final ArchTests jmixDomainReferenceRules = ArchTests.in(JmixDomainReferenceRules.class);
+
+  @ArchTest static final ArchTests jmixLiquibaseRules = ArchTests.in(JmixLiquibaseRules.class);
+
+  @ArchTest
+  static final ArchTests jmixUiDependencyRules = ArchTests.in(JmixUiDependencyRules.class);
+
+  @ArchTest
+  static final ArchTests jmixSecurityRoleRules = ArchTests.in(JmixSecurityRoleRules.class);
 
   @Nested
-  @DisplayName("Module Dependency Rules (File System Checks)")
+  @DisplayName("Core Module File Rules")
   class FileSystemChecks {
 
     @ParameterizedTest(name = "{0}")
@@ -31,8 +60,8 @@ class ArchitectureTest {
         })
     @DisplayName("Core modules do not declare Flow UI dependencies or view resources")
     void coreModuleDoesNotDeclareFlowUiDependenciesOrViews(String modulePath) {
-      ArchitectureRules.assertCoreModuleDoesNotDeclareFlowUi(
-          ArchitectureRules.projectRoot().resolve(modulePath));
+      CoreModuleFileRules.assertCoreModuleDoesNotDeclareFlowUi(
+          ArchitectureProject.projectRoot().resolve(modulePath));
     }
   }
 }

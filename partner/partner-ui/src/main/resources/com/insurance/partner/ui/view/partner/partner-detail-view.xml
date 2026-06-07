@@ -7,15 +7,6 @@
             <fetchPlan extends="_base"/>
             <loader id="partnerDl"/>
         </instance>
-        <keyValueCollection id="policiesDc">
-            <properties>
-                <property name="policyNo" class="java.lang.String"/>
-                <property name="coverageEnd" class="java.time.LocalDate"/>
-            </properties>
-            <loader id="policiesDl">
-                <query><![CDATA[select e.policyNo, e.coverageEnd from policy_Policy e where e.partnerNo = :partnerNo]]></query>
-            </loader>
-        </keyValueCollection>
     </data>
     <facets>
         <dataLoadCoordinator auto="true"/>
@@ -39,29 +30,8 @@
                 </formLayout>
             </details>
 
-            <!-- Right Column: Policies & Account -->
-            <vbox padding="false" width="45%" height="100%" expand="policiesDetails">
-                <!-- Policies Card -->
-                <details id="policiesDetails" summaryText="msg://policiesCard.title" width="100%" themeNames="filled" opened="true" height="100%">
-                    <dataGrid id="policiesGrid" dataContainer="policiesDc" width="100%" height="100%" classNames="theme-grid">
-                        <columns>
-                            <column property="policyNo" header="msg://policyNo.label"/>
-                            <column key="status" header="msg://status.label"/>
-                        </columns>
-                    </dataGrid>
-                </details>
-
-                <!-- Account Card -->
-                <details id="accountDetails" summaryText="msg://accountCard.title" width="100%" themeNames="filled" opened="true">
-                    <formLayout>
-                        <responsiveSteps>
-                            <responsiveStep minWidth="0" columns="1"/>
-                        </responsiveSteps>
-                        <textField id="accountNoField" label="msg://accountNo.label" readOnly="true"/>
-                        <textField id="balanceField" label="msg://balance.label" readOnly="true"/>
-                    </formLayout>
-                </details>
-            </vbox>
+            <!-- Right Column: Cross-module partner sections -->
+            <vbox id="partnerSectionsBox" padding="false" width="45%" height="100%"/>
         </hbox>
 
         <hbox id="detailActions" classNames="mt-m">

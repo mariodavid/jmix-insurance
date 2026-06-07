@@ -2,11 +2,13 @@ package com.insurance.account.core.entity;
 
 import io.jmix.core.annotation.DeletedBy;
 import io.jmix.core.annotation.DeletedDate;
+import io.jmix.core.entity.annotation.EmbeddedParameters;
 import io.jmix.core.entity.annotation.JmixGeneratedValue;
 import io.jmix.core.metamodel.annotation.Composition;
 import io.jmix.core.metamodel.annotation.InstanceName;
 import io.jmix.core.metamodel.annotation.JmixEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
@@ -16,6 +18,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -27,7 +30,10 @@ import org.springframework.data.annotation.LastModifiedDate;
 @JmixEntity
 @Table(
     name = "ACCOUNT_ACCOUNT",
-    indexes = {@Index(name = "IDX_ACCOUNT_ACCOUNT", columnList = "ACCOUNT_NO")})
+    indexes = {
+      @Index(name = "IDX_ACCOUNT_ACCOUNT_POLICY_NO", columnList = "POLICY_NO"),
+      @Index(name = "IDX_ACCOUNT_ACCOUNT_PARTNER_NO", columnList = "PARTNER_NO")
+    })
 @Entity(name = "account_Account")
 public class Account {
 
@@ -64,14 +70,18 @@ public class Account {
   @Column(name = "DELETED_DATE")
   private OffsetDateTime deletedDate;
 
-  @Column(name = "POLICY_ID", nullable = false)
+  @EmbeddedParameters(nullAllowed = false)
+  @Embedded
   @NotNull
-  private UUID policyId;
+  private AccountPolicyReference policy;
 
-  @InstanceName
-  @Column(name = "ACCOUNT_NO", nullable = false)
+  @Column(name = "ACCOUNTING_PERIOD_START", nullable = false)
   @NotNull
-  private String accountNo;
+  private LocalDate accountingPeriodStart;
+
+  @Column(name = "ACCOUNTING_PERIOD_END", nullable = false)
+  @NotNull
+  private LocalDate accountingPeriodEnd;
 
   @Column(name = "ACCOUNT_BALANCE", nullable = false, precision = 19, scale = 2)
   @NotNull
@@ -82,12 +92,37 @@ public class Account {
   @OneToMany(mappedBy = "account")
   private List<AccountDocument> documents;
 
-  public UUID getPolicyId() {
-    return policyId;
+  public AccountPolicyReference getPolicy() {
+    return policy;
   }
 
-  public void setPolicyId(UUID policyId) {
-    this.policyId = policyId;
+  public void setPolicy(AccountPolicyReference policy) {
+    this.policy = policy;
+  }
+
+  public LocalDate getAccountingPeriodStart() {
+    return accountingPeriodStart;
+  }
+
+  public void setAccountingPeriodStart(LocalDate accountingPeriodStart) {
+    this.accountingPeriodStart = accountingPeriodStart;
+  }
+
+  public LocalDate getAccountingPeriodEnd() {
+    return accountingPeriodEnd;
+  }
+
+  public void setAccountingPeriodEnd(LocalDate accountingPeriodEnd) {
+    this.accountingPeriodEnd = accountingPeriodEnd;
+  }
+
+  public UUID getPolicyId() {
+    return policy != null ? policy.getPolicyId() : null;
+  }
+
+  @InstanceName
+  public String getAccountNo() {
+    return policy != null ? policy.getPolicyNo() : null;
   }
 
   public List<AccountDocument> getDocuments() {
@@ -106,12 +141,8 @@ public class Account {
     this.accountBalance = accountBalance;
   }
 
-  public String getAccountNo() {
-    return accountNo;
-  }
-
-  public void setAccountNo(String accountNo) {
-    this.accountNo = accountNo;
+  public String getPartnerNo() {
+    return policy != null ? policy.getPartnerNo() : null;
   }
 
   public UUID getId() {

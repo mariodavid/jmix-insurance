@@ -1,29 +1,24 @@
 package com.insurance.partner.ui.view.partner;
 
 import com.insurance.partner.core.entity.Partner;
+import com.insurance.partner.ui.api.PartnerSection;
+import com.insurance.partner.ui.api.PartnerViewContext;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.data.renderer.Renderer;
+import com.vaadin.flow.component.details.Details;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
-import io.jmix.core.DataManager;
 import io.jmix.core.Messages;
-import io.jmix.core.entity.KeyValueEntity;
-import io.jmix.flowui.UiComponents;
-import io.jmix.flowui.component.grid.DataGrid;
-import io.jmix.flowui.model.KeyValueCollectionLoader;
 import io.jmix.flowui.view.DefaultMainViewParent;
 import io.jmix.flowui.view.EditedEntityContainer;
 import io.jmix.flowui.view.StandardDetailView;
 import io.jmix.flowui.view.Subscribe;
-import io.jmix.flowui.view.Supply;
 import io.jmix.flowui.view.ViewComponent;
 import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
+import java.util.UUID;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Route(value = "partners/:id", layout = DefaultMainViewParent.class)
@@ -33,78 +28,45 @@ import org.springframework.beans.factory.annotation.Autowired;
 @CssImport("./partner/styles.css")
 public class PartnerDetailView extends StandardDetailView<Partner> {
 
-  @ViewComponent private KeyValueCollectionLoader policiesDl;
+  @ViewComponent private VerticalLayout partnerSectionsBox;
 
-  @ViewComponent private DataGrid<KeyValueEntity> policiesGrid;
-
-  @ViewComponent private TextField accountNoField;
-
-  @ViewComponent private TextField balanceField;
-
-  @Autowired private DataManager dataManager;
-  @Autowired private UiComponents uiComponents;
+  @Autowired private ObjectProvider<PartnerSection> partnerSections;
   @Autowired private Messages messages;
 
   @Subscribe
   public void onBeforeShow(final BeforeShowEvent event) {
-    Partner partner = getEditedEntity();
+    PartnerViewContext context = contextFor(getEditedEntity());
 
-    if (partner.getPartnerNo() != null) {
-      // 1. Load Policies key-value collection
-      policiesDl.setParameter("partnerNo", partner.getPartnerNo());
-      policiesDl.load();
+    partnerSectionsBox.removeAll();
+    partnerSections.orderedStream().forEach(section -> addSection(section, context));
+  }
 
-      // 2. Query Accounts associated with partner's policies
-      List<KeyValueEntity> accounts =
-          dataManager
-              .loadValues(
-                  "select a.accountNo, a.accountBalance from account_Account a, policy_Policy p "
-                      + "where a.accountNo = p.policyNo and p.partnerNo = :partnerNo")
-              .properties("accountNo", "accountBalance")
-              .parameter("partnerNo", partner.getPartnerNo())
-              .list();
+  private PartnerViewContext contextFor(Partner partner) {
+    return new PartnerViewContextImpl(partner.getId(), partner.getPartnerNo());
+  }
 
-      if (!accounts.isEmpty()) {
-        KeyValueEntity acc = accounts.get(0);
-        accountNoField.setValue(acc.getValue("accountNo") != null ? acc.getValue("accountNo") : "");
-        BigDecimal bal = acc.getValue("accountBalance");
-        if (bal != null) {
-          balanceField.setValue(bal.toString() + " EUR");
-          if (bal.compareTo(BigDecimal.ZERO) < 0) {
-            balanceField.addClassName("text-danger");
-          } else {
-            balanceField.removeClassName("text-danger");
-          }
-        } else {
-          balanceField.setValue("0.00 EUR");
-        }
-      } else {
-        accountNoField.setValue("—");
-        balanceField.setValue("—");
-      }
+  private void addSection(PartnerSection section, PartnerViewContext context) {
+    Component content = section.createContent(context, this);
+    setWidthFull(content);
+
+    Details details = new Details();
+    details.setSummaryText(messages.getMessage(section.getClass(), section.titleMessageKey()));
+    details.setWidthFull();
+    details.getElement().getThemeList().add("filled");
+    details.setOpened(true);
+    details.add(content);
+
+    partnerSectionsBox.add(details);
+  }
+
+  private void setWidthFull(Component component) {
+    if (component instanceof HasSize hasSize) {
+      hasSize.setWidthFull();
+    } else {
+      component.getElement().getStyle().set("width", "100%");
     }
   }
 
-  @Supply(to = "policiesGrid.status", subject = "renderer")
-  protected Renderer<KeyValueEntity> statusComponentRenderer() {
-    return new ComponentRenderer<>(
-        () -> {
-          Span span = uiComponents.create(Span.class);
-          span.getElement().getThemeList().add("badge");
-          return span;
-        },
-        (span, keyValueEntity) -> {
-          span.getElement().getThemeList().remove("success");
-          span.getElement().getThemeList().remove("error");
-
-          LocalDate coverageEnd = keyValueEntity.getValue("coverageEnd");
-          if (coverageEnd == null || !coverageEnd.isBefore(LocalDate.now())) {
-            span.setText(messages.getMessage(getClass(), "status.active"));
-            span.getElement().getThemeList().add("success");
-          } else {
-            span.setText(messages.getMessage(getClass(), "status.expired"));
-            span.getElement().getThemeList().add("error");
-          }
-        });
-  }
+  private record PartnerViewContextImpl(UUID partnerId, String partnerNo)
+      implements PartnerViewContext {}
 }

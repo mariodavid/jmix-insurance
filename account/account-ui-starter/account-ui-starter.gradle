@@ -1,5 +1,3 @@
-archivesBaseName = 'account-ui-starter'
-
 jmix {
     entitiesEnhancing {
         enabled = false

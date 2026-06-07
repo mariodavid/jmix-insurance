@@ -20,10 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-/**
- * Testet getAccountBalance() mit einer echten Policy — deckt den coverageEnd-Check ab, der im
- * AccountServiceTest mit Fake-UUIDs übersprungen wird.
- */
+/** Testet getAccountBalance() mit einer echten Policy-Created-Event-Kette. */
 class AccountBalanceWithPolicyTest extends BaseIntegrationTest {
 
   @Autowired private AccountService accountService;

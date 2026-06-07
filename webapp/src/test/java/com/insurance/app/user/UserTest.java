@@ -1,54 +1,57 @@
 package com.insurance.app.user;
 
-import static com.insurance.security.test_support.Assertions.assertThat;
+import static com.insurance.security.core.test_support.Assertions.assertThat;
 
-import com.insurance.app.test_support.AuthenticatedAsAdmin;
-import com.insurance.security.entity.User;
+import com.insurance.app.test_support.BaseIntegrationTest;
+import com.insurance.common.test_support.EntityTestData;
+import com.insurance.security.core.entity.User;
+import com.insurance.security.core.test_support.UserDataProvider;
 import io.jmix.core.DataManager;
 import io.jmix.core.security.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
 
-/** Sample integration test for the User entity. */
-@SpringBootTest
-@ExtendWith(AuthenticatedAsAdmin.class)
-@ActiveProfiles("test")
-public class UserTest {
+class UserTest extends BaseIntegrationTest {
 
-  @Autowired DataManager dataManager;
+  @Autowired private DataManager dataManager;
 
-  @Autowired PasswordEncoder passwordEncoder;
+  @Autowired private PasswordEncoder passwordEncoder;
 
-  @Autowired UserRepository userRepository;
+  @Autowired private UserRepository userRepository;
 
-  User savedUser;
+  @Autowired private EntityTestData entityTestData;
+
+  private User savedUser;
 
   @Test
-  void test_saveAndLoad() {
-    // Create and save a new User
-    User user = dataManager.create(User.class);
-    user.setUsername("test-user-" + System.currentTimeMillis());
-    user.setPassword(passwordEncoder.encode("test-passwd"));
-    user.setActive(true);
-    savedUser = dataManager.save(user);
+  void given_userCreatedWithDefaults_when_saved_then_canBeLoadedByIdAndUsername() {
+    // given
+    String username = "test-user-" + System.currentTimeMillis();
 
-    // Check the new user can be loaded
-    User loadedUser = dataManager.load(User.class).id(user.getId()).one();
-    assertThat(loadedUser).hasId(user.getId()).hasUsername(user.getUsername()).isActive();
+    // when
+    savedUser =
+        entityTestData.saveWithDefaults(
+            new UserDataProvider(),
+            user -> {
+              user.setUsername(username);
+              user.setPassword(passwordEncoder.encode("test-passwd"));
+            });
 
-    // Check the new user is available through UserRepository
-    UserDetails userDetails = userRepository.loadUserByUsername(user.getUsername());
-    assertThat(userDetails.getUsername()).isEqualTo(user.getUsername());
+    // then
+    User loadedUser = dataManager.load(User.class).id(savedUser.getId()).one();
+    UserDetails userDetails = userRepository.loadUserByUsername(username);
+    assertThat(loadedUser).hasId(savedUser.getId()).hasUsername(username).isActive();
+    assertThat(userDetails.getUsername()).isEqualTo(username);
   }
 
   @AfterEach
   void tearDown() {
-    if (savedUser != null) dataManager.remove(savedUser);
+    if (savedUser != null) {
+      dataManager.load(User.class).id(savedUser.getId()).optional().ifPresent(dataManager::remove);
+      savedUser = null;
+    }
   }
 }

@@ -21,6 +21,7 @@ public class QuoteDataProvider implements TestDataProvider<Quote> {
   @Override
   public void accept(Quote quote) {
     LocalDate effectiveDate = LocalDate.of(2025, 1, 1);
+    LocalDate today = LocalDate.now();
     quote.setPartnerNo("PT-" + UUID.randomUUID().toString().substring(0, 5));
     quote.setQuoteNo("QT-" + UUID.randomUUID().toString().substring(0, 8));
     quote.setStatus(QuoteStatus.PENDING);
@@ -31,7 +32,7 @@ public class QuoteDataProvider implements TestDataProvider<Quote> {
     quote.setEffectiveDate(effectiveDate);
     quote.setSquareMeters(60);
     quote.setCalculatedPremium(new BigDecimal("220.00"));
-    quote.setValidFrom(effectiveDate);
-    quote.setValidUntil(effectiveDate.plusDays(14));
+    quote.setValidFrom(today);
+    quote.setValidUntil(today.plusDays(14));
   }
 }

@@ -15,7 +15,7 @@ A modular insurance management demo application built with [Jmix 2](https://www.
 
 |                   |                                       |
 |-------------------|---------------------------------------|
-| Language          | Java 17                               |
+| Language          | Java 21                               |
 | Framework         | Jmix 2.8.1 (Spring Boot 3, Vaadin 24) |
 | Persistence       | EclipseLink JPA                       |
 | Database          | HSQLDB (embedded, file-based)         |
@@ -27,22 +27,25 @@ A modular insurance management demo application built with [Jmix 2](https://www.
 ```
 jmix-insurance/
 ├── webapp/             ← Runnable Spring Boot application
-├── common/             ← Shared base entity + test utilities
 ├── security/           ← Security API, core, UI, and starters
 ├── partner/            ← Partner API, core, UI, and starters
 ├── policy/             ← Policy API, core, UI, and starters
 ├── quote/              ← Quote API, core, UI, and starters
 ├── account/            ← Account API, core, UI, and starters
-└── product/            ← Product API, core, UI, and starters
+├── product/            ← Product enum/configuration modules
+├── theme/              ← Shared Jmix theme add-on
+├── ui-sections/        ← Shared Flow UI section contracts
+├── test-support/       ← Spring/Jmix integration test fixtures
+└── test-support-ui/    ← Flow UI test helper library
 ```
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for a detailed description of the module layout, domain model, and key design decisions.
+See [docs/architecture.md](docs/architecture.md) for the canonical module layout, domain model, agent harness, and key design decisions.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Java 17 or later
+- Java 21
 - Gradle (or use the included `gradlew` wrapper)
 
 ### Run the Application
@@ -86,4 +89,4 @@ Run the same checks from a clean workspace:
 
 The project follows the Jmix composite build pattern. Each domain add-on can be opened and built independently. The `webapp` assembles all add-ons at runtime by including their `*-starter` artifacts.
 
-Coding guidelines and skill routing are documented in [CLAUDE.md](CLAUDE.md).
+Coding guidelines and skill routing are documented in [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md).

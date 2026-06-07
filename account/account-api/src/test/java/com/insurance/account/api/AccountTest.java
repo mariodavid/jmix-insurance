@@ -4,6 +4,7 @@ import static com.insurance.account.api.dto.Assertions.assertThat;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 import com.insurance.account.api.dto.AccountDto;
+import com.insurance.account.api.dto.PartnerAccountSummaryDto;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
@@ -51,5 +52,23 @@ class AccountTest {
     assertThat(metaClass.getProperty("id")).isNotNull();
     assertThat(dto).hasPolicyNo("HC-2025-000001").hasBalance(new BigDecimal("120.00"));
     assertThat(dto.instanceName()).isEqualTo("HC-2025-000001");
+  }
+
+  @Test
+  void
+      given_partnerAccountSummaryDto_when_createdThroughDataManager_then_metadataAndInstanceNameAreStable() {
+    PartnerAccountSummaryDto dto = dataManager.create(PartnerAccountSummaryDto.class);
+    dto.setAccountNo("HC-2025-000002");
+    dto.setAccountBalance(new BigDecimal("-120.00"));
+
+    MetaClass metaClass = metadata.getClass(PartnerAccountSummaryDto.class);
+
+    assertThat(dto.getId()).isNotNull();
+    assertThat(metaClass.getProperty("id")).isNotNull();
+    assertThat(metaClass.getProperty("accountNo")).isNotNull();
+    assertThat(metaClass.getProperty("accountBalance")).isNotNull();
+    assertThat(dto.getAccountNo()).isEqualTo("HC-2025-000002");
+    assertThat(dto.getAccountBalance()).isEqualByComparingTo("-120.00");
+    assertThat(dto.instanceName()).isEqualTo("HC-2025-000002");
   }
 }

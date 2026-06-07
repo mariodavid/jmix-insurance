@@ -9,7 +9,9 @@ public class PolicyCreatedEvent extends ApplicationEvent {
 
   private final UUID policyId;
   private final String policyNo;
+  private final String partnerNo;
   private final LocalDate coverageStart;
+  private final LocalDate coverageEnd;
   private final BigDecimal premium;
   private final String paymentFrequencyId;
 
@@ -17,13 +19,17 @@ public class PolicyCreatedEvent extends ApplicationEvent {
       Object source,
       UUID policyId,
       String policyNo,
+      String partnerNo,
       LocalDate coverageStart,
+      LocalDate coverageEnd,
       BigDecimal premium,
       String paymentFrequencyId) {
     super(source);
     this.policyId = policyId;
     this.policyNo = policyNo;
+    this.partnerNo = partnerNo;
     this.coverageStart = coverageStart;
+    this.coverageEnd = coverageEnd;
     this.premium = premium;
     this.paymentFrequencyId = paymentFrequencyId;
   }
@@ -36,8 +42,16 @@ public class PolicyCreatedEvent extends ApplicationEvent {
     return policyNo;
   }
 
+  public String getPartnerNo() {
+    return partnerNo;
+  }
+
   public LocalDate getCoverageStart() {
     return coverageStart;
+  }
+
+  public LocalDate getCoverageEnd() {
+    return coverageEnd;
   }
 
   public BigDecimal getPremium() {

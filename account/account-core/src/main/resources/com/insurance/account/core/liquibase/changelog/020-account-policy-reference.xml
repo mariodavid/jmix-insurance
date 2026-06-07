@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="1" author="app">
+        <dropIndex tableName="ACCOUNT_ACCOUNT" indexName="IDX_ACCOUNT_ACCOUNT"/>
+
+        <addColumn tableName="ACCOUNT_ACCOUNT">
+            <column name="POLICY_NO" type="VARCHAR(255)"/>
+            <column name="PARTNER_NO" type="VARCHAR(255)"/>
+            <column name="ACCOUNTING_PERIOD_START" type="DATE"/>
+            <column name="ACCOUNTING_PERIOD_END" type="DATE"/>
+        </addColumn>
+
+        <sql>
+            update ACCOUNT_ACCOUNT
+            set POLICY_NO = ACCOUNT_NO
+            where POLICY_NO is null
+        </sql>
+        <sql>
+            update ACCOUNT_ACCOUNT
+            set ACCOUNTING_PERIOD_START = DATE '1970-01-01'
+            where ACCOUNTING_PERIOD_START is null
+        </sql>
+        <sql>
+            update ACCOUNT_ACCOUNT
+            set ACCOUNTING_PERIOD_END = DATE '9999-12-31'
+            where ACCOUNTING_PERIOD_END is null
+        </sql>
+
+        <addNotNullConstraint tableName="ACCOUNT_ACCOUNT"
+                              columnName="POLICY_NO"
+                              columnDataType="VARCHAR(255)"/>
+        <addNotNullConstraint tableName="ACCOUNT_ACCOUNT"
+                              columnName="ACCOUNTING_PERIOD_START"
+                              columnDataType="DATE"/>
+        <addNotNullConstraint tableName="ACCOUNT_ACCOUNT"
+                              columnName="ACCOUNTING_PERIOD_END"
+                              columnDataType="DATE"/>
+
+        <dropColumn tableName="ACCOUNT_ACCOUNT" columnName="ACCOUNT_NO"/>
+
+        <createIndex tableName="ACCOUNT_ACCOUNT" indexName="IDX_ACCOUNT_ACCOUNT_POLICY_NO">
+            <column name="POLICY_NO"/>
+        </createIndex>
+        <createIndex tableName="ACCOUNT_ACCOUNT" indexName="IDX_ACCOUNT_ACCOUNT_PARTNER_NO">
+            <column name="PARTNER_NO"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

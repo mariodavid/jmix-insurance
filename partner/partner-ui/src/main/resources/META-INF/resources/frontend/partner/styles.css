@@ -36,8 +36,3 @@
 .partner-theme vaadin-app-layout::part(content) {
     background-color: var(--theme-tint-color) !important;
 }
-
-/* Vertical indicator for selected row in grid */
-.partner-theme vaadin-grid::part(selected-row-cell) {
-    border-left: 3px solid var(--theme-accent-color) !important;
-}

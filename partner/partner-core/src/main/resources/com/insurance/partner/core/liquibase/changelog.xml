@@ -6,5 +6,6 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <include file="/com/insurance/partner/core/liquibase/changelog/010-init-partner.xml"/>
+    <include file="/com/insurance/partner/core/liquibase/changelog/020-business-key-constraints.xml"/>
 
 </databaseChangeLog>

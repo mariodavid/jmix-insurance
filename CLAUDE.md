@@ -4,7 +4,7 @@ Use these instructions when working on a Jmix 2 application.
 
 ## Project Stack
 
-- Java 17
+- Java 21
 - Jmix 2, Spring Boot 3, Vaadin 24
 - Gradle
 - Relational database with Liquibase migrations
@@ -28,7 +28,12 @@ Use the most specific skill for the task:
 - Creating DTO entities or UI-bound non-persistent models: `jmix-create-dto-entity`
 - Creating reusable Flow UI fragments or fragment renderers: `jmix-create-fragment`
 - Adding or changing tests: `jmix-create-test`
+- Changing cross-domain access or module boundaries: `insurance-module-boundaries`
+- Changing quote accept/reject behavior: `insurance-quote-lifecycle`
+- Changing persistent schema or business-key constraints: `insurance-liquibase-drift`
+- Changing business-flow logging: `insurance-observability`
 - Writing tests following project conventions (patterns, assertions, cleanup, flow tests): `insurance-testing`
+- Updating app-specific role composition and security policies: `insurance-security-roles`
 
 ## Tooling
 
@@ -132,4 +137,4 @@ To maximize development velocity, avoid running full root builds (`./gradlew che
 5. **Full Project Verification**: Before final check-in, run the full validation suite:
    ```shell
    ./gradlew check
-
+   ```

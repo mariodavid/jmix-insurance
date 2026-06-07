@@ -1,4 +1,5 @@
 .jmix
+graphify-out/
 
 .gradle
 build/

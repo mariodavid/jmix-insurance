@@ -8,6 +8,7 @@ import com.insurance.app.test_support.AuthenticatedAsAdmin;
 import com.insurance.partner.ui.view.partner.PartnerListView;
 import com.insurance.policy.ui.view.policy.PolicyListView;
 import com.insurance.quote.ui.view.quote.QuoteListView;
+import com.insurance.security.ui.view.user.UserListView;
 import io.jmix.flowui.ViewNavigators;
 import io.jmix.flowui.testassist.FlowuiTestAssistConfiguration;
 import io.jmix.flowui.testassist.UiTest;
@@ -60,7 +61,8 @@ class UiStarterRegistrationTest {
         view("quote_Quote.list", QuoteListView.class),
         view("account_Account.list", AccountListView.class),
         view("policy_Policy.list", PolicyListView.class),
-        view("partner_Partner.list", PartnerListView.class));
+        view("partner_Partner.list", PartnerListView.class),
+        view("security_User.list", UserListView.class));
   }
 
   private static Object[] view(String viewId, Class<? extends View<?>> viewClass) {

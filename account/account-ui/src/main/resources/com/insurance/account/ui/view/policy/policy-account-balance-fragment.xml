@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<fragment xmlns="http://jmix.io/schema/flowui/fragment">
+    <content>
+        <vbox id="root" width="100%" padding="false">
+            <datePicker id="accountBalanceEffectiveDatePicker"
+                        label="msg://com.insurance.account.ui.view.policy/effectiveDate.label"/>
+            <textField id="accountBalanceResult"
+                       label="msg://com.insurance.account.ui.view.policy/accountBalance.label"
+                       readOnly="true">
+                <suffix>
+                    <span text="msg://com.insurance.account.ui.view.policy/eur"/>
+                </suffix>
+            </textField>
+        </vbox>
+    </content>
+</fragment>

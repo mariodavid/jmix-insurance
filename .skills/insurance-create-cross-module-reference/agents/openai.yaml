@@ -1,0 +1,7 @@
+interface:
+  display_name: "Insurance Cross-Module Reference"
+  short_description: "Create local embedded domain references."
+  default_prompt: "Use $insurance-create-cross-module-reference to create a consumer-owned embedded reference to an entity owned by another Insurance module."
+
+policy:
+  allow_implicit_invocation: true

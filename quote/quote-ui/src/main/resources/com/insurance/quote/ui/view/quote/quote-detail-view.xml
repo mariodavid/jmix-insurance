@@ -69,7 +69,7 @@
                         <responsiveSteps>
                             <responsiveStep minWidth="0" columns="1"/>
                         </responsiveSteps>
-                        <textField id="createdPolicyNoField" property="createdPolicyNo" readOnly="true"/>
+                        <textField id="createdPolicyNoField" property="createdPolicy.policyNo" readOnly="true"/>
                     </formLayout>
                 </details>
             </vbox>

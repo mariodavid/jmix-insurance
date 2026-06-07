@@ -1,5 +1,3 @@
-archivesBaseName = 'partner-api-starter'
-
 jmix {
     entitiesEnhancing {
         enabled = false

@@ -15,6 +15,7 @@ vaadin-app-layout.jmix-main-view-top-menu-app-layout::part(navbar) {
   display: flex;
   flex-grow: 1;
   overflow: auto;
+  margin-left: var(--lumo-space-xl); /* Shorter/shifted right */
 }
 
 .jmix-main-view-top-menu-header {
@@ -26,7 +27,18 @@ vaadin-app-layout.jmix-main-view-top-menu-app-layout::part(navbar) {
 
 .jmix-main-view-top-menu-logo-container {
   display: flex;
+  align-items: center;
+  gap: var(--lumo-space-s);
   margin: 0 var(--lumo-space-m);
+  text-decoration: none !important;
+}
+
+.jmix-main-view-top-menu-logo-label {
+  font-weight: 700;
+  font-size: var(--lumo-font-size-m);
+  color: var(--lumo-header-text-color);
+  white-space: nowrap;
+  letter-spacing: -0.1px;
 }
 
 .app-logo-box {
@@ -75,59 +87,43 @@ vaadin-app-layout.jmix-main-view-top-menu-app-layout::part(navbar) {
   margin: var(--lumo-space-s) var(--lumo-space-m);
 }
 
-/* Active navigation item selected border highlights */
-jmix-horizontal-menu::part(item)[selected],
-vaadin-tab[selected] {
-    font-weight: bold !important;
+/* Adjust size and styles of horizontal menu items */
+.jmix-horizontal-menu vaadin-menu-bar-button {
+    font-size: 12.5px !important;
+    font-weight: 500;
+    color: var(--lumo-secondary-text-color) !important;
+    min-height: 34px !important;
+    height: 34px !important;
+    padding: 0 6px !important; /* Tight padding inside item */
+    margin: 0 !important; /* No margin between items */
+    border-bottom: 2px solid transparent !important;
+    border-radius: 0 !important; /* Flat bottom border */
+    transition: color 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
+    background-color: transparent !important;
 }
 
-/* Active navigation item selected color highlights */
-jmix-horizontal-menu::part(item)[selected]:has(.account-menu-item),
-jmix-horizontal-menu::part(item)[selected]:has(.account-menu-item) vaadin-icon {
-    color: #0D9488 !important;
-}
-jmix-horizontal-menu::part(item)[selected]:has(.account-menu-item) {
-    border-bottom: 2px solid #0D9488 !important;
+.jmix-horizontal-menu vaadin-menu-bar-button:hover {
+    color: var(--lumo-header-text-color) !important;
 }
 
-jmix-horizontal-menu::part(item)[selected]:has(.quote-menu-item),
-jmix-horizontal-menu::part(item)[selected]:has(.quote-menu-item) vaadin-icon {
-    color: #D97706 !important;
-}
-jmix-horizontal-menu::part(item)[selected]:has(.quote-menu-item) {
-    border-bottom: 2px solid #D97706 !important;
+/* Active navigation item highlights */
+.jmix-horizontal-menu vaadin-menu-bar-button:has(.menu-item-active) {
+    color: var(--theme-accent-color, var(--lumo-primary-color)) !important;
+    border-bottom: 2px solid var(--theme-accent-color, var(--lumo-primary-color)) !important;
 }
 
-jmix-horizontal-menu::part(item)[selected]:has(.policy-menu-item),
-jmix-horizontal-menu::part(item)[selected]:has(.policy-menu-item) vaadin-icon {
-    color: #4F46E5 !important;
-}
-jmix-horizontal-menu::part(item)[selected]:has(.policy-menu-item) {
-    border-bottom: 2px solid #4F46E5 !important;
+.jmix-horizontal-menu vaadin-menu-bar-button:has(.menu-item-active) .menu-item-active {
+    color: var(--theme-accent-color, var(--lumo-primary-color)) !important;
+    font-weight: 600 !important;
 }
 
-jmix-horizontal-menu::part(item)[selected]:has(.partner-menu-item),
-jmix-horizontal-menu::part(item)[selected]:has(.partner-menu-item) vaadin-icon {
-    color: #9333EA !important;
-}
-jmix-horizontal-menu::part(item)[selected]:has(.partner-menu-item) {
-    border-bottom: 2px solid #9333EA !important;
-}
-
-jmix-horizontal-menu::part(item)[selected]:has(.security-menu-item),
-jmix-horizontal-menu::part(item)[selected]:has(.security-menu-item) vaadin-icon {
-    color: var(--lumo-primary-color) !important;
-}
-jmix-horizontal-menu::part(item)[selected]:has(.security-menu-item) {
-    border-bottom: 2px solid var(--lumo-primary-color) !important;
-}
-
-/* Make horizontal menu icons smaller */
-jmix-horizontal-menu vaadin-icon,
-jmix-horizontal-menu::part(item) vaadin-icon {
+/* Make horizontal menu icons smaller and inherit button color */
+.jmix-horizontal-menu vaadin-icon {
     width: 15px !important;
     height: 15px !important;
     margin-right: var(--lumo-space-xs) !important;
+    color: inherit !important;
 }
 
 

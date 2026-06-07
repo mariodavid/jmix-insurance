@@ -4,10 +4,12 @@ import com.insurance.product.api.dto.InsuranceProduct;
 import com.insurance.product.api.dto.PaymentFrequency;
 import io.jmix.core.annotation.DeletedBy;
 import io.jmix.core.annotation.DeletedDate;
+import io.jmix.core.entity.annotation.EmbeddedParameters;
 import io.jmix.core.entity.annotation.JmixGeneratedValue;
 import io.jmix.core.metamodel.annotation.InstanceName;
 import io.jmix.core.metamodel.annotation.JmixEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -60,9 +62,10 @@ public class Policy {
   @Column(name = "DELETED_DATE")
   private OffsetDateTime deletedDate;
 
-  @Column(name = "PARTNER_NO", nullable = false)
+  @EmbeddedParameters(nullAllowed = false)
+  @Embedded
   @NotNull
-  private String partnerNo;
+  private PolicyPartnerReference partner;
 
   @Column(name = "INSURANCE_PRODUCT", nullable = false)
   @NotNull
@@ -87,12 +90,22 @@ public class Policy {
   @NotNull
   private String paymentFrequency;
 
+  public PolicyPartnerReference getPartner() {
+    return partner;
+  }
+
+  public void setPartner(PolicyPartnerReference partner) {
+    this.partner = partner;
+  }
+
   public String getPartnerNo() {
-    return partnerNo;
+    return partner != null ? partner.getPartnerNo() : null;
   }
 
   public void setPartnerNo(String partnerNo) {
-    this.partnerNo = partnerNo;
+    if (partner != null) {
+      partner.setPartnerNo(partnerNo);
+    }
   }
 
   public PaymentFrequency getPaymentFrequency() {

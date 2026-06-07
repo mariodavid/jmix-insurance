@@ -8,7 +8,6 @@
             <fetchPlan extends="_base"/>
             <loader id="policyDl"/>
         </instance>
-        <instance id="partnerDc" class="com.insurance.partner.api.dto.PartnerDto" />
     </data>
     <facets>
         <dataLoadCoordinator auto="true"/>
@@ -33,25 +32,7 @@
                 <select id="paymentFrequencyField" property="paymentFrequency" readOnly="true"/>
             </formLayout>
             </details>
-            <vbox padding="false" width="300px" height="100%" expand="accountBalance">
-                <details themeNames="filled" summaryText="msg://com.insurance.policy.ui.view.policy/policyHolder" opened="true" width="100%">
-                    <formLayout id="partnerForm" dataContainer="partnerDc" width="100%">
-                        <textField id="partnerNoField" property="partnerNo" readOnly="true"/>
-                        <textField id="firstNameField" property="firstName" readOnly="true"/>
-                        <textField id="lastNameField" property="lastName" readOnly="true"/>
-                    </formLayout>
-                </details>
-                <details id="accountBalance" themeNames="filled" summaryText="msg://com.insurance.policy.ui.view.policy/accountBalance" opened="true" width="100%" height="100%">
-                    <vbox width="100%">
-                        <datePicker id="accountBalanceEffectiveDatePicker" label="msg://com.insurance.policy.ui.view.policy/effectiveDate"/>
-                        <textField id="accountBalanceResult" label="msg://com.insurance.policy.ui.view.policy/accountBalance" readOnly="true">
-                            <suffix>
-                                <span text="msg://com.insurance.policy.ui.view.policy/eur"/>
-                            </suffix>
-                        </textField>
-                    </vbox>
-                </details>
-            </vbox>
+            <vbox id="policySectionsBox" padding="false" width="300px"/>
         </hbox>
         <hbox id="detailActions">
             <button id="saveAndCloseButton" action="saveAction"/>

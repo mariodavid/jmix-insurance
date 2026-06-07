@@ -1,5 +1,3 @@
-archivesBaseName = 'account-core'
-
 dependencies {
     api 'com.insurance.account:account-api-starter:0.0.1-SNAPSHOT'
 
@@ -17,11 +15,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'javax.annotation:javax.annotation-api:1.3.2'
     testImplementation 'com.insurance.testsupport:test-support:0.0.1-SNAPSHOT'
-    testImplementation testFixtures('com.insurance.policy:policy-core:0.0.1-SNAPSHOT')
 
     testFixturesApi 'org.assertj:assertj-core:3.24.2'
     testFixturesApi 'com.insurance.testsupport:test-support:0.0.1-SNAPSHOT'
-    testFixturesApi testFixtures('com.insurance.policy:policy-core:0.0.1-SNAPSHOT')
     testFixturesImplementation 'javax.annotation:javax.annotation-api:1.3.2'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

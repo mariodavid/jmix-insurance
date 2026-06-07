@@ -5,6 +5,7 @@ include 'policy-api-starter'
 include 'policy-core'
 include 'policy-core-starter'
 include 'policy-ui'
+include 'policy-ui-api'
 include 'policy-ui-starter'
 
 rootProject.children.each { p1 ->

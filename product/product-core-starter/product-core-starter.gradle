@@ -1,5 +1,3 @@
-archivesBaseName = 'product-core-starter'
-
 jmix {
     entitiesEnhancing {
         enabled = false

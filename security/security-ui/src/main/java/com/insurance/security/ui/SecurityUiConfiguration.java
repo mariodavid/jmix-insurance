@@ -1,6 +1,6 @@
 package com.insurance.security.ui;
 
-import com.insurance.security.SecurityCoreConfiguration;
+import com.insurance.security.core.SecurityCoreConfiguration;
 import io.jmix.core.annotation.JmixModule;
 import io.jmix.core.impl.scanning.AnnotationScanMetadataReaderFactory;
 import io.jmix.flowui.FlowuiConfiguration;

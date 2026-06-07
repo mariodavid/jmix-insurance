@@ -1,5 +1,3 @@
-archivesBaseName = 'partner-ui-starter'
-
 jmix {
     entitiesEnhancing {
         enabled = false

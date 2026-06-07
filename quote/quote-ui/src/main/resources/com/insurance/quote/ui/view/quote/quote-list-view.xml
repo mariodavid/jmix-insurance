@@ -55,7 +55,7 @@
                 <column property="squareMeters"/>
                 <column property="calculatedPremium"/>
                 <column property="insuranceProduct"/>
-                <column property="createdPolicyNo"/>
+                <column property="createdPolicy.policyNo"/>
             </columns>
         </dataGrid>
         <hbox id="lookupActions" visible="false">

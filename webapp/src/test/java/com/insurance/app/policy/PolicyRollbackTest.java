@@ -62,6 +62,8 @@ class PolicyRollbackTest extends BaseIntegrationTest {
         .createAccount(
             any(java.util.UUID.class),
             anyString(),
+            anyString(),
+            any(LocalDate.class),
             any(LocalDate.class),
             any(BigDecimal.class),
             any(PaymentFrequency.class));
@@ -77,6 +79,8 @@ class PolicyRollbackTest extends BaseIntegrationTest {
         .createAccount(
             any(java.util.UUID.class),
             anyString(),
+            anyString(),
+            any(LocalDate.class),
             any(LocalDate.class),
             any(BigDecimal.class),
             any(PaymentFrequency.class));

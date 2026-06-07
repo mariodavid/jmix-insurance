@@ -1,0 +1,25 @@
+# Task Backlog
+
+Diese Tasks stammen aus `plans/codex-review.md` und sind als moegliche PR-Schnitte gedacht.
+
+1. [CI Harness Und Java-Version Stabilisieren](1-ci-harness-beschreibung.md)
+2. [Partner UI Von Direkten Cross-Domain Queries Entkoppeln](2-cross-domain-partner-ui-beschreibung.md)
+3. [Cross-Domain Entity-Namen In Java Und XML Per ArchUnit Blockieren](3-cross-domain-guardrail-beschreibung.md)
+4. [Quote Lifecycle Im Service Erzwingen](4-quote-lifecycle-beschreibung.md)
+5. [Liquibase Drift Bei Business Keys Schliessen](5-liquibase-drift-beschreibung.md)
+6. [App-Spezifische Skills Aktualisieren Und Ergaenzen](6-app-specific-skills-beschreibung.md)
+7. [Business Logging Und Correlation Fuer Quote-Flows Einfuehren](7-observability-logging-beschreibung.md)
+8. [Gradle Domain-Konventionen Zentralisieren](8-gradle-conventions-beschreibung.md)
+9. [Security Rollen Gegen Menus Und Views Pruefen](9-security-role-guardrails-beschreibung.md)
+10. [Dokumentation Als Architekturvertrag Synchronisieren](10-doc-sync-beschreibung.md)
+11. [Alte Und Neue Testmuster Vereinheitlichen](11-test-harness-cleanup-beschreibung.md)
+12. [Deprecated Jmix/Vaadin Test-Support API Aktualisieren](12-deprecation-upgrade-beschreibung.md)
+13. [Security User Entity Von app_User Auf security_User Migrieren](13-security-user-entity-prefix-beschreibung.md)
+14. [ArchitectureRules In Logische Regelklassen Aufteilen](14-architecture-rules-aufteilen-beschreibung.md)
+15. [Partner View Sections Mit Generischem UI-Section Contract Einfuehren](15-partner-view-sections-beschreibung.md)
+16. [Domain Association Strategy Fuer Consumer-Owned References Festlegen](16-domain-association-strategy-beschreibung.md)
+17. [Entity Imports Gegen Fremde Domain-Modelle Absichern](17-cross-domain-jpa-association-guardrail-beschreibung.md)
+18. [Cross-Module UI Dependencies In Gradle Und ArchUnit Begrenzen](18-cross-module-ui-dependency-guardrail-beschreibung.md)
+19. [Entfaellt: GenericFilter Ueber Embedded Reference](19-generic-filter-association-demo-beschreibung.md)
+20. [Konkrete Embedded References Und Account-Policy-Reference Umsetzen](20-konkrete-embedded-references-beschreibung.md)
+21. [Core Entity Boundary Guardrails Vereinfachen](21-core-entity-boundary-guardrails-vereinfachen-beschreibung.md)

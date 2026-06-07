@@ -17,7 +17,10 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 @PropertySource("classpath:/com/insurance/quote/core/test-app.properties")
 @JmixModule(
     id = "com.insurance.quote.core.test",
-    dependsOn = {QuoteConfiguration.class, com.insurance.security.SecurityCoreConfiguration.class})
+    dependsOn = {
+      QuoteConfiguration.class,
+      com.insurance.security.core.SecurityCoreConfiguration.class
+    })
 public class QuoteTestConfiguration {
 
   @Bean

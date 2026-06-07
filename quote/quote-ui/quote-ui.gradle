@@ -1,5 +1,3 @@
-archivesBaseName = 'quote-ui'
-
 dependencies {
     api project(':quote-core')
 

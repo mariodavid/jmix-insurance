@@ -15,13 +15,13 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 @SpringBootConfiguration
 @EnableAutoConfiguration
-@Import(PolicyConfiguration.class)
+@Import({PolicyConfiguration.class, com.insurance.partner.core.PartnerConfiguration.class})
 @PropertySource("classpath:/com/insurance/policy/core/test-app.properties")
 @JmixModule(
     id = "com.insurance.policy.core.test",
     dependsOn = {
       PolicyConfiguration.class,
-      com.insurance.security.SecurityCoreConfiguration.class,
+      com.insurance.security.core.SecurityCoreConfiguration.class,
       com.insurance.partner.core.PartnerConfiguration.class
     })
 public class PolicyTestConfiguration {

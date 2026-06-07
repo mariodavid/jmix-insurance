@@ -65,6 +65,9 @@ class PolicyCreatedEventTest extends BaseIntegrationTest {
     Account account = awaitAccountByNo(policy.getPolicyNo(), 1);
     assertThat(account)
         .hasAccountNo(policy.getPolicyNo())
+        .hasPolicyId(policy.getId())
+        .hasPolicyPartnerNo(policy.getPartnerNo())
+        .hasAccountingPeriod(policy.getCoverageStart(), policy.getCoverageEnd())
         .hasBalance(PREMIUM.negate())
         .hasDocumentCount(1);
 
@@ -107,7 +110,7 @@ class PolicyCreatedEventTest extends BaseIntegrationTest {
         Account account =
             dataManager
                 .load(Account.class)
-                .condition(PropertyCondition.equal("accountNo", accountNo))
+                .condition(PropertyCondition.equal("policy.policyNo", accountNo))
                 .fetchPlan(
                     fp ->
                         fp.addFetchPlan(io.jmix.core.FetchPlan.BASE)
@@ -131,7 +134,7 @@ class PolicyCreatedEventTest extends BaseIntegrationTest {
     }
     return dataManager
         .load(Account.class)
-        .condition(PropertyCondition.equal("accountNo", accountNo))
+        .condition(PropertyCondition.equal("policy.policyNo", accountNo))
         .fetchPlan(
             fp ->
                 fp.addFetchPlan(io.jmix.core.FetchPlan.BASE)
@@ -142,7 +145,7 @@ class PolicyCreatedEventTest extends BaseIntegrationTest {
   private Account loadAccountByNo(String accountNo) {
     return dataManager
         .load(Account.class)
-        .condition(PropertyCondition.equal("accountNo", accountNo))
+        .condition(PropertyCondition.equal("policy.policyNo", accountNo))
         .fetchPlan(
             fp ->
                 fp.addFetchPlan(io.jmix.core.FetchPlan.BASE)
