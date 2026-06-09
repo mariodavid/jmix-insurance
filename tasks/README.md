@@ -23,3 +23,6 @@ Diese Tasks stammen aus `plans/codex-review.md` und sind als moegliche PR-Schnit
 19. [Entfaellt: GenericFilter Ueber Embedded Reference](19-generic-filter-association-demo-beschreibung.md)
 20. [Konkrete Embedded References Und Account-Policy-Reference Umsetzen](20-konkrete-embedded-references-beschreibung.md)
 21. [Core Entity Boundary Guardrails Vereinfachen](21-core-entity-boundary-guardrails-vereinfachen-beschreibung.md)
+23. [Cross-Module Core Isolation mit Slices API umsetzen](23-archunit-slices-core-isolation-beschreibung.md)
+24. [Standard Coding Rules und Jmix-Ausnahmen einrichten](24-archunit-general-coding-rules-beschreibung.md)
+25. [Annotation-Matching, Logger-Conventions und Composite-Rules verfeinern](25-archunit-additional-idiomatic-refactoring-beschreibung.md)

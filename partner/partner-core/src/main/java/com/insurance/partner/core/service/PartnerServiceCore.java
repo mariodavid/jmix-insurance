@@ -11,6 +11,7 @@ import io.jmix.data.Sequences;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service("partner_PartnerService")
 public class PartnerServiceCore implements PartnerService {
@@ -29,18 +30,21 @@ public class PartnerServiceCore implements PartnerService {
   @Override
   @Authenticated
   public List<PartnerDto> findPartners(String search, int limit, int offset) {
-    String queryStr = "select p from partner_Partner p";
-    if (search != null && !search.trim().isEmpty()) {
-      queryStr +=
-          " where (lower(p.firstName) like lower(:search) "
-              + " or lower(p.lastName) like lower(:search) "
-              + " or lower(p.partnerNo) like lower(:search))";
-    }
-    queryStr += " order by p.partnerNo";
+    String queryStr =
+        StringUtils.hasText(search)
+            ? """
+                select p from partner_Partner p
+                where (lower(p.firstName) like lower(:search)
+                   or lower(p.lastName) like lower(:search)
+                   or lower(p.partnerNo) like lower(:search))
+                order by p.partnerNo
+                """
+                .formatted()
+            : "select p from partner_Partner p order by p.partnerNo";
 
     var loader = dataManager.load(Partner.class).query(queryStr);
 
-    if (search != null && !search.trim().isEmpty()) {
+    if (StringUtils.hasText(search)) {
       loader.parameter("search", "%" + search.trim() + "%");
     }
 
@@ -71,11 +75,11 @@ public class PartnerServiceCore implements PartnerService {
       partner = dataManager.create(Partner.class);
 
       // Generate unique partnerNo using Jmix Sequences if not present
-      if (partnerDto.getPartnerNo() == null || partnerDto.getPartnerNo().trim().isEmpty()) {
+      if (StringUtils.hasText(partnerDto.getPartnerNo())) {
+        partner.setPartnerNo(partnerDto.getPartnerNo());
+      } else {
         long nextVal = sequences.createNextValue(Sequence.withName("partner_number_sequence"));
         partner.setPartnerNo("PT-" + String.format("%05d", nextVal));
-      } else {
-        partner.setPartnerNo(partnerDto.getPartnerNo());
       }
     }
 

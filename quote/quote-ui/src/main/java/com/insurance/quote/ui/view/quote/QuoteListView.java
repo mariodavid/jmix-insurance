@@ -33,9 +33,14 @@ public class QuoteListView extends StandardListView<Quote> {
 
   @ViewComponent private DataGrid<Quote> quotesDataGrid;
 
-  @Autowired private QuoteService quoteService;
+  private final QuoteService quoteService;
+  private final Notifications notifications;
 
-  @Autowired private Notifications notifications;
+  @Autowired
+  public QuoteListView(QuoteService quoteService, Notifications notifications) {
+    this.quoteService = quoteService;
+    this.notifications = notifications;
+  }
 
   @ViewComponent private MessageBundle messageBundle;
 

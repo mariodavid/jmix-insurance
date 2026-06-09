@@ -6,6 +6,7 @@ import io.jmix.data.Sequence;
 import io.jmix.data.Sequences;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component("partner_PartnerEventListener")
 public class PartnerEventListener {
@@ -21,7 +22,7 @@ public class PartnerEventListener {
     Partner partner = event.getEntity();
 
     // Generate unique partnerNo using Jmix Sequences if not present yet
-    if (partner.getPartnerNo() == null || partner.getPartnerNo().trim().isEmpty()) {
+    if (!StringUtils.hasText(partner.getPartnerNo())) {
       long nextVal = sequences.createNextValue(Sequence.withName("partner_number_sequence"));
       partner.setPartnerNo("PT-" + String.format("%05d", nextVal));
     }

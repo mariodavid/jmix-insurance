@@ -24,6 +24,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
+@SuppressWarnings("PMD.NullAssignment")
 @JmixEntity
 @Table(name = "POLICY_POLICY")
 @Entity(name = "policy_Policy")

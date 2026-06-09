@@ -6,6 +6,7 @@ import io.jmix.data.Sequence;
 import io.jmix.data.Sequences;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component("quote_QuoteEventListener")
 public class QuoteEventListener {
@@ -21,7 +22,7 @@ public class QuoteEventListener {
     Quote quote = event.getEntity();
 
     // Generate unique quoteNo using Jmix Sequences if not present yet
-    if (quote.getQuoteNo() == null || quote.getQuoteNo().trim().isEmpty()) {
+    if (!StringUtils.hasText(quote.getQuoteNo())) {
       long nextVal = sequences.createNextValue(Sequence.withName("quote_number_sequence"));
       quote.setQuoteNo("QT-" + String.format("%05d", nextVal));
     }

@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@SuppressWarnings({"PMD.TooManyFields", "PMD.NullAssignment"})
 @JmixEntity(name = "quote_api_QuoteDto")
 public class QuoteDto {
 

@@ -10,6 +10,7 @@ import com.insurance.quote.core.security.QuoteCoreManageRole;
 import com.insurance.quote.ui.security.QuoteUiManageRole;
 import io.jmix.security.role.annotation.ResourceRole;
 
+@SuppressWarnings("PMD.ConstantsInInterface")
 @ResourceRole(name = "Insurance Agent", code = InsuranceAgentRole.CODE)
 public interface InsuranceAgentRole
     extends UiMinimalRole,

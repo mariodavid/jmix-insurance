@@ -20,6 +20,7 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@SuppressWarnings("PMD.GuardLogStatement")
 @Service("account_AccountService")
 public class AccountServiceCore implements AccountService {
 
@@ -49,6 +50,7 @@ public class AccountServiceCore implements AccountService {
     return createAccount(policyReference, coverageStart, coverageEnd, premium, paymentFrequency);
   }
 
+  @SuppressWarnings("PMD.AvoidCatchingGenericException")
   @Transactional
   public Account createAccount(
       AccountPolicyReference policy,
@@ -56,16 +58,7 @@ public class AccountServiceCore implements AccountService {
       LocalDate accountingPeriodEnd,
       BigDecimal premium,
       PaymentFrequency paymentFrequency) {
-    if (policy == null
-        || policy.getPolicyId() == null
-        || policy.getPolicyNo() == null
-        || accountingPeriodStart == null
-        || accountingPeriodEnd == null
-        || premium == null
-        || paymentFrequency == null) {
-      throw new IllegalArgumentException(
-          "Policy reference, accounting period, premium and payment frequency are required");
-    }
+    validateParams(policy, accountingPeriodStart, accountingPeriodEnd, premium, paymentFrequency);
 
     String previousPolicyNo = replaceMdc(MDC_POLICY_NO, policy.getPolicyNo());
 
@@ -88,21 +81,7 @@ public class AccountServiceCore implements AccountService {
 
       saveContext.saving(account);
 
-      int intervalMonths;
-      switch (payments) {
-        case 1:
-          intervalMonths = 0;
-          break;
-        case 4:
-          intervalMonths = 3;
-          break;
-        case 12:
-          intervalMonths = 1;
-          break;
-        default:
-          intervalMonths = 12 / payments;
-          break;
-      }
+      int intervalMonths = calculateIntervalMonths(payments);
 
       for (int i = 0; i < payments; i++) {
         LocalDate documentDate = accountingPeriodStart.plusMonths((long) i * intervalMonths);
@@ -134,6 +113,43 @@ public class AccountServiceCore implements AccountService {
     }
   }
 
+  private void validateParams(
+      AccountPolicyReference policy,
+      LocalDate accountingPeriodStart,
+      LocalDate accountingPeriodEnd,
+      BigDecimal premium,
+      PaymentFrequency paymentFrequency) {
+    if (policy == null
+        || policy.getPolicyId() == null
+        || policy.getPolicyNo() == null
+        || accountingPeriodStart == null
+        || accountingPeriodEnd == null
+        || premium == null
+        || paymentFrequency == null) {
+      throw new IllegalArgumentException(
+          "Policy reference, accounting period, premium and payment frequency are required");
+    }
+  }
+
+  private int calculateIntervalMonths(int payments) {
+    int interval;
+    switch (payments) {
+      case 1:
+        interval = 0;
+        break;
+      case 4:
+        interval = 3;
+        break;
+      case 12:
+        interval = 1;
+        break;
+      default:
+        interval = 12 / payments;
+        break;
+    }
+    return interval;
+  }
+
   @Override
   public BigDecimal getAccountBalance(String accountNo, LocalDate effectiveDate) {
     log.info(
@@ -145,26 +161,27 @@ public class AccountServiceCore implements AccountService {
             .fetchPlan(fp -> fp.addFetchPlan(FetchPlan.BASE).add("documents", FetchPlan.BASE))
             .optional();
 
-    if (potentialAccount.isEmpty()) {
+    BigDecimal computedBalance = BigDecimal.ZERO;
+    if (potentialAccount.isPresent()) {
+      Account account = potentialAccount.get();
+
+      if (account.getAccountingPeriodEnd().isBefore(effectiveDate)) {
+        throw new IllegalArgumentException(
+            "Account balance calculation not possible. Coverage end is before effectiveDate "
+                + effectiveDate);
+      }
+
+      computedBalance =
+          account.getDocuments().stream()
+              .filter(doc -> !doc.getDocumentDate().isAfter(effectiveDate))
+              .map(AccountDocument::getAmount)
+              .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+      log.debug("Computed balance for accountNo {}: {}", accountNo, computedBalance);
+    } else {
       log.warn("Account with accountNo {} not found.", accountNo);
-      return BigDecimal.ZERO;
     }
 
-    Account account = potentialAccount.get();
-
-    if (account.getAccountingPeriodEnd().isBefore(effectiveDate)) {
-      throw new IllegalArgumentException(
-          "Account balance calculation not possible. Coverage end is before effectiveDate "
-              + effectiveDate);
-    }
-
-    BigDecimal computedBalance =
-        account.getDocuments().stream()
-            .filter(doc -> !doc.getDocumentDate().isAfter(effectiveDate))
-            .map(AccountDocument::getAmount)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-    log.debug("Computed balance for accountNo {}: {}", accountNo, computedBalance);
     return computedBalance;
   }
 

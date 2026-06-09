@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@SuppressWarnings("PMD.GuardLogStatement")
 @FragmentDescriptor("policy-account-balance-fragment.xml")
 public class PolicyAccountBalanceFragment extends Fragment<VerticalLayout> {
 
@@ -28,10 +29,22 @@ public class PolicyAccountBalanceFragment extends Fragment<VerticalLayout> {
 
   @ViewComponent private TypedDatePicker<LocalDate> accountBalanceEffectiveDatePicker;
 
-  @Autowired private AccountService accountService;
-  @Autowired private TimeSource timeSource;
-  @Autowired private Notifications notifications;
-  @Autowired private Messages messages;
+  private final AccountService accountService;
+  private final TimeSource timeSource;
+  private final Notifications notifications;
+  private final Messages messages;
+
+  @Autowired
+  public PolicyAccountBalanceFragment(
+      AccountService accountService,
+      TimeSource timeSource,
+      Notifications notifications,
+      Messages messages) {
+    this.accountService = accountService;
+    this.timeSource = timeSource;
+    this.notifications = notifications;
+    this.messages = messages;
+  }
 
   private String policyNo;
 
@@ -46,6 +59,7 @@ public class PolicyAccountBalanceFragment extends Fragment<VerticalLayout> {
     updateBalance(event.getValue());
   }
 
+  @SuppressWarnings("PMD.AvoidCatchingGenericException")
   private void updateBalance(LocalDate effectiveDate) {
     if (policyNo == null || policyNo.isBlank() || effectiveDate == null) {
       accountBalanceResult.clear();

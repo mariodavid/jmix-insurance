@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@SuppressWarnings("PMD.GuardLogStatement")
 @Service("policy_PolicyService")
 public class PolicyServiceCore implements PolicyService {
 
@@ -46,6 +47,7 @@ public class PolicyServiceCore implements PolicyService {
     this.partnerService = partnerService;
   }
 
+  @SuppressWarnings({"PMD.ExceptionAsFlowControl", "PMD.AvoidCatchingGenericException"})
   @Override
   @Transactional
   public PolicyDto createPolicy(CreatePolicyRequestDto request) {

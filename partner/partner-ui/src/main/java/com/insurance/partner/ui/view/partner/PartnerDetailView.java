@@ -30,8 +30,14 @@ public class PartnerDetailView extends StandardDetailView<Partner> {
 
   @ViewComponent private VerticalLayout partnerSectionsBox;
 
-  @Autowired private ObjectProvider<PartnerSection> partnerSections;
-  @Autowired private Messages messages;
+  private final ObjectProvider<PartnerSection> partnerSections;
+  private final Messages messages;
+
+  @Autowired
+  public PartnerDetailView(ObjectProvider<PartnerSection> partnerSections, Messages messages) {
+    this.partnerSections = partnerSections;
+    this.messages = messages;
+  }
 
   @Subscribe
   public void onBeforeShow(final BeforeShowEvent event) {

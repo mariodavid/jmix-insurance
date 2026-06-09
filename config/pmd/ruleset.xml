@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<ruleset name="Custom Ruleset"
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        Custom PMD ruleset for Jmix Insurance application.
+    </description>
+
+    <!-- Reference standard rulesets, excluding rules that produce false positives in Jmix/Spring/Vaadin -->
+    <rule ref="category/java/design.xml">
+        <exclude name="LoosePackageCoupling"/>
+        <exclude name="LawOfDemeter"/>
+        <exclude name="DataClass"/>
+    </rule>
+
+
+    <!-- Configure TooManyMethods with a more realistic threshold for Spring Services -->
+    <rule ref="category/java/design.xml/TooManyMethods">
+        <properties>
+            <property name="maxmethods" value="20"/>
+        </properties>
+    </rule>
+
+    <rule ref="category/java/design.xml/NcssCount">
+        <properties>
+            <property name="methodReportLevel" value="45"/>
+            <property name="classReportLevel" value="500"/>
+        </properties>
+    </rule>
+
+    <rule ref="category/java/bestpractices.xml">
+        <exclude name="ImplicitFunctionalInterface"/>
+    </rule>
+
+    <rule ref="category/java/codestyle.xml">
+        <exclude name="MethodArgumentCouldBeFinal"/>
+        <exclude name="LocalVariableCouldBeFinal"/>
+        <exclude name="AtLeastOneConstructor"/>
+        <exclude name="CallSuperInConstructor"/>
+        <exclude name="FieldDeclarationsShouldBeAtStartOfClass"/>
+        <exclude name="CommentDefaultAccessModifier"/>
+        <exclude name="UseExplicitTypes"/>
+        <exclude name="OnlyOneReturn"/>
+        <exclude name="LongVariable"/>
+        <exclude name="ConfusingTernary"/>
+        <exclude name="BooleanGetMethodName"/>
+    </rule>
+
+    <rule ref="category/java/codestyle.xml/OnlyOneReturn">
+        <properties>
+            <property name="allowGuardIfs" value="true"/>
+            <property name="ignoredMethodNames" value="compareTo,equals,fromId,fromValue"/>
+        </properties>
+    </rule>
+
+    <!-- 'id' is a standard Jmix entity identity field name (2 chars) -->
+    <rule ref="category/java/codestyle.xml/ShortVariable">
+        <properties>
+            <property name="minimum" value="2"/>
+        </properties>
+    </rule>
+
+    <!-- Allow lowercase 'log' for SLF4J loggers alongside the default ALL_UPPER convention -->
+    <rule ref="category/java/codestyle.xml/FieldNamingConventions">
+        <properties>
+            <property name="constantPattern" value="log|[A-Z][A-Z_0-9]*"/>
+        </properties>
+    </rule>
+
+    <rule ref="category/java/errorprone.xml">
+        <exclude name="MissingSerialVersionUID"/>
+        <exclude name="NonSerializableClass"/>
+    </rule>
+
+    <rule ref="category/java/performance.xml">
+    </rule>
+
+    <rule ref="category/java/security.xml"/>
+
+</ruleset>

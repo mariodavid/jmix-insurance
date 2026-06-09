@@ -10,6 +10,7 @@ import org.slf4j.MDC;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+@SuppressWarnings("PMD.GuardLogStatement")
 @Component("account_PolicyCreatedEventListener")
 public class PolicyCreatedEventListener {
 
@@ -22,6 +23,7 @@ public class PolicyCreatedEventListener {
     this.accountService = accountService;
   }
 
+  @SuppressWarnings("PMD.AvoidCatchingGenericException")
   @EventListener
   @Authenticated
   public void onPolicyCreated(final PolicyCreatedEvent event) {
@@ -53,7 +55,8 @@ public class PolicyCreatedEventListener {
         throw e;
       } catch (Exception e) {
         log.error("policy.created.account-failed policyNo={}", event.getPolicyNo(), e);
-        throw new RuntimeException("Account creation failed for policy: " + event.getPolicyNo(), e);
+        throw new IllegalStateException(
+            "Account creation failed for policy: " + event.getPolicyNo(), e);
       }
     } finally {
       restoreMdc(MDC_POLICY_NO, previousPolicyNo);

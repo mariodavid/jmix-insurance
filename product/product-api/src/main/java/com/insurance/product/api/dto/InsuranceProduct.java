@@ -52,6 +52,7 @@ public enum InsuranceProduct implements EnumClass<String> {
     this.validUntil = validUntil;
   }
 
+  @Override
   public String getId() {
     return id;
   }
@@ -84,7 +85,7 @@ public enum InsuranceProduct implements EnumClass<String> {
    */
   public static Optional<InsuranceProduct> findFirstMatchingProduct(
       ProductType productType, ProductVariant variant, LocalDate effectiveDate) {
-    return Arrays.stream(InsuranceProduct.values())
+    return Arrays.stream(values())
         .filter(product -> product.getProductType() == productType)
         .filter(product -> product.getVariant() == variant)
         .filter(product -> !effectiveDate.isBefore(product.getValidFrom()))
@@ -102,7 +103,7 @@ public enum InsuranceProduct implements EnumClass<String> {
 
   @Nullable
   public static InsuranceProduct fromId(String id) {
-    for (InsuranceProduct product : InsuranceProduct.values()) {
+    for (InsuranceProduct product : values()) {
       if (product.getId().equals(id)) {
         return product;
       }

@@ -22,9 +22,19 @@ public class PartnerPoliciesFragment extends Fragment<VerticalLayout> {
 
   @ViewComponent private CollectionContainer<PartnerPolicySummaryDto> policiesDc;
 
-  @Autowired private PartnerPolicyOverviewService partnerPolicyOverviewService;
-  @Autowired private UiComponents uiComponents;
-  @Autowired private Messages messages;
+  private final PartnerPolicyOverviewService partnerPolicyOverviewService;
+  private final UiComponents uiComponents;
+  private final Messages messages;
+
+  @Autowired
+  public PartnerPoliciesFragment(
+      PartnerPolicyOverviewService partnerPolicyOverviewService,
+      UiComponents uiComponents,
+      Messages messages) {
+    this.partnerPolicyOverviewService = partnerPolicyOverviewService;
+    this.uiComponents = uiComponents;
+    this.messages = messages;
+  }
 
   public void setPartnerNo(String partnerNo) {
     if (partnerNo == null || partnerNo.isBlank()) {

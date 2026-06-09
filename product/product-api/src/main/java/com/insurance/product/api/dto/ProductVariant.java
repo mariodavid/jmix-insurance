@@ -19,13 +19,14 @@ public enum ProductVariant implements EnumClass<String> {
     this.factor = factor;
   }
 
+  @Override
   public String getId() {
     return id;
   }
 
   @Nullable
   public static ProductVariant fromId(String id) {
-    for (ProductVariant at : ProductVariant.values()) {
+    for (ProductVariant at : values()) {
       if (at.getId().equals(id)) {
         return at;
       }

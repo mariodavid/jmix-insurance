@@ -14,13 +14,14 @@ public enum ProductType implements EnumClass<String> {
     this.name = name;
   }
 
+  @Override
   public String getId() {
     return id;
   }
 
   @Nullable
   public static ProductType fromId(String id) {
-    for (ProductType at : ProductType.values()) {
+    for (ProductType at : values()) {
       if (at.getId().equals(id)) {
         return at;
       }

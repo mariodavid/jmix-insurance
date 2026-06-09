@@ -30,8 +30,14 @@ public class PolicyListView extends StandardListView<Policy> {
 
   @ViewComponent private DataGrid<Policy> policiesDataGrid;
 
-  @Autowired private UiComponents uiComponents;
-  @Autowired private Messages messages;
+  private final UiComponents uiComponents;
+  private final Messages messages;
+
+  @Autowired
+  public PolicyListView(UiComponents uiComponents, Messages messages) {
+    this.uiComponents = uiComponents;
+    this.messages = messages;
+  }
 
   @Supply(to = "policiesDataGrid.status", subject = "renderer")
   protected Renderer<Policy> statusComponentRenderer() {

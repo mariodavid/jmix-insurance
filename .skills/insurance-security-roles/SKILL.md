@@ -33,8 +33,8 @@ Use this skill when adding or changing access for the insurance app.
 
 ## Guardrails
 
-- `JmixSecurityRoleRules` rejects `@ViewPolicy` and `@MenuPolicy` values that do not exist.
-- `JmixSecurityRoleRules` rejects user-facing `@ViewController` ids with no concrete `@ViewPolicy`.
+- `SecurityPolicyConsistencyRules` rejects `@ViewPolicy` and `@MenuPolicy` values that do not exist.
+- `SecurityPolicyConsistencyRules` rejects user-facing `@ViewController` ids with no concrete `@ViewPolicy`.
 - `RoleCompositionTest` keeps app persona roles aligned with the intended business access matrix.
 
 ## Forbidden

@@ -38,10 +38,17 @@ def includedBuildTasks = { String taskName ->
     }
 }
 
+tasks.register('test') {
+    description = 'Runs tests for all included builds'
+    group = 'Verification'
+    dependsOn(includedBuildTasks('test'))
+}
+
 tasks.named('check') {
-    description = 'Runs tests, Checkstyle, SpotBugs and aggregate JaCoCo coverage for all included builds'
+    description = 'Runs tests, PMD, SpotBugs and aggregate JaCoCo coverage for all included builds'
     dependsOn(includedBuildTasks('check'))
     dependsOn(tasks.named('jacocoRootReport'))
+    dependsOn(tasks.named('jacocoRootCoverageVerification'))
 }
 
 tasks.named('clean') {
@@ -90,4 +97,57 @@ tasks.register('jacocoRootReport', JacocoReport) {
     }
 
     mustRunAfter(tasks.matching { it.name.startsWith('spotless') })
+}
+
+tasks.register('jacocoRootCoverageVerification', JacocoCoverageVerification) {
+    description = 'Verifies aggregate JaCoCo coverage for all composite builds'
+    group = 'Verification'
+
+    dependsOn(includedBuildTasks('test'))
+
+    def reportRoots = providers.provider {
+        gradle.includedBuilds.collect { it.projectDir } + [rootDir]
+    }
+
+    classDirectories.setFrom(reportRoots.map { roots ->
+        files(roots.collect { reportRoot ->
+            fileTree(reportRoot) {
+                include '**/build/classes/java/main/**'
+                exclude '**/autoconfigure/**'
+                exclude '**/entity/**'
+            }
+        })
+    })
+    sourceDirectories.setFrom(reportRoots.map { roots ->
+        files(roots.collect { reportRoot ->
+            fileTree(reportRoot) {
+                include '**/src/main/java/**'
+            }
+        })
+    })
+    executionData.setFrom(reportRoots.map { roots ->
+        files(roots.collect { reportRoot ->
+            fileTree(reportRoot) {
+                include '**/build/jacoco/*.exec'
+            }
+        })
+    })
+
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.75
+            }
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.60
+            }
+        }
+    }
+
+    mustRunAfter(tasks.matching { it.name.startsWith('spotless') })
+    mustRunAfter(tasks.named('jacocoRootReport'))
 }

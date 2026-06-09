@@ -14,10 +14,10 @@
     <Match>
         <Class name="~.*\.entity\..*"/>
     </Match>
-    <!-- Spring/Jmix services and listeners store injected framework beans by design. -->
+    <!-- Spring/Jmix services, listeners and views store injected framework beans by design. -->
     <Match>
         <Bug pattern="EI_EXPOSE_REP2"/>
-        <Class name="~com\.insurance\..*\.(service|listener)\..*"/>
+        <Class name="~com\.insurance\..*\.(service|listener|view|ui\.view)\..*"/>
     </Match>
     <!-- Jmix Flow UI view dependencies are injected and managed by the framework lifecycle. -->
     <Match>

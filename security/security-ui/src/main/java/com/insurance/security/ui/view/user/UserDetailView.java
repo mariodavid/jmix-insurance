@@ -34,10 +34,17 @@ public class UserDetailView extends StandardDetailView<User> {
   @ViewComponent private PasswordField confirmPasswordField;
   @ViewComponent private ComboBox<String> timeZoneField;
   @ViewComponent private MessageBundle messageBundle;
-  @Autowired private Notifications notifications;
+  private final Notifications notifications;
+  private final EntityStates entityStates;
+  private final PasswordEncoder passwordEncoder;
 
-  @Autowired private EntityStates entityStates;
-  @Autowired private PasswordEncoder passwordEncoder;
+  @Autowired
+  public UserDetailView(
+      Notifications notifications, EntityStates entityStates, PasswordEncoder passwordEncoder) {
+    this.notifications = notifications;
+    this.entityStates = entityStates;
+    this.passwordEncoder = passwordEncoder;
+  }
 
   private boolean newEntity;
 

@@ -28,6 +28,12 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
+@SuppressWarnings({
+  "PMD.GodClass",
+  "PMD.TooManyFields",
+  "PMD.ExcessivePublicCount",
+  "PMD.NullAssignment"
+})
 @JmixEntity
 @Table(name = "QUOTE_QUOTE")
 @Entity(name = "quote_Quote")

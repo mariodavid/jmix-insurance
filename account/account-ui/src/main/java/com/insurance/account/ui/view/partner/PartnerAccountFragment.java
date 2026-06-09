@@ -13,11 +13,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 @FragmentDescriptor("partner-account-fragment.xml")
 public class PartnerAccountFragment extends Fragment<VerticalLayout> {
 
+  private static final String STYLE_TEXT_DANGER = "text-danger";
+
   @ViewComponent private TextField accountNoField;
 
   @ViewComponent private TextField balanceField;
 
-  @Autowired private PartnerAccountOverviewService partnerAccountOverviewService;
+  private final PartnerAccountOverviewService partnerAccountOverviewService;
+
+  @Autowired
+  public PartnerAccountFragment(PartnerAccountOverviewService partnerAccountOverviewService) {
+    this.partnerAccountOverviewService = partnerAccountOverviewService;
+  }
 
   public void setPartnerNo(String partnerNo) {
     if (partnerNo == null || partnerNo.isBlank()) {
@@ -36,21 +43,21 @@ public class PartnerAccountFragment extends Fragment<VerticalLayout> {
     BigDecimal balance = accountSummary.getAccountBalance();
     if (balance == null) {
       balanceField.setValue("0.00 EUR");
-      balanceField.removeClassName("text-danger");
+      balanceField.removeClassName(STYLE_TEXT_DANGER);
       return;
     }
 
     balanceField.setValue(balance + " EUR");
     if (balance.compareTo(BigDecimal.ZERO) < 0) {
-      balanceField.addClassName("text-danger");
+      balanceField.addClassName(STYLE_TEXT_DANGER);
     } else {
-      balanceField.removeClassName("text-danger");
+      balanceField.removeClassName(STYLE_TEXT_DANGER);
     }
   }
 
   private void showNoAccountSummary() {
     accountNoField.setValue("-");
     balanceField.setValue("-");
-    balanceField.removeClassName("text-danger");
+    balanceField.removeClassName(STYLE_TEXT_DANGER);
   }
 }

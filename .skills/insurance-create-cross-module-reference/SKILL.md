@@ -100,7 +100,8 @@ private AccountPolicyReference policy;
 Before finishing, verify the architecture rules cover the new shape:
 
 - Persistent entities and embeddables reside below `com.insurance.<module>.core.entity`.
-- Persistent entities and embeddables import only their own module model or foreign API enums.
-- A temporary import of a foreign API DTO in the embeddable makes `ArchitectureTest` fail, then remove the probe and rerun it green.
+- Persistent entities and embeddables do not depend on foreign `com.insurance.<module>.core.entity` packages.
+- Foreign API enums stay allowed because they are outside `core.entity` packages.
+- A temporary foreign entity field, for example `com.insurance.policy.core.entity.Policy`, in a consuming embeddable makes `ArchitectureTest` fail, then remove the probe and rerun it green.
 
-If these rules are missing, update `JmixDomainReferenceRules`, `JmixEntityRules`, and their tests before relying on the new pattern.
+If these rules are missing, update `PersistentEntityDependencyRules`, `PersistentEntityConventionRules`, and their tests before relying on the new pattern.

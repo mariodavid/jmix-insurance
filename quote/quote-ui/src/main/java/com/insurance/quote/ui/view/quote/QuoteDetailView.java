@@ -2,9 +2,9 @@ package com.insurance.quote.ui.view.quote;
 
 import com.insurance.partner.api.dto.PartnerDto;
 import com.insurance.partner.api.service.PartnerService;
-import com.insurance.product.api.dto.InsuranceProduct;
 import com.insurance.quote.api.dto.QuoteStatus;
 import com.insurance.quote.core.entity.Quote;
+import com.insurance.quote.core.service.QuotePremiumService;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.textfield.TextField;
@@ -27,11 +27,8 @@ import io.jmix.flowui.view.Target;
 import io.jmix.flowui.view.ViewComponent;
 import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.stream.Stream;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Route(value = "quotes/:id", layout = DefaultMainViewParent.class)
 @ViewController(id = "quote_Quote.detail")
@@ -40,9 +37,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 @CssImport("./quote/styles.css")
 public class QuoteDetailView extends StandardDetailView<Quote> {
 
-  @Autowired private TimeSource timeSource;
+  private final TimeSource timeSource;
+  private final Notifications notifications;
+  private final PartnerService partnerService;
+  private final QuotePremiumService quotePremiumService;
 
-  @Autowired private Notifications notifications;
+  public QuoteDetailView(
+      TimeSource timeSource,
+      Notifications notifications,
+      PartnerService partnerService,
+      QuotePremiumService quotePremiumService) {
+    this.timeSource = timeSource;
+    this.notifications = notifications;
+    this.partnerService = partnerService;
+    this.quotePremiumService = quotePremiumService;
+  }
 
   @ViewComponent private MessageBundle messageBundle;
 
@@ -55,8 +64,6 @@ public class QuoteDetailView extends StandardDetailView<Quote> {
   @ViewComponent private TextField lastNameField;
 
   @ViewComponent private Action calculatePremiumAction;
-
-  @Autowired private PartnerService partnerService;
 
   @Subscribe
   public void onBeforeShow(final BeforeShowEvent event) {
@@ -102,28 +109,17 @@ public class QuoteDetailView extends StandardDetailView<Quote> {
           .create(messageBundle.getMessage("missingFieldsForCalculation"))
           .withType(Notifications.Type.WARNING)
           .show();
-      return;
+    } else {
+      try {
+        quotePremiumService.calculateAndApply(quote);
+        saveAndCloseButton.setEnabled(true);
+      } catch (IllegalStateException e) {
+        notifications
+            .create(messageBundle.getMessage("noMatchingProduct"))
+            .withType(Notifications.Type.ERROR)
+            .show();
+      }
     }
-
-    Optional<InsuranceProduct> matchingProduct =
-        InsuranceProduct.findFirstMatchingProduct(
-            quote.getProductType(), quote.getProductVariant(), quote.getEffectiveDate());
-
-    if (matchingProduct.isEmpty()) {
-      notifications
-          .create(messageBundle.getMessage("noMatchingProduct"))
-          .withType(Notifications.Type.ERROR)
-          .show();
-      return;
-    }
-
-    InsuranceProduct insuranceProduct = matchingProduct.get();
-    quote.setInsuranceProduct(insuranceProduct);
-    BigDecimal calculatedPremium =
-        insuranceProduct.calculatePremium(BigDecimal.valueOf(quote.getSquareMeters()));
-    quote.setCalculatedPremium(calculatedPremium);
-
-    saveAndCloseButton.setEnabled(true);
   }
 
   @Subscribe(id = "quoteDc", target = Target.DATA_CONTAINER)
@@ -135,6 +131,7 @@ public class QuoteDetailView extends StandardDetailView<Quote> {
     }
   }
 
+  @SuppressWarnings("PMD.UnusedPrivateMethod")
   @Install(to = "partnerComboBox", subject = "itemsFetchCallback")
   private Stream<PartnerDto> partnerComboBoxItemsFetchCallback(
       final Query<PartnerDto, String> query) {
@@ -148,16 +145,16 @@ public class QuoteDetailView extends StandardDetailView<Quote> {
   public void onPartnerComboBoxComponentValueChange(
       final AbstractField.ComponentValueChangeEvent<EntityComboBox<PartnerDto>, PartnerDto> event) {
     PartnerDto value = event.getValue();
-    if (value != null) {
-      getEditedEntity().setPartnerNo(value.getPartnerNo());
-      getEditedEntity().setPartnerId(value.getId());
-      firstNameField.setValue(value.getFirstName() != null ? value.getFirstName() : "");
-      lastNameField.setValue(value.getLastName() != null ? value.getLastName() : "");
-    } else {
+    if (value == null) {
       getEditedEntity().setPartnerNo(null);
       getEditedEntity().setPartnerId(null);
       firstNameField.setValue("");
       lastNameField.setValue("");
+    } else {
+      getEditedEntity().setPartnerNo(value.getPartnerNo());
+      getEditedEntity().setPartnerId(value.getId());
+      firstNameField.setValue(value.getFirstName() != null ? value.getFirstName() : "");
+      lastNameField.setValue(value.getLastName() != null ? value.getLastName() : "");
     }
   }
 }

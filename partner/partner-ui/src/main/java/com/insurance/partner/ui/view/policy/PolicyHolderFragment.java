@@ -18,10 +18,22 @@ public class PolicyHolderFragment extends Fragment<VerticalLayout> {
 
   @ViewComponent private InstanceContainer<PartnerDto> partnerDc;
 
-  @Autowired private PartnerService partnerService;
-  @Autowired private Metadata metadata;
-  @Autowired private Notifications notifications;
-  @Autowired private Messages messages;
+  private final PartnerService partnerService;
+  private final Metadata metadata;
+  private final Notifications notifications;
+  private final Messages messages;
+
+  @Autowired
+  public PolicyHolderFragment(
+      PartnerService partnerService,
+      Metadata metadata,
+      Notifications notifications,
+      Messages messages) {
+    this.partnerService = partnerService;
+    this.metadata = metadata;
+    this.notifications = notifications;
+    this.messages = messages;
+  }
 
   public void setPartnerNo(String partnerNo) {
     if (partnerNo == null || partnerNo.isBlank()) {

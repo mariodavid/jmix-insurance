@@ -36,6 +36,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class WebappSecurityConfiguration {
 
+  @SuppressWarnings("PMD.SignatureDeclareThrowsException")
   @Bean
   @Order(JmixSecurityFilterChainOrder.CUSTOM)
   SecurityFilterChain publicFilterChain(HttpSecurity http) throws Exception {

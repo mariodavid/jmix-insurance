@@ -1,18 +1,23 @@
 // Static Analysis Conventions
 
-apply plugin: 'checkstyle'
-checkstyle {
-    toolVersion = '10.12.5'
-    configFile = file("${rootDir}/../config/checkstyle/checkstyle.xml")
+apply plugin: 'pmd'
+pmd {
+    consoleOutput = true
+    toolVersion = '7.25.0'
     ignoreFailures = false
 }
 
-// Ensure Checkstyle runs as part of check
-tasks.withType(Checkstyle).configureEach {
-    configDirectory = file("${rootDir}/../config/checkstyle")
+// Ensure PMD tasks use only our custom ruleset
+tasks.withType(Pmd).configureEach {
+    ruleSets = []
+    ruleSetFiles = files("${rootDir}/../config/pmd/ruleset.xml")
     reports {
         xml.required = true
         html.required = true
+    }
+    // Only analyze the main source set to avoid noise in tests
+    onlyIf { task ->
+        task.name.endsWith("Main")
     }
 }
 

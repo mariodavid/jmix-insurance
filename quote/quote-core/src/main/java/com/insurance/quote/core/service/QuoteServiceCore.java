@@ -20,6 +20,7 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@SuppressWarnings("PMD.GuardLogStatement")
 @Service("quote_QuoteService")
 public class QuoteServiceCore implements QuoteService {
 
@@ -28,6 +29,7 @@ public class QuoteServiceCore implements QuoteService {
   private static final String MDC_QUOTE_NO = "quoteNo";
   private static final String MDC_POLICY_NO = "policyNo";
   private static final String MDC_PARTNER_NO = "partnerNo";
+  private static final String QUOTE_PREFIX = "Quote ";
 
   private final DataManager dataManager;
   private final PolicyService policyService;
@@ -49,6 +51,7 @@ public class QuoteServiceCore implements QuoteService {
     dataManager.save(quote);
   }
 
+  @SuppressWarnings("PMD.AvoidCatchingGenericException")
   @Override
   @Transactional
   public QuoteDto accept(Id<?> quoteId) {
@@ -120,24 +123,35 @@ public class QuoteServiceCore implements QuoteService {
 
   private void assertCanAccept(Quote quote) {
     assertPendingTransition(quote, "accept");
+    validatePremium(quote);
+    validateRequiredData(quote);
+    validateDates(quote, timeSource.now().toLocalDate());
+  }
+
+  private void validatePremium(Quote quote) {
     if (quote.getCalculatedPremium() == null
         || quote.getCalculatedPremium().compareTo(BigDecimal.ZERO) <= 0) {
       throw new IllegalStateException(
-          "Quote " + quote.getQuoteNo() + " requires a positive calculated premium");
+          QUOTE_PREFIX + quote.getQuoteNo() + " requires a positive calculated premium");
     }
+  }
+
+  private void validateRequiredData(Quote quote) {
     if (quote.getInsuranceProduct() == null
         || quote.getPaymentFrequency() == null
         || quote.getEffectiveDate() == null) {
       throw new IllegalStateException(
-          "Quote " + quote.getQuoteNo() + " is missing required policy creation data");
+          QUOTE_PREFIX + quote.getQuoteNo() + " is missing required policy creation data");
     }
+  }
 
-    LocalDate today = timeSource.now().toLocalDate();
+  private void validateDates(Quote quote, LocalDate today) {
     if (quote.getValidFrom() == null
         || quote.getValidUntil() == null
         || quote.getValidFrom().isAfter(today)
         || quote.getValidUntil().isBefore(today)) {
-      throw new IllegalStateException("Quote " + quote.getQuoteNo() + " is not valid on " + today);
+      throw new IllegalStateException(
+          QUOTE_PREFIX + quote.getQuoteNo() + " is not valid on " + today);
     }
   }
 

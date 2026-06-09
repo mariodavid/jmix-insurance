@@ -16,13 +16,14 @@ public enum PaymentFrequency implements EnumClass<String> {
     this.frequency = frequency;
   }
 
+  @Override
   public String getId() {
     return id;
   }
 
   @Nullable
   public static PaymentFrequency fromId(String id) {
-    for (PaymentFrequency at : PaymentFrequency.values()) {
+    for (PaymentFrequency at : values()) {
       if (at.getId().equals(id)) {
         return at;
       }

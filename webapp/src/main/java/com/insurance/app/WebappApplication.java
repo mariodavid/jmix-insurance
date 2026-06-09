@@ -10,8 +10,8 @@ import io.jmix.core.impl.scanning.AnnotationScanMetadataReaderFactory;
 import io.jmix.flowui.sys.ActionsConfiguration;
 import io.jmix.flowui.sys.ViewControllersConfiguration;
 import javax.sql.DataSource;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -25,7 +25,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 
 @Push
-@Theme(value = "webapp")
+@Theme("webapp")
 @PWA(name = "Jmix Insurance", shortName = "Jmix Insurance", offline = false)
 @JmixModule(
     dependsOn = {
@@ -55,7 +55,13 @@ import org.springframework.core.env.Environment;
 @SpringBootApplication
 public class WebappApplication implements AppShellConfigurator {
 
-  @Autowired private Environment environment;
+  private static final Logger log = LoggerFactory.getLogger(WebappApplication.class);
+
+  private final Environment environment;
+
+  public WebappApplication(Environment environment) {
+    this.environment = environment;
+  }
 
   public static void main(String[] args) {
     SpringApplication.run(WebappApplication.class, args);
@@ -75,14 +81,13 @@ public class WebappApplication implements AppShellConfigurator {
     return dataSourceProperties.initializeDataSourceBuilder().build();
   }
 
+  @SuppressWarnings("PMD.GuardLogStatement")
   @EventListener
   public void printApplicationUrl(final ApplicationStartedEvent event) {
-    LoggerFactory.getLogger(WebappApplication.class)
-        .info(
-            "Application started at "
-                + "http://localhost:"
-                + environment.getProperty("local.server.port")
-                + Strings.nullToEmpty(environment.getProperty("server.servlet.context-path")));
+    log.info(
+        "Application started at http://localhost:{}{}",
+        environment.getProperty("local.server.port"),
+        Strings.nullToEmpty(environment.getProperty("server.servlet.context-path")));
   }
 
   @Bean("app_ViewControllers")

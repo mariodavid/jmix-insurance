@@ -21,7 +21,7 @@ public enum QuoteStatus implements EnumClass<String> {
 
   @Nullable
   public static QuoteStatus fromId(String id) {
-    for (QuoteStatus at : QuoteStatus.values()) {
+    for (QuoteStatus at : values()) {
       if (at.getId().equals(id)) {
         return at;
       }

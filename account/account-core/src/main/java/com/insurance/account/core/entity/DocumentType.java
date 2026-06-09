@@ -20,7 +20,7 @@ public enum DocumentType implements EnumClass<String> {
 
   @Nullable
   public static DocumentType fromId(String id) {
-    for (DocumentType at : DocumentType.values()) {
+    for (DocumentType at : values()) {
       if (at.getId().equals(id)) {
         return at;
       }

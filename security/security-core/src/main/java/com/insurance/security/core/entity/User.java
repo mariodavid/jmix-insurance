@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.UUID;
 import org.springframework.security.core.GrantedAuthority;
 
+@SuppressWarnings("PMD.ShortClassName")
 @JmixEntity
 @Entity(name = "security_User")
 @Table(
@@ -79,6 +80,7 @@ public class User implements JmixUserDetails, HasTimeZone {
     this.version = version;
   }
 
+  @Override
   public String getPassword() {
     return password;
   }
@@ -163,7 +165,7 @@ public class User implements JmixUserDetails, HasTimeZone {
   public String getDisplayName() {
     return String.format(
             "%s %s [%s]",
-            (firstName != null ? firstName : ""), (lastName != null ? lastName : ""), username)
+            firstName != null ? firstName : "", lastName != null ? lastName : "", username)
         .trim();
   }
 

@@ -31,8 +31,14 @@ public class PolicyDetailView extends StandardDetailView<Policy> {
 
   @ViewComponent private VerticalLayout policySectionsBox;
 
-  @Autowired private ObjectProvider<PolicySection> policySections;
-  @Autowired private Messages messages;
+  private final ObjectProvider<PolicySection> policySections;
+  private final Messages messages;
+
+  @Autowired
+  public PolicyDetailView(ObjectProvider<PolicySection> policySections, Messages messages) {
+    this.policySections = policySections;
+    this.messages = messages;
+  }
 
   @Subscribe
   public void onBeforeShow(final BeforeShowEvent event) {

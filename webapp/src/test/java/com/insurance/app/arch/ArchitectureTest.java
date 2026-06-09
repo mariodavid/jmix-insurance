@@ -1,67 +1,128 @@
 package com.insurance.app.arch;
 
-import com.insurance.common.test_support.architecture.ArchitectureProject;
-import com.insurance.common.test_support.architecture.CoreModuleFileRules;
-import com.insurance.common.test_support.architecture.JavaPackageDependencyRules;
-import com.insurance.common.test_support.architecture.JmixDomainBoundaryRules;
-import com.insurance.common.test_support.architecture.JmixDomainBuildRules;
-import com.insurance.common.test_support.architecture.JmixDomainReferenceRules;
-import com.insurance.common.test_support.architecture.JmixEntityRules;
-import com.insurance.common.test_support.architecture.JmixLiquibaseRules;
-import com.insurance.common.test_support.architecture.JmixSecurityRoleRules;
-import com.insurance.common.test_support.architecture.JmixUiDependencyRules;
+import com.insurance.common.test_support.architecture.rules.entity.PersistentEntityDependencyRules;
+import com.insurance.common.test_support.architecture.rules.insurance.BusinessModuleDependencyRules;
+import com.insurance.common.test_support.architecture.rules.jmix.JmixDtoEntityConventionRules;
+import com.insurance.common.test_support.architecture.rules.jmix.LiquibaseSchemaDriftRules;
+import com.insurance.common.test_support.architecture.rules.jmix.PersistentEntityConventionRules;
+import com.insurance.common.test_support.architecture.rules.jmix.PersistentEntityNameBoundaryRules;
+import com.insurance.common.test_support.architecture.rules.jmix.SecurityPolicyConsistencyRules;
+import com.insurance.common.test_support.architecture.rules.layer.CoreModuleIsolationRules;
+import com.insurance.common.test_support.architecture.rules.layer.ModuleLayerDependencyRules;
+import com.insurance.common.test_support.architecture.rules.security.SecurityRoleLayerRules;
+import com.insurance.common.test_support.architecture.rules.slice.DomainBuildConventionRules;
+import com.insurance.common.test_support.architecture.rules.ui.UiCompositionBoundaryRules;
+import com.insurance.common.test_support_ui.architecture.rules.jmix.JmixUiPackageConventionRules;
+import com.insurance.common.test_support_ui.architecture.rules.jmix.JmixViewDescriptorIntegrityRules;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.junit.ArchTests;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
+/**
+ * Global architecture test suite for the Insurance modular monolith.
+ *
+ * <p>This class is the single entry point for deterministic guardrails that coding agents should
+ * not silently break: Java package boundaries, Jmix entity ownership, string-based Jmix entity-name
+ * references, Liquibase/schema drift, UI composition boundaries, and security role consistency.
+ * Most checks are ArchUnit rules; file-system checks cover Gradle/XML/resource boundaries that do
+ * not always appear as Java type dependencies.
+ */
 @DisplayName("Global architecture rules")
-@AnalyzeClasses(packages = "com.insurance")
+@AnalyzeClasses(
+    packages = "com.insurance",
+    importOptions = {com.tngtech.archunit.core.importer.ImportOption.DoNotIncludeTests.class})
 class ArchitectureTest {
 
   @ArchTest
-  static final ArchTests javaPackageDependencyRules =
-      ArchTests.in(JavaPackageDependencyRules.class);
-
-  @ArchTest static final ArchTests jmixEntityRules = ArchTests.in(JmixEntityRules.class);
+  static final ArchTests persistentEntityConventionRules =
+      ArchTests.in(PersistentEntityConventionRules.class);
 
   @ArchTest
-  static final ArchTests jmixDomainBoundaryRules = ArchTests.in(JmixDomainBoundaryRules.class);
-
-  @ArchTest static final ArchTests jmixDomainBuildRules = ArchTests.in(JmixDomainBuildRules.class);
-
-  @ArchTest
-  static final ArchTests jmixDomainReferenceRules = ArchTests.in(JmixDomainReferenceRules.class);
-
-  @ArchTest static final ArchTests jmixLiquibaseRules = ArchTests.in(JmixLiquibaseRules.class);
+  static final ArchTests persistentEntityNameBoundaryRules =
+      ArchTests.in(PersistentEntityNameBoundaryRules.class);
 
   @ArchTest
-  static final ArchTests jmixUiDependencyRules = ArchTests.in(JmixUiDependencyRules.class);
+  static final ArchTests liquibaseSchemaDriftRules = ArchTests.in(LiquibaseSchemaDriftRules.class);
 
   @ArchTest
-  static final ArchTests jmixSecurityRoleRules = ArchTests.in(JmixSecurityRoleRules.class);
+  static final ArchTests securityPolicyConsistencyRules =
+      ArchTests.in(SecurityPolicyConsistencyRules.class);
 
-  @Nested
-  @DisplayName("Core Module File Rules")
-  class FileSystemChecks {
+  @ArchTest
+  static final ArchTests jmixViewDescriptorIntegrityRules =
+      ArchTests.in(JmixViewDescriptorIntegrityRules.class);
 
-    @ParameterizedTest(name = "{0}")
-    @ValueSource(
-        strings = {
-          "account/account-core",
-          "partner/partner-core",
-          "policy/policy-core",
-          "product/product-core",
-          "quote/quote-core",
-          "security/security-core"
-        })
-    @DisplayName("Core modules do not declare Flow UI dependencies or view resources")
-    void coreModuleDoesNotDeclareFlowUiDependenciesOrViews(String modulePath) {
-      CoreModuleFileRules.assertCoreModuleDoesNotDeclareFlowUi(
-          ArchitectureProject.projectRoot().resolve(modulePath));
-    }
-  }
+  @ArchTest
+  static final ArchTests securityRoleLayerRules = ArchTests.in(SecurityRoleLayerRules.class);
+
+  @ArchTest
+  static final ArchTests jmixDtoEntityConventionRules =
+      ArchTests.in(JmixDtoEntityConventionRules.class);
+
+  @ArchTest
+  static final ArchTests moduleLayerDependencyRules =
+      ArchTests.in(ModuleLayerDependencyRules.class);
+
+  @ArchTest
+  static final ArchTests businessModuleDependencyRules =
+      ArchTests.in(BusinessModuleDependencyRules.class);
+
+  @ArchTest
+  static final ArchTests coreModuleIsolationRules = ArchTests.in(CoreModuleIsolationRules.class);
+
+  @ArchTest
+  static final ArchTests domainBuildConventionRules =
+      ArchTests.in(DomainBuildConventionRules.class);
+
+  @ArchTest
+  static final ArchTests persistentEntityDependencyRules =
+      ArchTests.in(PersistentEntityDependencyRules.class);
+
+  @ArchTest
+  static final ArchTests uiCompositionBoundaryRules =
+      ArchTests.in(UiCompositionBoundaryRules.class);
+
+  @ArchTest
+  static final ArchTests generalCodingRules =
+      ArchTests.in(
+          com.insurance.common.test_support.architecture.rules.general.GeneralCodingRules.class);
+
+  @ArchTest
+  static final ArchTests uiSectionContributionRules =
+      ArchTests.in(
+          com.insurance.common.test_support.architecture.rules.ui.UiSectionContributionRules.class);
+
+  @ArchTest
+  static final ArchTests embeddedReferenceConventionRules =
+      ArchTests.in(
+          com.insurance.common.test_support.architecture.rules.entity
+              .EmbeddedReferenceConventionRules.class);
+
+  @ArchTest
+  static final ArchTests jmixInternalApiRules =
+      ArchTests.in(
+          com.insurance.common.test_support.architecture.rules.jmix.JmixInternalApiRules.class);
+
+  @ArchTest
+  static final ArchTests jmixEventListenerSafetyRules =
+      ArchTests.in(
+          com.insurance.common.test_support.architecture.rules.jmix.JmixEventListenerSafetyRules
+              .class);
+
+  @ArchTest
+  static final ArchTests testSupportBoundaryRules =
+      ArchTests.in(
+          com.insurance.common.test_support.architecture.rules.layer.TestSupportBoundaryRules
+              .class);
+
+  @ArchTest
+  static final ArchTests modulePackageConventionRules =
+      ArchTests.in(
+          com.insurance.common.test_support.architecture.rules.slice.ModulePackageConventionRules
+              .class);
+
+  @ArchTest
+  static final ArchTests jmixUiPackageConventionRules =
+      ArchTests.in(JmixUiPackageConventionRules.class);
 }
