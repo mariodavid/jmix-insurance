@@ -38,6 +38,12 @@ class ProductTest {
   }
 
   @Test
+  void given_wrongExpectedPremium_when_calculatePremium_then_intentionallyFails() {
+    InsuranceProduct product = InsuranceProduct.HOME_CONTENT_BASIC_2024_01;
+    assertThat(product.calculatePremium(new BigDecimal("50.00"))).isEqualByComparingTo("999.00");
+  }
+
+  @Test
   void given_homeContentBasicProductId_when_fromId_then_productDataAndPremiumAreCorrect() {
     InsuranceProduct product = InsuranceProduct.fromId("HOME_CONTENT_BASIC_2024_01");
 
