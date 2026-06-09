@@ -16,8 +16,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-test-verify:
-    name: Build, Test & Verify
+  compile-and-lint:
+    name: Compile & Static Analysis
     runs-on: ubuntu-24.04
 
     steps:
@@ -51,6 +51,24 @@ jobs:
             **/build/reports/spotbugs
             **/build/reports/spotless
           if-no-files-found: ignore
+
+  test-and-coverage:
+    name: Tests & Coverage
+    runs-on: ubuntu-24.04
+    needs: compile-and-lint
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Run Tests & Generate Coverage Report
         run: ./gradlew test jacocoRootReport
@@ -89,7 +107,7 @@ jobs:
   review:
     name: Claude Code Review
     runs-on: ubuntu-latest
-    needs: build-test-verify
+    needs: test-and-coverage
     if: github.event_name == 'pull_request' && success()
     permissions:
       contents: write
@@ -118,12 +136,12 @@ jobs:
             1. Retrieve the list of changed files in this PR and their diff using standard git commands or `gh pr diff`.
             2. Scan the directory `.claude/skills/` to see available guidelines (Skills) in this repository.
             3. For each changed file, determine if it matches the scope of any available skills. If so, read their `SKILL.md` instructions using your file reading tools.
-            
+
             Focus Areas:
             - Focus on SEMANTIC correctness, business logic bugs, transaction boundary robustness, exception handling, and edge cases.
             - Focus on TEST QUALITY (e.g., checking that tests verify actual logic and boundary conditions, have descriptive assertions, and perform proper cleanup).
             - Focus on UI/UX flow logical consistency and security design alignment.
-            
+
             Static Analysis Exclusion Rule:
             - DO NOT report issues that are already covered by static analysis tools and automated tests in the project (such as ArchUnit rules in ArchitectureTest, PMD, Spotless formatting, or Spotbugs). For example, do not check for simple naming conventions, Lombok usage, file structure, or import boundary rules that the build itself already fails on.
 
