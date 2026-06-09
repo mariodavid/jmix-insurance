@@ -122,8 +122,8 @@ apply from: "${rootDir}/../gradle/static-analysis.gradle"
 
 tasks.register('compileAll') {
     group = 'build'
-    description = 'Compiles main sources.'
-    dependsOn(tasks.named('compileJava'))
+    description = 'Compiles and enhances main sources.'
+    dependsOn(tasks.named('classes'))
 }
 
 tasks.register('lint') {

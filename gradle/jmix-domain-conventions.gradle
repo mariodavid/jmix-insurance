@@ -111,8 +111,8 @@ tasks.register('test') {
 
 tasks.register('compileAll') {
     group = 'build'
-    description = 'Compiles all subproject main sources.'
-    dependsOn subprojects.collect { it.tasks.named('compileJava') }
+    description = 'Compiles and enhances all subproject main sources.'
+    dependsOn subprojects.collect { it.tasks.named('classes') }
 }
 
 tasks.register('lint') {
