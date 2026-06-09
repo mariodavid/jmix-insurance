@@ -33,19 +33,10 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Code Formatting Check (Spotless)
+      - name: Static Analysis & Compilation
         run: |
           chmod +x ./gradlew
-          ./gradlew spotlessJavaCheck
-
-      - name: Compile & Jmix Enhance
-        run: ./gradlew compileJava enhanceJmixMain
-
-      - name: Static Analysis (PMD)
-        run: ./gradlew pmdMain
-
-      - name: Static Analysis (SpotBugs)
-        run: ./gradlew spotbugsMain
+          ./gradlew check -x test -x jacocoRootCoverageVerification
 
       - name: Upload Static Analysis Reports (On Failure)
         uses: actions/upload-artifact@v4
