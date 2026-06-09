@@ -108,3 +108,16 @@ tasks.register('test') {
     description = 'Runs tests for all subprojects.'
     dependsOn subprojects.collect { it.tasks.matching { task -> task.name == 'test' } }
 }
+
+tasks.register('compileAll') {
+    group = 'build'
+    description = 'Compiles all subproject main sources.'
+    dependsOn subprojects.collect { it.tasks.named('compileJava') }
+}
+
+tasks.register('lint') {
+    group = 'verification'
+    description = 'Runs static analysis (compile, PMD, SpotBugs on main sources) without tests.'
+    dependsOn subprojects.collect { it.tasks.named('spotbugsMain') }
+    dependsOn subprojects.collect { it.tasks.named('pmdMain') }
+}

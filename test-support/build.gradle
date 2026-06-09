@@ -29,3 +29,14 @@ java {
         languageVersion = JavaLanguageVersion.of(21)
     }
 }
+
+tasks.register('compileAll') {
+    group = 'build'
+    description = 'Compiles main sources.'
+    dependsOn(tasks.named('compileJava'))
+}
+
+tasks.register('lint') {
+    group = 'verification'
+    description = 'No-op lint task — no static analysis configured for this module.'
+}

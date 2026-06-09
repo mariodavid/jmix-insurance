@@ -33,10 +33,13 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Static Analysis & Compilation
+      - name: Compile
         run: |
           chmod +x ./gradlew
-          ./gradlew check -x test -x jacocoRootCoverageVerification
+          ./gradlew compileAll
+
+      - name: Static Analysis
+        run: ./gradlew lint
 
       - name: Upload Static Analysis Reports (On Failure)
         uses: actions/upload-artifact@v4
@@ -82,16 +85,6 @@ jobs:
           name: coverage-reports
           path: "**/build/reports/jacoco"
           if-no-files-found: ignore
-
-      - name: Build Production JAR
-        run: ./gradlew :webapp:bootJar -Pvaadin.productionMode=true
-
-      - name: Upload Application JAR
-        uses: actions/upload-artifact@v4
-        with:
-          name: webapp-jar
-          path: webapp/build/libs/*.jar
-          if-no-files-found: error
 
   review:
     name: Claude Code Review

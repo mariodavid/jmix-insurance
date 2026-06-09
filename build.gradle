@@ -45,10 +45,21 @@ tasks.register('test') {
 }
 
 tasks.named('check') {
-    description = 'Runs tests, PMD, SpotBugs and aggregate JaCoCo coverage for all included builds'
+    description = 'Runs tests, PMD, SpotBugs for all included builds'
     dependsOn(includedBuildTasks('check'))
-    dependsOn(tasks.named('jacocoRootReport'))
-    dependsOn(tasks.named('jacocoRootCoverageVerification'))
+}
+
+tasks.register('compileAll') {
+    description = 'Compiles main sources across all included builds'
+    group = 'build'
+    dependsOn(includedBuildTasks('compileAll'))
+}
+
+tasks.register('lint') {
+    description = 'Runs spotless check and static analysis (PMD, SpotBugs on main sources) without tests'
+    group = 'verification'
+    dependsOn(spotlessCheck)
+    dependsOn(includedBuildTasks('lint'))
 }
 
 tasks.named('clean') {

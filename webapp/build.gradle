@@ -119,3 +119,16 @@ vaadin {
 }
 
 apply from: "${rootDir}/../gradle/static-analysis.gradle"
+
+tasks.register('compileAll') {
+    group = 'build'
+    description = 'Compiles main sources.'
+    dependsOn(tasks.named('compileJava'))
+}
+
+tasks.register('lint') {
+    group = 'verification'
+    description = 'Runs static analysis (compile, PMD, SpotBugs on main sources) without tests.'
+    dependsOn(tasks.named('spotbugsMain'))
+    dependsOn(tasks.named('pmdMain'))
+}
