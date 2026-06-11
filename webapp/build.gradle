@@ -102,7 +102,6 @@ jacoco {
 test {
     useJUnitPlatform()
     systemProperty 'liquibase.duplicateFileMode', 'WARN'
-    exclude '**/arch/**'
     finalizedBy jacocoTestReport
 }
 
