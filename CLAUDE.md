@@ -1,140 +1,112 @@
-# Jmix Coding Guidelines
+# CLAUDE.md
 
-Use these instructions when working on a Jmix 2 application.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Stack
+## Project Overview
 
-- Java 21
-- Jmix 2, Spring Boot 3, Vaadin 24
-- Gradle
-- Relational database with Liquibase migrations
+Modular insurance management application built with Jmix 2 (Spring Boot 3, Vaadin 24, EclipseLink JPA). Structured as a Gradle composite build of independently publishable domain add-ons assembled into a single runnable app.
+
+**Stack:** Java 21, Jmix 2.8.1, HSQLDB (embedded), Liquibase, Gradle composite build.
+
+## Build Commands
+
+```shell
+# Run the application (http://localhost:8080, admin/admin)
+./gradlew :webapp:bootRun
+
+# Auto-format code (always run before compile/check)
+./gradlew spotlessApply
+
+# Compile a single layer (~5s)
+./gradlew :<module>:<layer>:compileJava    # e.g. :partner:partner-core:compileJava
+
+# Test/check a single module (~30s)
+./gradlew :<module>:check                  # e.g. :partner:check
+
+# Architecture guardrails (module boundaries, naming, security policies)
+./gradlew :webapp:test --tests "com.insurance.app.arch.ArchitectureTest"
+
+# Full project verification
+./gradlew check
+
+# Lint only (spotless + PMD + SpotBugs, no tests)
+./gradlew lint
+
+# Run a single test class
+./gradlew :webapp:test --tests "com.insurance.app.quote.QuoteAcceptTest"
+```
+
+## Module Structure
+
+Root `settings.gradle` uses `includeBuild` for each domain. Each domain add-on follows a six-artifact pattern:
+
+| Artifact | Purpose |
+|---|---|
+| `<domain>-api` | Service interfaces, DTOs, events (no JPA entities) |
+| `<domain>-api-starter` | Spring Boot auto-config for API |
+| `<domain>-core` | JPA entities, service implementations, listeners |
+| `<domain>-core-starter` | Spring Boot auto-config for core |
+| `<domain>-ui` | Jmix Flow UI views (Java controllers + XML descriptors) |
+| `<domain>-ui-starter` | Spring Boot auto-config for UI |
+
+Domain modules: `partner`, `policy`, `quote`, `account`, `claim`, `product`, `security`.
+Shared: `theme`, `ui-sections`, `test-support`, `test-support-ui`.
+App assembly: `webapp`.
+
+Each domain build has its own `settings.gradle` and applies `gradle/jmix-domain-conventions.gradle`. The `jmixDomainProjectId` in each domain's `build.gradle` controls entity name prefixes (e.g. `partner_Partner`).
+
+## Architecture Rules
+
+- **API/Core boundary**: Inter-domain communication goes through `*-api` interfaces + DTOs only. Core modules never import from another domain's core.
+- **Cross-domain references**: Stored as string values (partner numbers, policy IDs), not JPA associations.
+- **Business logic**: In services or Spring event listeners, never in view controllers.
+- **Entity instantiation**: Use `DataManager.create()` / `Metadata.create()` / `DataContext.create()`, never constructors.
+- **No Lombok on entities**.
+- **Message keys**: All user-visible text must use `msg://` keys, never hardcoded strings.
+- **Decentralized Liquibase**: Each module owns its changelogs; `webapp/liquibase/changelog.xml` assembles them in dependency order.
+- **Cross-module UI**: Uses `ViewSection<C>` contract from `ui-sections`. Host views define typed section interfaces in `*-ui-api`; contributors implement them as Jmix fragments.
+
+## Key Business Flows
+
+**Quote acceptance** (main cross-domain flow):
+`QuoteService.accept()` → `PolicyService.createPolicy()` → publishes `PolicyCreatedEvent` → `AccountService.createAccount()` (event-driven, keeps policy-core free of account dependency).
+
+## Testing
+
+- **Base class**: `BaseIntegrationTest` (authenticated as admin, Spring Boot context).
+- **Cleanup**: `DatabaseCleanup` truncates all domain tables in `@BeforeEach`.
+- **Fixtures**: `EntityTestData` generic factory + `*DataProvider` per module (in `testFixtures` source set).
+- **Assertions**: `InsuranceAssertions` entry point with domain-specific fluent assertions.
+- **UI tests**: `@UiTest` annotation with `FlowuiTestAssistConfiguration`.
+- All integration tests run in `webapp/src/test`.
 
 ## Skill Routing
 
 Use the most specific skill for the task:
 
-- Creating or changing a persistent entity: `jmix-create-entity`
-- Creating an enum used by an entity: `jmix-create-enum`
-- Creating a list view: `jmix-create-list-view`
-- Creating a detail view: `jmix-create-detail-view`
-- Creating parent-child composition editing: `jmix-create-composition-detail-view`
-- Implementing service-layer business logic: `jmix-create-service`
-- Opening an entity detail dialog from a button/action: `jmix-add-dialog-detail-flow`
-- Adding entity lifecycle/event business logic: `jmix-add-entity-event-listener`
-- Adding or changing database schema: `jmix-create-liquibase-changelog`
-- Creating or changing resource roles: `jmix-create-resource-role`
-- Adding user-visible text or entity/enum captions: `jmix-add-i18n-keys`
-- Configuring fetch plans or fixing unfetched/N+1 loading issues: `jmix-configure-fetch-plan`
-- Creating DTO entities or UI-bound non-persistent models: `jmix-create-dto-entity`
-- Creating reusable Flow UI fragments or fragment renderers: `jmix-create-fragment`
-- Adding or changing tests: `jmix-create-test`
-- Changing cross-domain access or module boundaries: `insurance-module-boundaries`
-- Changing quote accept/reject behavior: `insurance-quote-lifecycle`
-- Changing persistent schema or business-key constraints: `insurance-liquibase-drift`
-- Changing business-flow logging: `insurance-observability`
-- Writing tests following project conventions (patterns, assertions, cleanup, flow tests): `insurance-testing`
-- Updating app-specific role composition and security policies: `insurance-security-roles`
+- Entity: `jmix-create-entity`
+- Enum: `jmix-create-enum`
+- List view: `jmix-create-list-view`
+- Detail view: `jmix-create-detail-view`
+- Composition UI: `jmix-create-composition-detail-view`
+- Service logic: `jmix-create-service`
+- Dialog flow: `jmix-add-dialog-detail-flow`
+- Entity events: `jmix-add-entity-event-listener`
+- Liquibase: `jmix-create-liquibase-changelog`
+- Roles: `jmix-create-resource-role`
+- I18n: `jmix-add-i18n-keys`
+- Fetch plans: `jmix-configure-fetch-plan`
+- DTO entities: `jmix-create-dto-entity`
+- Fragments: `jmix-create-fragment`
+- Tests: `jmix-create-test` or `insurance-testing`
+- Module boundaries: `insurance-module-boundaries`
+- Security roles: `insurance-security-roles`
 
-## Tooling
+## Validation Checklist
 
-- If Context7 MCP is available, use it to confirm unfamiliar Jmix APIs and to find Jmix code examples.
-- If JetBrains MCP is available and the project is open in IntelliJ IDEA, use it to check modified files for inspections and errors.
-- For UI changes, if Playwright is available and the application can be run, use it to verify navigation and user interactions in the browser.
-- Do not block work if these tools are unavailable; state what was checked manually instead.
-
-## Global Rules
-
-- Prefer Jmix APIs and generated project patterns over raw framework code.
-- For change requests on an existing feature, preserve existing behavior and constraints unless the new request explicitly changes them. Inspect current entities, views, listeners, roles, and changelogs before editing.
-- Use `DataManager` for normal CRUD. Use `EntityManager` only for bulk/native operations that `DataManager` cannot express, and only inside an explicit transaction.
-- Keep business logic in services or Spring event listeners, not in view controllers.
-- Do not use Lombok on Jmix entities.
-- Do not instantiate Jmix entities with constructors. Use `DataManager.create()`, `Metadata.create()`, or `DataContext.create()` depending on context.
-- Do not hardcode user-visible UI text. Use message keys.
-- Do not invent XML component attributes, Vaadin icon names, or Jmix action ids. Reuse existing project patterns or omit optional decoration.
-- Before using a Jmix or Vaadin API that is not already used in the project, search the current project for a working example; if none exists and Context7 MCP is available, use it to confirm the API and follow official examples.
-- Do not edit generated frontend files.
-
-## Required Cross-Cutting Work
-
-For each new persistent entity, complete all related artifacts:
-
-- Entity class with Jmix/JPA metadata.
-- Liquibase changelog included from the root changelog.
-- Message keys for entity, attributes, enum values, view titles, buttons, and actions.
-- List/detail views when the entity is user-facing.
-- Resource role policies for entity operations, attributes, views, and menu items.
-
-For each new user-facing view:
-
-- Java controller and XML descriptor.
-- Stable view id.
-- Menu entry for top-level list views only.
-- Message keys for titles, labels, and buttons.
-- View policies for every role that can open it, including dialog-only detail views.
-- Visible buttons or menu items for every action the user must be able to trigger.
-- Typed form components that match property types.
-
-For each new business operation:
-
-- Put the operation in a service or listener, not in a view.
-- Define clear transaction boundaries.
-- Prefer `DataManager` for CRUD.
-- Keep UI notifications, dialogs, and components out of services.
-- Defaults for required persistent fields must work outside UI-only paths.
-
-For each DTO entity or UI-bound non-persistent model:
-
-- Use Jmix DTO metadata, not JPA annotations.
-- Provide a stable `@JmixId` when identity matters.
-- Add message keys when the model is shown in UI or exposed with localized captions.
-- Keep DTO entities out of Liquibase unless they are backed by an explicit custom persistence mechanism.
-
-For each reusable UI fragment:
-
-- Create both controller and XML descriptor.
-- Keep fragment XML self-contained or explicitly mark host-provided data components.
-- Use fragment-specific facets when needed.
-- Add message keys for user-visible fragment text.
-
-## Validation Before Finishing
-
-- Run the smallest relevant compile/test command available for the change.
-- Read compile and startup failures; fix deterministic failures before reporting completion.
-- Search changed XML and Java for obvious drift before reporting completion: table names in JPQL, unresolved `msg://` keys, hardcoded visible labels, missing components referenced by `urlQueryParameters`, raw Vaadin dialogs for Jmix workflows, unsafe loader parameter handling, after-commit listeners used for validation or required mutations, and form components that do not match property types.
-- Compare resource role menu policies against actual `menu.xml` item ids or view ids.
-- For update tasks, compare touched artifacts against their previous constraints and defaults before reporting completion.
-- If tests cannot be run, state the exact blocker and what was validated instead.
-
-## Fast Micro-Feedback Verification (Harness Shortcuts)
-
-To maximize development velocity, avoid running full root builds (`./gradlew check` or `./gradlew test`), which analyze all 12 modules and can take several minutes. Instead, use these target-specific Gradle shortcuts:
-
-1. **Auto-Format Code**: Before compiling or running checks, run the formatter to automatically correct any code style or spacing errors:
-   ```shell
-   ./gradlew spotlessApply
-   ```
-
-2. **Targeted Layer Compile**: Verify that the layer you are working on compiles in isolation (takes ~5 seconds):
-   ```shell
-   ./gradlew :<module>:<layer>:compileJava
-   # Example:
-   ./gradlew :partner:partner-core:compileJava
-   ```
-
-3. **Targeted Module Verification**: Compile and run checks/tests for a single module in isolation (~30 seconds):
-   ```shell
-   ./gradlew :<module>:check
-   # Example:
-   ./gradlew :partner:check
-   ```
-
-4. **Modularity & Guardrails Verification**: Ensure your changes did not violate Jmix rules, Lombok restrictions, or package boundary layers:
-   ```shell
-   ./gradlew :webapp:test --tests "com.insurance.app.arch.ArchitectureTest"
-   ```
-
-5. **Full Project Verification**: Before final check-in, run the full validation suite:
-   ```shell
-   ./gradlew check
-   ```
+Before reporting completion:
+1. Run `./gradlew spotlessApply` then compile the affected layer.
+2. Check for unresolved `msg://` keys, hardcoded labels, mismatched form component types.
+3. Verify role policies reference real view/menu IDs.
+4. Run architecture test if module boundaries were touched.
+5. Run `./gradlew :<module>:check` for the affected module.

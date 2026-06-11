@@ -17,6 +17,7 @@
     <include file="/com/insurance/quote/core/liquibase/changelog.xml"/>
     <include file="/com/insurance/policy/core/liquibase/changelog.xml"/>
     <include file="/com/insurance/account/core/liquibase/changelog.xml"/>
+    <include file="/com/insurance/claim/core/liquibase/changelog.xml"/>
 
     <includeAll path="/com/insurance/app/liquibase/changelog"/>
 

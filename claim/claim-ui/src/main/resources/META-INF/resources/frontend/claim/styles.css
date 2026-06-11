@@ -1,0 +1,38 @@
+.claim-theme {
+    /* Lumo primary color overrides */
+    --lumo-primary-color: #475569;
+    --lumo-primary-text-color: #475569;
+    --lumo-primary-color-50pct: rgba(71, 85, 105, 0.5);
+    --lumo-primary-color-10pct: rgba(71, 85, 105, 0.1);
+    --lumo-primary-contrast-color: #FFFFFF;
+
+    /* Theme domain variables */
+    --theme-accent-color: #475569;
+    --theme-ink-color: #334155;
+    --theme-strong-color: #E2E8F0;
+    --theme-tint-color: #F1F5F9;
+    --theme-border-color: #CBD5E1;
+}
+
+/* Header highlight for Claim */
+.claim-theme .jmix-main-view-top-menu-view-header-box {
+    background-color: var(--theme-strong-color) !important;
+    border-bottom: 1px solid var(--theme-border-color) !important;
+}
+
+.claim-theme .jmix-main-view-top-menu-view-title {
+    color: var(--theme-ink-color) !important;
+    font-weight: 700;
+}
+
+/* Tab menu item selected border for Claim */
+.claim-theme jmix-horizontal-menu::part(item)[selected],
+.claim-theme vaadin-tab[selected] {
+    border-bottom: 2px solid var(--theme-accent-color) !important;
+    color: var(--theme-accent-color) !important;
+}
+
+/* Background tint for the workspace content */
+.claim-theme vaadin-app-layout::part(content) {
+    background-color: var(--theme-tint-color) !important;
+}

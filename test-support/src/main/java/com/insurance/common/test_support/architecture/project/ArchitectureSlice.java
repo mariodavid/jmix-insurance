@@ -10,6 +10,7 @@ public enum ArchitectureSlice {
   POLICY("policy", true, true, true),
   PRODUCT("product", true, true, true),
   QUOTE("quote", true, true, true),
+  CLAIM("claim", true, true, true),
   SECURITY("security", false, true, true);
 
   private final String id;

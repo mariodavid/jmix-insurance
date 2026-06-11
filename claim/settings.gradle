@@ -1,0 +1,12 @@
+rootProject.name = 'claim'
+
+include 'claim-api'
+include 'claim-api-starter'
+include 'claim-core'
+include 'claim-core-starter'
+include 'claim-ui'
+include 'claim-ui-starter'
+
+rootProject.children.each { p1 ->
+    p1.buildFileName = "${p1.name}.gradle"
+}

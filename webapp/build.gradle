@@ -44,6 +44,9 @@ dependencies {
     implementation 'com.insurance.quote:quote-core-starter:0.0.1-SNAPSHOT'
     implementation 'com.insurance.quote:quote-ui-starter:0.0.1-SNAPSHOT'
     implementation 'com.insurance.quote:quote-api-starter:0.0.1-SNAPSHOT'
+    implementation 'com.insurance.claim:claim-core-starter:0.0.1-SNAPSHOT'
+    implementation 'com.insurance.claim:claim-ui-starter:0.0.1-SNAPSHOT'
+    implementation 'com.insurance.claim:claim-api-starter:0.0.1-SNAPSHOT'
 
     implementation 'com.insurance.partner:partner-core-starter:0.0.1-SNAPSHOT'
     implementation 'com.insurance.partner:partner-ui-starter:0.0.1-SNAPSHOT'
@@ -80,6 +83,7 @@ dependencies {
     testImplementation testFixtures('com.insurance.product:product-core:0.0.1-SNAPSHOT')
     testImplementation testFixtures('com.insurance.policy:policy-core:0.0.1-SNAPSHOT')
     testImplementation testFixtures('com.insurance.quote:quote-core:0.0.1-SNAPSHOT')
+    testImplementation testFixtures('com.insurance.claim:claim-core:0.0.1-SNAPSHOT')
     testImplementation testFixtures('com.insurance.account:account-core:0.0.1-SNAPSHOT')
 }
 

@@ -1,0 +1,17 @@
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath "io.jmix.gradle:jmix-gradle-plugin:2.8.1"
+        classpath "com.github.spotbugs:com.github.spotbugs.gradle.plugin:6.0.20"
+    }
+}
+
+apply plugin: 'base'
+
+group = 'com.insurance.claim'
+version = '0.0.1-SNAPSHOT'
+ext.jmixDomainProjectId = 'claim'
+
+apply from: "${rootDir}/../gradle/jmix-domain-conventions.gradle"

@@ -2,6 +2,7 @@ rootProject.name = 'jmix-insurance'
 
 includeBuild 'policy'
 includeBuild 'quote'
+includeBuild 'claim'
 
 includeBuild 'webapp'
 includeBuild 'account'

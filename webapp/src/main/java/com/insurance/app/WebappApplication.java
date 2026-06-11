@@ -46,6 +46,8 @@ import org.springframework.core.env.Environment;
       com.insurance.policy.ui.PolicyUiConfiguration.class,
       com.insurance.quote.core.QuoteConfiguration.class,
       com.insurance.quote.ui.QuoteUiConfiguration.class,
+      com.insurance.claim.core.ClaimConfiguration.class,
+      com.insurance.claim.ui.ClaimUiConfiguration.class,
       com.insurance.account.core.AccountConfiguration.class,
       com.insurance.account.ui.AccountUiConfiguration.class
     })
