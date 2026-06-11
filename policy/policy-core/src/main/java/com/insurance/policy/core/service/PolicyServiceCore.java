@@ -146,6 +146,21 @@ public class PolicyServiceCore implements PolicyService {
     return mapToDto(policy);
   }
 
+  @Override
+  public java.util.List<PolicyDto> findPolicies(String filter, int limit, int offset) {
+    String pattern = "%" + (filter != null ? filter : "") + "%";
+    return dataManager
+        .load(Policy.class)
+        .query("select e from policy_Policy e where e.policyNo like :pattern order by e.policyNo")
+        .parameter("pattern", pattern)
+        .maxResults(limit)
+        .firstResult(offset)
+        .list()
+        .stream()
+        .map(this::mapToDto)
+        .toList();
+  }
+
   private PolicyDto mapToDto(Policy policy) {
     if (policy == null) {
       return null;

@@ -1,0 +1,46 @@
+:root {
+  --primary: #1b5e3b;
+  --primary-hover: #14472d;
+  --primary-light: #d4edda;
+  --success: #1b5e3b;
+  --success-bg: #d4edda;
+  --error: #c0392b;
+  --error-bg: #fdecea;
+  --text: #2c3e50;
+  --text-muted: #6b7280;
+  --bg: #f4f6f9;
+  --card-bg: #ffffff;
+  --border: #d1d5db;
+  --border-focus: #1b5e3b;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.12);
+
+  font: 16px/1.5 system-ui, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+h1, h2, h3 {
+  margin: 0;
+  color: var(--text);
+  font-weight: 600;
+}
+
+p {
+  margin: 0;
+}
+
+#root {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}

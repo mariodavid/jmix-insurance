@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      title="msg://com.insurance.claim.ui.view.claim/claimListView.title"
+      focusComponent="claimsDataGrid">
+    <data>
+        <collection id="claimsDc"
+                    class="com.insurance.claim.core.entity.Claim">
+            <fetchPlan extends="_base"/>
+            <loader id="claimsDl" readOnly="true">
+                <query>
+                    <![CDATA[select e from claim_Claim e order by e.reportDate desc]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+        <urlQueryParameters>
+            <genericFilter component="genericFilter"/>
+            <pagination component="pagination"/>
+        </urlQueryParameters>
+    </facets>
+    <actions>
+        <action id="lookupSelectAction" type="lookup_select"/>
+        <action id="lookupDiscardAction" type="lookup_discard"/>
+    </actions>
+    <layout>
+        <genericFilter id="genericFilter"
+                       dataLoader="claimsDl"/>
+        <hbox id="buttonsPanel" classNames="buttons-panel">
+            <button id="createButton" action="claimsDataGrid.list_create"/>
+            <button id="editButton" action="claimsDataGrid.list_edit"/>
+            <button id="removeButton" action="claimsDataGrid.list_remove"/>
+            <simplePagination id="pagination" dataLoader="claimsDl"/>
+        </hbox>
+        <dataGrid id="claimsDataGrid"
+                  width="100%"
+                  minHeight="20em"
+                  dataContainer="claimsDc"
+                  columnReorderingAllowed="true">
+            <actions>
+                <action id="list_create" type="list_create"/>
+                <action id="list_edit" type="list_edit"/>
+                <action id="list_remove" type="list_remove"/>
+            </actions>
+            <columns resizable="true">
+                <column property="claimNo"/>
+                <column property="policy.policyNo"/>
+                <column property="reportDate"/>
+                <column property="incidentDate"/>
+                <column property="claimStatus"/>
+                <column property="expectedClaimAmount"/>
+            </columns>
+        </dataGrid>
+        <hbox id="lookupActions" visible="false">
+            <button id="selectButton" action="lookupSelectAction"/>
+            <button id="discardButton" action="lookupDiscardAction"/>
+        </hbox>
+    </layout>
+</view>

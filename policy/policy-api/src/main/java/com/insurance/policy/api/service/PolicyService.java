@@ -31,4 +31,14 @@ public interface PolicyService {
    * @return the policy data, or {@code null} if no policy exists for the id
    */
   PolicyDto findPolicyById(java.util.UUID id);
+
+  /**
+   * Searches policies by policy number prefix.
+   *
+   * @param filter text to match against the policy number (case-insensitive prefix)
+   * @param limit maximum number of results
+   * @param offset pagination offset
+   * @return matching policies
+   */
+  java.util.List<PolicyDto> findPolicies(String filter, int limit, int offset);
 }
