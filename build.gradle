@@ -56,8 +56,9 @@ tasks.register('compileAll') {
 }
 
 tasks.register('lint') {
-    description = 'Runs static analysis (PMD, SpotBugs on main sources) without tests'
+    description = 'Runs spotless check and static analysis (PMD, SpotBugs on main sources) without tests'
     group = 'verification'
+    dependsOn(spotlessCheck)
     dependsOn(includedBuildTasks('lint'))
 }
 
@@ -148,12 +149,12 @@ tasks.register('jacocoRootCoverageVerification', JacocoCoverageVerification) {
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.0
+                minimum = 0.75
             }
             limit {
                 counter = 'BRANCH'
                 value = 'COVEREDRATIO'
-                minimum = 0.0
+                minimum = 0.60
             }
         }
     }
