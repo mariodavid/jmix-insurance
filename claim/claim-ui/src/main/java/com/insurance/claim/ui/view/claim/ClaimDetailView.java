@@ -1,8 +1,10 @@
 package com.insurance.claim.ui.view.claim;
 
 import com.insurance.claim.api.dto.ClaimStatus;
+import com.insurance.claim.api.dto.ReserveStatus;
 import com.insurance.claim.core.entity.Claim;
 import com.insurance.claim.core.entity.ClaimPolicyReference;
+import com.insurance.claim.core.entity.ClaimReserve;
 import com.insurance.claim.core.service.ClaimService;
 import com.insurance.policy.api.dto.PolicyDto;
 import com.insurance.policy.api.service.PolicyService;
@@ -12,6 +14,8 @@ import com.vaadin.flow.router.Route;
 import io.jmix.core.DataManager;
 import io.jmix.core.TimeSource;
 import io.jmix.flowui.component.combobox.EntityComboBox;
+import io.jmix.flowui.component.grid.DataGrid;
+import io.jmix.flowui.kit.action.ActionPerformedEvent;
 import io.jmix.flowui.view.DefaultMainViewParent;
 import io.jmix.flowui.view.EditedEntityContainer;
 import io.jmix.flowui.view.Install;
@@ -34,8 +38,9 @@ public class ClaimDetailView extends StandardDetailView<Claim> {
   private final DataManager dataManager;
   private final ClaimService claimService;
 
-  @ViewComponent
-  private EntityComboBox<PolicyDto> policyComboBox;
+  @ViewComponent private EntityComboBox<PolicyDto> policyComboBox;
+
+  @ViewComponent private DataGrid<ClaimReserve> reservesDataGrid;
 
   public ClaimDetailView(
       TimeSource timeSource,
@@ -68,8 +73,7 @@ public class ClaimDetailView extends StandardDetailView<Claim> {
 
   @SuppressWarnings("PMD.UnusedPrivateMethod")
   @Install(to = "policyComboBox", subject = "itemsFetchCallback")
-  private Stream<PolicyDto> policyComboBoxItemsFetchCallback(
-      final Query<PolicyDto, String> query) {
+  private Stream<PolicyDto> policyComboBoxItemsFetchCallback(final Query<PolicyDto, String> query) {
     String filter = query.getFilter().orElse("");
     int limit = query.getLimit();
     int offset = query.getOffset();
@@ -100,6 +104,14 @@ public class ClaimDetailView extends StandardDetailView<Claim> {
     Claim claim = getEditedEntity();
     if (claim.getPolicy() == null || claim.getPolicyId() == null) {
       event.getErrors().add("A policy must be selected");
+    }
+  }
+
+  @Subscribe("reservesDataGrid.approve")
+  public void onReservesDataGridApprove(final ActionPerformedEvent event) {
+    ClaimReserve selected = reservesDataGrid.getSingleSelectedItem();
+    if (selected != null && ReserveStatus.PENDING.equals(selected.getReserveStatus())) {
+      selected.setReserveStatus(ReserveStatus.APPROVED);
     }
   }
 

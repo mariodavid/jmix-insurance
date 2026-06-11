@@ -1,5 +1,6 @@
 package com.insurance.claim.core.service;
 
+import com.insurance.claim.api.dto.ReserveStatus;
 import com.insurance.claim.api.dto.ReserveType;
 import com.insurance.claim.core.entity.Claim;
 import com.insurance.claim.core.entity.ClaimReserve;
@@ -39,8 +40,9 @@ public class ClaimService {
     }
 
     if (claim.getReserves() != null) {
-      boolean hasIndemnity = claim.getReserves().stream()
-          .anyMatch(r -> ReserveType.INDEMNITY.equals(r.getReserveType()));
+      boolean hasIndemnity =
+          claim.getReserves().stream()
+              .anyMatch(r -> ReserveType.INDEMNITY.equals(r.getReserveType()));
       if (hasIndemnity) {
         return false;
       }
@@ -53,6 +55,7 @@ public class ClaimService {
     ClaimReserve reserve = dataManager.create(ClaimReserve.class);
     reserve.setClaim(claim);
     reserve.setReserveType(ReserveType.INDEMNITY);
+    reserve.setReserveStatus(ReserveStatus.PENDING);
     reserve.setReserveAmount(claim.getExpectedClaimAmount());
     reserve.setReason("Initial indemnity reserve");
     return reserve;

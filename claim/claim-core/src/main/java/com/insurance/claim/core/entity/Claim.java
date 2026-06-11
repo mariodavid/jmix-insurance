@@ -99,6 +99,11 @@ public class Claim {
   @OneToMany(mappedBy = "claim")
   private List<ClaimReserve> reserves;
 
+  @OrderBy("paymentDate DESC")
+  @Composition
+  @OneToMany(mappedBy = "claim")
+  private List<ClaimPayment> payments;
+
   public UUID getId() {
     return id;
   }
@@ -233,5 +238,13 @@ public class Claim {
 
   public void setReserves(List<ClaimReserve> reserves) {
     this.reserves = reserves;
+  }
+
+  public List<ClaimPayment> getPayments() {
+    return payments;
+  }
+
+  public void setPayments(List<ClaimPayment> payments) {
+    this.payments = payments;
   }
 }

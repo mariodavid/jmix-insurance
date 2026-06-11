@@ -27,7 +27,6 @@ import io.jmix.flowui.component.combobox.EntityComboBox;
 import io.jmix.flowui.kit.component.button.JmixButton;
 import io.jmix.flowui.testassist.FlowuiTestAssistConfiguration;
 import io.jmix.flowui.testassist.UiTest;
-import io.jmix.flowui.testassist.UiTestUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -133,10 +132,12 @@ class ClaimUiTest {
     assertThat(savedClaim.getPolicyNo()).isEqualTo("HC-2026-000001");
     assertThat(savedClaim.getClaimStatus()).isEqualTo(ClaimStatus.OPEN);
 
-    Claim claimWithReserves = dataManager.load(Claim.class)
-        .id(savedClaim.getId())
-        .fetchPlan(fp -> fp.addFetchPlan(FetchPlan.BASE).add("reserves", FetchPlan.BASE))
-        .one();
+    Claim claimWithReserves =
+        dataManager
+            .load(Claim.class)
+            .id(savedClaim.getId())
+            .fetchPlan(fp -> fp.addFetchPlan(FetchPlan.BASE).add("reserves", FetchPlan.BASE))
+            .one();
     assertThat(claimWithReserves.getReserves()).hasSize(1);
 
     ClaimReserve reserve = claimWithReserves.getReserves().getFirst();

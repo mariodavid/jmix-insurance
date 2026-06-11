@@ -48,6 +48,7 @@
                         <button id="reserveCreateButton" action="reservesDataGrid.list_create"/>
                         <button id="reserveEditButton" action="reservesDataGrid.list_edit"/>
                         <button id="reserveRemoveButton" action="reservesDataGrid.list_remove"/>
+                        <button id="reserveApproveButton" action="reservesDataGrid.approve"/>
                     </hbox>
                     <dataGrid id="reservesDataGrid"
                               width="100%"
@@ -58,9 +59,11 @@
                             <action id="list_create" type="list_create"/>
                             <action id="list_edit" type="list_edit"/>
                             <action id="list_remove" type="list_remove"/>
+                            <action id="approve" text="msg://com.insurance.claim.ui.view.claim/approveReserve"/>
                         </actions>
                         <columns resizable="true">
                             <column property="reserveType"/>
+                            <column property="reserveStatus"/>
                             <column property="reserveAmount"/>
                             <column property="reason"/>
                         </columns>

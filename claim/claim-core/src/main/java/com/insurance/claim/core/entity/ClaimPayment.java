@@ -1,7 +1,5 @@
 package com.insurance.claim.core.entity;
 
-import com.insurance.claim.api.dto.ReserveStatus;
-import com.insurance.claim.api.dto.ReserveType;
 import io.jmix.core.annotation.DeletedBy;
 import io.jmix.core.annotation.DeletedDate;
 import io.jmix.core.entity.annotation.JmixGeneratedValue;
@@ -15,11 +13,11 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import org.springframework.data.annotation.CreatedBy;
@@ -30,14 +28,10 @@ import org.springframework.data.annotation.LastModifiedDate;
 @SuppressWarnings("PMD.NullAssignment")
 @JmixEntity
 @Table(
-    name = "CLAIM_CLAIM_RESERVE",
-    indexes = {@Index(name = "IDX_CLAIM_CLAIM_RESERVE_CLAIM", columnList = "CLAIM_ID")},
-    uniqueConstraints =
-        @UniqueConstraint(
-            name = "UNQ_CLAIM_RESERVE_TYPE",
-            columnNames = {"CLAIM_ID", "RESERVE_TYPE"}))
-@Entity(name = "claim_ClaimReserve")
-public class ClaimReserve {
+    name = "CLAIM_CLAIM_PAYMENT",
+    indexes = {@Index(name = "IDX_CLAIM_CLAIM_PAYMENT_CLAIM", columnList = "CLAIM_ID")})
+@Entity(name = "claim_ClaimPayment")
+public class ClaimPayment {
 
   @JmixGeneratedValue
   @Column(name = "ID", nullable = false)
@@ -77,23 +71,22 @@ public class ClaimReserve {
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   private Claim claim;
 
-  @Column(name = "RESERVE_TYPE", nullable = false)
-  @NotNull
-  private String reserveType;
-
-  @Column(name = "RESERVE_AMOUNT", nullable = false, precision = 19, scale = 2)
+  @Column(name = "AMOUNT", nullable = false, precision = 19, scale = 2)
   @NotNull
   @DecimalMin(value = "0", inclusive = false)
-  private BigDecimal reserveAmount;
+  private BigDecimal amount;
 
-  @Column(name = "RESERVE_STATUS", nullable = false)
+  @Column(name = "PAYMENT_DATE", nullable = false)
   @NotNull
-  private String reserveStatus;
+  private LocalDate paymentDate;
 
   @InstanceName
-  @Column(name = "REASON", nullable = false)
+  @Column(name = "PAYMENT_REFERENCE", nullable = false)
   @NotNull
-  private String reason;
+  private String paymentReference;
+
+  @Column(name = "COMMENT", length = 1000)
+  private String comment;
 
   public UUID getId() {
     return id;
@@ -167,35 +160,35 @@ public class ClaimReserve {
     this.claim = claim;
   }
 
-  public ReserveType getReserveType() {
-    return reserveType == null ? null : ReserveType.fromId(reserveType);
+  public BigDecimal getAmount() {
+    return amount;
   }
 
-  public void setReserveType(ReserveType reserveType) {
-    this.reserveType = reserveType == null ? null : reserveType.getId();
+  public void setAmount(BigDecimal amount) {
+    this.amount = amount;
   }
 
-  public BigDecimal getReserveAmount() {
-    return reserveAmount;
+  public LocalDate getPaymentDate() {
+    return paymentDate;
   }
 
-  public void setReserveAmount(BigDecimal reserveAmount) {
-    this.reserveAmount = reserveAmount;
+  public void setPaymentDate(LocalDate paymentDate) {
+    this.paymentDate = paymentDate;
   }
 
-  public ReserveStatus getReserveStatus() {
-    return reserveStatus == null ? null : ReserveStatus.fromId(reserveStatus);
+  public String getPaymentReference() {
+    return paymentReference;
   }
 
-  public void setReserveStatus(ReserveStatus reserveStatus) {
-    this.reserveStatus = reserveStatus == null ? null : reserveStatus.getId();
+  public void setPaymentReference(String paymentReference) {
+    this.paymentReference = paymentReference;
   }
 
-  public String getReason() {
-    return reason;
+  public String getComment() {
+    return comment;
   }
 
-  public void setReason(String reason) {
-    this.reason = reason;
+  public void setComment(String comment) {
+    this.comment = comment;
   }
 }

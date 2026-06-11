@@ -1,7 +1,6 @@
 package com.insurance.claim.ui.view.claim;
 
 import com.insurance.claim.core.entity.Claim;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.router.Route;
 import io.jmix.flowui.view.DefaultMainViewParent;
 import io.jmix.flowui.view.DialogMode;

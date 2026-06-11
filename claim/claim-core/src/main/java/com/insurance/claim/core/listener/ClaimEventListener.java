@@ -23,7 +23,10 @@ public class ClaimEventListener {
 
     if (!StringUtils.hasText(claim.getClaimNo())) {
       long nextVal = sequences.createNextValue(Sequence.withName("claim_number_sequence"));
-      int year = claim.getReportDate() != null ? claim.getReportDate().getYear() : java.time.LocalDate.now().getYear();
+      int year =
+          claim.getReportDate() != null
+              ? claim.getReportDate().getYear()
+              : java.time.LocalDate.now().getYear();
       claim.setClaimNo("CLM-" + year + "-" + String.format("%06d", nextVal));
     }
   }

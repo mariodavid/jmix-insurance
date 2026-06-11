@@ -3,6 +3,7 @@ package com.insurance.claim.core;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.insurance.claim.api.dto.ClaimStatus;
+import com.insurance.claim.api.dto.ReserveStatus;
 import com.insurance.claim.api.dto.ReserveType;
 import com.insurance.claim.core.entity.Claim;
 import com.insurance.claim.core.entity.ClaimReserve;
@@ -63,29 +64,35 @@ class ClaimTest {
     Claim claim = entityTestData.createWithDefaults(new ClaimDataProvider());
     claimService.saveClaim(claim);
 
-    Claim loaded = dataManager.load(Claim.class)
-        .id(claim.getId())
-        .fetchPlan(fp -> fp.addFetchPlan(FetchPlan.BASE).add("reserves", FetchPlan.BASE))
-        .one();
+    Claim loaded =
+        dataManager
+            .load(Claim.class)
+            .id(claim.getId())
+            .fetchPlan(fp -> fp.addFetchPlan(FetchPlan.BASE).add("reserves", FetchPlan.BASE))
+            .one();
 
     assertThat(loaded.getReserves()).hasSize(1);
 
     ClaimReserve reserve = loaded.getReserves().get(0);
     assertThat(reserve.getReserveType()).isEqualTo(ReserveType.INDEMNITY);
+    assertThat(reserve.getReserveStatus()).isEqualTo(ReserveStatus.PENDING);
     assertThat(reserve.getReserveAmount()).isEqualByComparingTo(new BigDecimal("1500.00"));
     assertThat(reserve.getReason()).isEqualTo("Initial indemnity reserve");
   }
 
   @Test
   void given_claimWithoutExpectedAmount_when_saved_then_noReserveIsCreated() {
-    Claim claim = entityTestData.createWithDefaults(new ClaimDataProvider(), c ->
-        c.setExpectedClaimAmount(null));
+    Claim claim =
+        entityTestData.createWithDefaults(
+            new ClaimDataProvider(), c -> c.setExpectedClaimAmount(null));
     claimService.saveClaim(claim);
 
-    Claim loaded = dataManager.load(Claim.class)
-        .id(claim.getId())
-        .fetchPlan(fp -> fp.addFetchPlan(FetchPlan.BASE).add("reserves", FetchPlan.BASE))
-        .one();
+    Claim loaded =
+        dataManager
+            .load(Claim.class)
+            .id(claim.getId())
+            .fetchPlan(fp -> fp.addFetchPlan(FetchPlan.BASE).add("reserves", FetchPlan.BASE))
+            .one();
 
     assertThat(loaded.getReserves()).isEmpty();
   }
@@ -101,6 +108,28 @@ class ClaimTest {
     assertThat(loaded.getCreatedBy()).isNotNull();
     assertThat(loaded.getVersion()).isEqualTo(1);
     assertThat(loaded.getClaimStatus()).isEqualTo(ClaimStatus.OPEN);
+  }
+
+  @Test
+  void given_pendingReserve_when_approved_then_statusIsApproved() {
+    Claim claim = entityTestData.createWithDefaults(new ClaimDataProvider());
+    claimService.saveClaim(claim);
+
+    Claim loaded =
+        dataManager
+            .load(Claim.class)
+            .id(claim.getId())
+            .fetchPlan(fp -> fp.addFetchPlan(FetchPlan.BASE).add("reserves", FetchPlan.BASE))
+            .one();
+
+    ClaimReserve reserve = loaded.getReserves().get(0);
+    assertThat(reserve.getReserveStatus()).isEqualTo(ReserveStatus.PENDING);
+
+    reserve.setReserveStatus(ReserveStatus.APPROVED);
+    dataManager.save(reserve);
+
+    ClaimReserve reloaded = dataManager.load(ClaimReserve.class).id(reserve.getId()).one();
+    assertThat(reloaded.getReserveStatus()).isEqualTo(ReserveStatus.APPROVED);
   }
 
   private void deleteAllClaims() {
