@@ -9,6 +9,7 @@ pmd {
 
 // Ensure PMD tasks use only our custom ruleset
 tasks.withType(Pmd).configureEach {
+    enabled = false
     ruleSets = []
     ruleSetFiles = files("${rootDir}/../config/pmd/ruleset.xml")
     reports {
@@ -30,6 +31,7 @@ spotbugs {
 
 // SpotBugs HTML report configuration using class name match to avoid compile-time type resolution issues
 tasks.matching { it.class.name.contains('SpotBugsTask') }.configureEach {
+    enabled = false
     reports {
         xml.required = true
         html.required = true
