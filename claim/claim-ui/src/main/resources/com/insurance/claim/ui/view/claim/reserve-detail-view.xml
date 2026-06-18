@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      title="msg://com.insurance.claim.ui.view.claim/reserveDetailView.title"
+      focusComponent="form">
+    <data>
+        <instance id="reserveDc"
+                  class="com.insurance.claim.core.entity.Reserve">
+            <fetchPlan extends="_base"/>
+            <loader id="reserveDl"/>
+        </instance>
+    </data>
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+    </facets>
+    <actions>
+        <action id="saveAction" type="detail_saveClose"/>
+        <action id="closeAction" type="detail_close"/>
+    </actions>
+    <layout>
+        <formLayout id="form" dataContainer="reserveDc">
+            <responsiveSteps>
+                <responsiveStep minWidth="0" columns="1"/>
+            </responsiveSteps>
+            <select id="typeField" property="type"/>
+            <textField id="amountField" property="amount"/>
+            <textArea id="commentField" property="comment"/>
+        </formLayout>
+        <hbox id="detailActions">
+            <button id="saveAndCloseButton" action="saveAction"/>
+            <button id="closeButton" action="closeAction"/>
+        </hbox>
+    </layout>
+</view>

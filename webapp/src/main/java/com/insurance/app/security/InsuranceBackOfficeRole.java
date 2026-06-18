@@ -2,6 +2,8 @@ package com.insurance.app.security;
 
 import com.insurance.account.core.security.AccountCoreManageRole;
 import com.insurance.account.ui.security.AccountUiManageRole;
+import com.insurance.claim.core.security.ClaimCoreManageRole;
+import com.insurance.claim.ui.security.ClaimUiManageRole;
 import com.insurance.partner.core.security.PartnerCoreManageRole;
 import com.insurance.partner.ui.security.PartnerUiManageRole;
 import com.insurance.policy.core.security.PolicyCoreManageRole;
@@ -21,7 +23,9 @@ public interface InsuranceBackOfficeRole
         PolicyCoreManageRole,
         PolicyUiManageRole,
         AccountCoreManageRole,
-        AccountUiManageRole {
+        AccountUiManageRole,
+        ClaimCoreManageRole,
+        ClaimUiManageRole {
 
   String CODE = "insurance-backoffice";
 }

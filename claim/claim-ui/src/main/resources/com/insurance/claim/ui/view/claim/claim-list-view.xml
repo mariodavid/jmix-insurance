@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      xmlns:c="http://jmix.io/schema/flowui/jpql-condition"
+      title="msg://com.insurance.claim.ui.view.claim/claimListView.title"
+      focusComponent="claimsDataGrid">
+    <data>
+        <collection id="claimsDc"
+                    class="com.insurance.claim.core.entity.Claim">
+            <fetchPlan extends="_base"/>
+            <loader id="claimsDl" readOnly="true">
+                <query>
+                    <![CDATA[select e from claim_Claim e order by e.claimNo desc]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+        <urlQueryParameters>
+            <genericFilter component="genericFilter"/>
+            <pagination component="pagination"/>
+        </urlQueryParameters>
+    </facets>
+    <actions>
+        <action id="selectAction" type="lookup_select"/>
+        <action id="discardAction" type="lookup_discard"/>
+    </actions>
+    <layout>
+        <genericFilter id="genericFilter"
+                       dataLoader="claimsDl">
+            <properties include=".*"/>
+        </genericFilter>
+        <hbox id="buttonsPanel" classNames="buttons-panel">
+            <button id="createButton" action="claimsDataGrid.createAction"/>
+            <button id="readButton" action="claimsDataGrid.readAction"/>
+            <simplePagination id="pagination" dataLoader="claimsDl"/>
+        </hbox>
+        <dataGrid id="claimsDataGrid"
+                  width="100%"
+                  minHeight="20em"
+                  dataContainer="claimsDc"
+                  columnReorderingAllowed="true">
+            <actions>
+                <action id="createAction" type="list_create"/>
+                <action id="readAction" type="list_read"/>
+            </actions>
+            <columns resizable="true">
+                <column property="claimNo"/>
+                <column property="policy.policyNo" header="msg://com.insurance.claim.ui.view.claim/policyNo.header"/>
+                <column property="dateOfLoss"/>
+                <column property="estimatedAmount"/>
+                <column key="status" header="msg://com.insurance.claim.ui.view.claim/status.header"/>
+            </columns>
+        </dataGrid>
+        <hbox id="lookupActions" visible="false">
+            <button id="selectButton" action="selectAction"/>
+            <button id="discardButton" action="discardAction"/>
+        </hbox>
+    </layout>
+</view>

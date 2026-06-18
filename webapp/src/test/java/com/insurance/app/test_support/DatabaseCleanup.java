@@ -2,6 +2,8 @@ package com.insurance.app.test_support;
 
 import com.insurance.account.core.entity.Account;
 import com.insurance.account.core.entity.AccountDocument;
+import com.insurance.claim.core.entity.Claim;
+import com.insurance.claim.core.entity.Reserve;
 import com.insurance.partner.core.entity.Partner;
 import com.insurance.policy.core.entity.Policy;
 import com.insurance.quote.core.entity.Quote;
@@ -23,6 +25,8 @@ public class DatabaseCleanup {
 
   public void removeAllEntities() {
     JdbcTemplate jdbc = new JdbcTemplate(dataSource);
+    delete(Reserve.class, jdbc);
+    delete(Claim.class, jdbc);
     delete(AccountDocument.class, jdbc);
     delete(Account.class, jdbc);
     delete(Policy.class, jdbc);

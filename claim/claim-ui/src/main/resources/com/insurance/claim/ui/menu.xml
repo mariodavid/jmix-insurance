@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <menu-config xmlns="http://jmix.io/schema/flowui/menu">
 
+    <item view="claim_Claim.list" icon="CLIPBOARD"/>
+
 </menu-config>
