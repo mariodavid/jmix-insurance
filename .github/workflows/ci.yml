@@ -106,11 +106,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: test-and-coverage
     if: github.event_name == 'pull_request' && success()
+    # Reviewer-only permissions: read code, write comments. No `contents: write`.
     permissions:
-      contents: write
+      contents: read
       pull-requests: write
       issues: write
       id-token: write
+      actions: read # let Claude read this run's CI results
 
     steps:
       - name: Checkout repository
@@ -118,34 +120,85 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Run Claude PR Reviewer
+      # Focused reviewer #1 — Domain-Driven Design & module boundaries.
+      - name: Claude Review — Domain & Boundaries
         uses: anthropics/claude-code-action@v1
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          track_progress: true
+          # Skill invocation drives the review; the skill IS the checklist (we don't restate its rules).
+          # Works because `actions/checkout` above makes `.claude/skills/` available to the action.
+          prompt: |
+            /insurance-module-boundaries Act as the domain & module-boundary reviewer for
+            pull request #${{ github.event.pull_request.number }} in ${{ github.repository }}.
+            Also apply the /insurance-create-cross-module-reference skill wherever this PR adds
+            a cross-module reference. Use those skills' rules (their workflow and "Forbidden"
+            constraints) as your review checklist — do not modify any code.
+
+            Get the diff with `gh pr diff` / `gh pr view` and review ONLY changes this PR introduces.
+            Do NOT report anything the ArchUnit ArchitectureTest, PMD, SpotBugs, or Spotless already
+            fail the build on, nor pre-existing issues or pedantic nitpicks.
+
+            Report specific line issues with `mcp__github_inline_comment__create_inline_comment`
+            (do NOT pass `confirmed: true`). Post ONE summary via `gh pr comment` headed
+            `### Domain & Boundaries review`. Post only to GitHub, never as a chat reply; if nothing
+            is noteworthy in this focus, post a one-line summary saying so.
+          claude_args: |
+            --model claude-sonnet-4-6
+            --max-turns 15
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Read,Grep,Glob,LS"
+
+      # Focused reviewer #2 — semantic correctness, transactions & test quality.
+      - name: Claude Review — Correctness & Tests
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           track_progress: true
           prompt: |
-            REPO: ${{ github.repository }}
-            PR NUMBER: ${{ github.event.pull_request.number }}
+            /insurance-testing Act as the correctness & testing reviewer for pull request
+            #${{ github.event.pull_request.number }} in ${{ github.repository }}. Use this skill's
+            rules as your checklist for test quality, and also apply the /insurance-observability
+            skill for business-flow logging. Do not modify any code.
 
-            You are a senior developer performing a code review on this Pull Request.
+            Beyond the skills, judge semantic/business-logic correctness, transaction boundaries,
+            exception handling and edge cases — especially the Quote -> Policy -> Account
+            event-driven flow (no skill covers this; use engineering judgment).
 
-            Instructions:
-            1. Retrieve the list of changed files in this PR and their diff using standard git commands or `gh pr diff`.
-            2. Scan the directory `.claude/skills/` to see available guidelines (Skills) in this repository.
-            3. For each changed file, determine if it matches the scope of any available skills. If so, read their `SKILL.md` instructions using your file reading tools.
+            Get the diff with `gh pr diff` / `gh pr view` and review ONLY changes this PR introduces.
+            Do NOT report anything the ArchUnit ArchitectureTest, PMD, SpotBugs, or Spotless already
+            fail the build on, nor pre-existing issues or pedantic nitpicks.
 
-            Focus Areas:
-            - Focus on SEMANTIC correctness, business logic bugs, transaction boundary robustness, exception handling, and edge cases.
-            - Focus on TEST QUALITY (e.g., checking that tests verify actual logic and boundary conditions, have descriptive assertions, and perform proper cleanup).
-            - Focus on UI/UX flow logical consistency and security design alignment.
+            Report specific line issues with `mcp__github_inline_comment__create_inline_comment`
+            (do NOT pass `confirmed: true`). Post ONE summary via `gh pr comment` headed
+            `### Correctness & Tests review`. Post only to GitHub, never as a chat reply; if nothing
+            is noteworthy in this focus, post a one-line summary saying so.
+          claude_args: |
+            --model claude-sonnet-4-6
+            --max-turns 15
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Read,Grep,Glob,LS"
 
-            Static Analysis Exclusion Rule:
-            - DO NOT report issues that are already covered by static analysis tools and automated tests in the project (such as ArchUnit rules in ArchitectureTest, PMD, Spotless formatting, or Spotbugs). For example, do not check for simple naming conventions, Lombok usage, file structure, or import boundary rules that the build itself already fails on.
+      # Focused reviewer #3 — security roles, policies & i18n.
+      - name: Claude Review — Security & Roles
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          track_progress: true
+          prompt: |
+            /insurance-security-roles Act as the security & roles reviewer for pull request
+            #${{ github.event.pull_request.number }} in ${{ github.repository }}. Use this skill's
+            rules as your review checklist. Do not modify any code.
 
-            Reporting Rules:
-            - Use `mcp__github_inline_comment__create_inline_comment` to add inline comments highlighting specific code issues. Do not pass `confirmed: true` so that comments are buffered and filtered through the Action's post-session classifier (which cleans up testing/probing comments).
-            - Use `gh pr comment` to post a top-level review summary comment.
-            - Only post GitHub comments - do not output the review as chat response messages.
+            Additionally verify all user-visible text uses `msg://` keys (flag hardcoded labels)
+            and that any new role policy references view/menu IDs that actually exist in the changed code.
+
+            Get the diff with `gh pr diff` / `gh pr view` and review ONLY changes this PR introduces.
+            Do NOT report anything the ArchUnit ArchitectureTest, PMD, SpotBugs, or Spotless already
+            fail the build on, nor pre-existing issues or pedantic nitpicks.
+
+            Report specific line issues with `mcp__github_inline_comment__create_inline_comment`
+            (do NOT pass `confirmed: true`). Post ONE summary via `gh pr comment` headed
+            `### Security & Roles review`. Post only to GitHub, never as a chat reply; if nothing
+            is noteworthy in this focus, post a one-line summary saying so.
           claude_args: |
             --model claude-sonnet-4-6
             --max-turns 15
