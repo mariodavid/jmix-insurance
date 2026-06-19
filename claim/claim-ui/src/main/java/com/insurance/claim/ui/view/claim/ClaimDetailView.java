@@ -13,7 +13,6 @@ import io.jmix.core.DataManager;
 import io.jmix.core.SaveContext;
 import io.jmix.flowui.component.combobox.EntityComboBox;
 import io.jmix.flowui.view.*;
-
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -55,11 +54,12 @@ public class ClaimDetailView extends StandardDetailView<Claim> {
     }
   }
 
-
+  @SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.UnusedFormalParameter"})
   @Install(target = Target.DATA_CONTEXT)
   private Set<Object> saveDelegate(final SaveContext saveContext) {
     Claim claim = getEditedEntity();
-    Claim savedClaim = claimService.createClaim(
+    Claim savedClaim =
+        claimService.createClaim(
             claim.getPolicy().getPolicyId(),
             claim.getPolicy().getPolicyNo(),
             claim.getPolicy().getPartnerNo(),
@@ -70,11 +70,9 @@ public class ClaimDetailView extends StandardDetailView<Claim> {
     return Set.of(savedClaim);
   }
 
-
   @SuppressWarnings("PMD.UnusedPrivateMethod")
   @Install(to = "policyComboBox", subject = "itemsFetchCallback")
-  private Stream<PolicyDto> policyComboBoxItemsFetchCallback(
-      final Query<PolicyDto, String> query) {
+  private Stream<PolicyDto> policyComboBoxItemsFetchCallback(final Query<PolicyDto, String> query) {
     String filter = query.getFilter().orElse("");
     int limit = query.getLimit();
     int offset = query.getOffset();

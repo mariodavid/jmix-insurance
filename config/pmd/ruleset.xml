@@ -23,6 +23,13 @@
         </properties>
     </rule>
 
+    <!-- Jmix entities carry 8 audit/system fields; raise threshold to accommodate -->
+    <rule ref="category/java/design.xml/TooManyFields">
+        <properties>
+            <property name="maxfields" value="20"/>
+        </properties>
+    </rule>
+
     <rule ref="category/java/design.xml/NcssCount">
         <properties>
             <property name="methodReportLevel" value="45"/>
