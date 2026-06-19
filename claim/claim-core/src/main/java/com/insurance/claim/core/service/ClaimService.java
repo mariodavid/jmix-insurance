@@ -22,8 +22,12 @@ public class ClaimService {
   }
 
   public Claim createClaim(
-      UUID policyId, String policyNo, String partnerNo,
-      LocalDate dateOfLoss, String description, BigDecimal estimatedAmount) {
+      UUID policyId,
+      String policyNo,
+      String partnerNo,
+      LocalDate dateOfLoss,
+      String description,
+      BigDecimal estimatedAmount) {
 
     Claim claim = dataManager.create(Claim.class);
     claim.setStatus(ClaimStatus.OPEN);

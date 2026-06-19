@@ -1,7 +1,5 @@
 package com.insurance.claim.core.entity;
 
-import com.insurance.claim.api.dto.ReserveStatus;
-import com.insurance.claim.api.dto.ReserveType;
 import io.jmix.core.annotation.DeletedBy;
 import io.jmix.core.annotation.DeletedDate;
 import io.jmix.core.entity.annotation.JmixGeneratedValue;
@@ -14,11 +12,11 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import org.springframework.data.annotation.CreatedBy;
@@ -28,14 +26,10 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 @JmixEntity
 @Table(
-    name = "CLAIM_RESERVE",
-    uniqueConstraints =
-        @UniqueConstraint(
-            name = "IDX_CLAIM_RESERVE_UNQ",
-            columnNames = {"CLAIM_ID", "TYPE_"}),
-    indexes = @Index(name = "IDX_CLAIM_RESERVE_CLAIM", columnList = "CLAIM_ID"))
-@Entity(name = "claim_Reserve")
-public class Reserve {
+    name = "CLAIM_PAYMENT",
+    indexes = @Index(name = "IDX_CLAIM_PAYMENT_CLAIM", columnList = "CLAIM_ID"))
+@Entity(name = "claim_Payment")
+public class Payment {
 
   @JmixGeneratedValue
   @Column(name = "ID", nullable = false)
@@ -75,18 +69,18 @@ public class Reserve {
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   private Claim claim;
 
-  @Column(name = "TYPE_", nullable = false)
-  @NotNull
-  private String type;
-
   @Column(name = "AMOUNT", nullable = false, precision = 19, scale = 2)
   @NotNull
-  @DecimalMin(value = "0.01", message = "Reserve amount must be greater than zero")
+  @DecimalMin(value = "0.01", message = "Payment amount must be greater than zero")
   private BigDecimal amount;
 
-  @Column(name = "STATUS", nullable = false)
+  @Column(name = "PAYMENT_DATE", nullable = false)
   @NotNull
-  private String status;
+  private LocalDate paymentDate;
+
+  @Column(name = "PAYMENT_REFERENCE", nullable = false)
+  @NotNull
+  private String paymentReference;
 
   @Column(name = "COMMENT_")
   private String comment;
@@ -163,15 +157,6 @@ public class Reserve {
     this.claim = claim;
   }
 
-  public ReserveType getType() {
-    return type == null ? null : ReserveType.fromId(type);
-  }
-
-  @SuppressWarnings("PMD.NullAssignment")
-  public void setType(ReserveType type) {
-    this.type = type == null ? null : type.getId();
-  }
-
   public BigDecimal getAmount() {
     return amount;
   }
@@ -180,13 +165,20 @@ public class Reserve {
     this.amount = amount;
   }
 
-  public ReserveStatus getStatus() {
-    return status == null ? null : ReserveStatus.fromId(status);
+  public LocalDate getPaymentDate() {
+    return paymentDate;
   }
 
-  @SuppressWarnings("PMD.NullAssignment")
-  public void setStatus(ReserveStatus status) {
-    this.status = status == null ? null : status.getId();
+  public void setPaymentDate(LocalDate paymentDate) {
+    this.paymentDate = paymentDate;
+  }
+
+  public String getPaymentReference() {
+    return paymentReference;
+  }
+
+  public void setPaymentReference(String paymentReference) {
+    this.paymentReference = paymentReference;
   }
 
   public String getComment() {
