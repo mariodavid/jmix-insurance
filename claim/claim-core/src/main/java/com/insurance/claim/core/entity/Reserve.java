@@ -1,6 +1,5 @@
 package com.insurance.claim.core.entity;
 
-import com.insurance.claim.api.dto.ReserveStatus;
 import com.insurance.claim.api.dto.ReserveType;
 import io.jmix.core.annotation.DeletedBy;
 import io.jmix.core.annotation.DeletedDate;
@@ -84,10 +83,6 @@ public class Reserve {
   @DecimalMin(value = "0.01", message = "Reserve amount must be greater than zero")
   private BigDecimal amount;
 
-  @Column(name = "STATUS", nullable = false)
-  @NotNull
-  private String status;
-
   @Column(name = "COMMENT_")
   private String comment;
 
@@ -167,7 +162,6 @@ public class Reserve {
     return type == null ? null : ReserveType.fromId(type);
   }
 
-  @SuppressWarnings("PMD.NullAssignment")
   public void setType(ReserveType type) {
     this.type = type == null ? null : type.getId();
   }
@@ -178,15 +172,6 @@ public class Reserve {
 
   public void setAmount(BigDecimal amount) {
     this.amount = amount;
-  }
-
-  public ReserveStatus getStatus() {
-    return status == null ? null : ReserveStatus.fromId(status);
-  }
-
-  @SuppressWarnings("PMD.NullAssignment")
-  public void setStatus(ReserveStatus status) {
-    this.status = status == null ? null : status.getId();
   }
 
   public String getComment() {

@@ -98,11 +98,6 @@ public class Claim {
   @OneToMany(mappedBy = "claim", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Reserve> reserves;
 
-  @OrderBy("paymentDate DESC")
-  @Composition
-  @OneToMany(mappedBy = "claim", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Payment> payments;
-
   public UUID getId() {
     return id;
   }
@@ -219,7 +214,6 @@ public class Claim {
     return status == null ? null : ClaimStatus.fromId(status);
   }
 
-  @SuppressWarnings("PMD.NullAssignment")
   public void setStatus(ClaimStatus status) {
     this.status = status == null ? null : status.getId();
   }
@@ -230,13 +224,5 @@ public class Claim {
 
   public void setReserves(List<Reserve> reserves) {
     this.reserves = reserves;
-  }
-
-  public List<Payment> getPayments() {
-    return payments;
-  }
-
-  public void setPayments(List<Payment> payments) {
-    this.payments = payments;
   }
 }
