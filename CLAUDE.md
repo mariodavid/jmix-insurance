@@ -14,14 +14,23 @@ Modular insurance management application built with Jmix 2 (Spring Boot 3, Vaadi
 # Run the application (http://localhost:8080, admin/admin)
 ./gradlew :webapp:bootRun
 
+# Auto-format code (always run before compile/check)
+./gradlew spotlessApply
+
 # Compile a single layer (~5s)
 ./gradlew :<module>:<layer>:compileJava    # e.g. :partner:partner-core:compileJava
 
 # Test/check a single module (~30s)
 ./gradlew :<module>:check                  # e.g. :partner:check
 
+# Architecture guardrails (module boundaries, naming, security policies)
+./gradlew :webapp:test --tests "com.insurance.app.arch.ArchitectureTest"
+
 # Full project verification
 ./gradlew check
+
+# Lint only (spotless + PMD + SpotBugs, no tests)
+./gradlew lint
 
 # Run a single test class
 ./gradlew :webapp:test --tests "com.insurance.app.quote.QuoteAcceptTest"
@@ -96,7 +105,8 @@ Use the most specific skill for the task:
 ## Validation Checklist
 
 Before reporting completion:
-1. Compile the affected layer.
+1. Run `./gradlew spotlessApply` then compile the affected layer.
 2. Check for unresolved `msg://` keys, hardcoded labels, mismatched form component types.
 3. Verify role policies reference real view/menu IDs.
-4. Run `./gradlew :<module>:check` for the affected module.
+4. Run architecture test if module boundaries were touched.
+5. Run `./gradlew :<module>:check` for the affected module.
