@@ -6,5 +6,6 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <include file="/com/insurance/claim/core/liquibase/changelog/010-init-claim.xml"/>
+    <include file="/com/insurance/claim/core/liquibase/changelog/020-reserve-status-payment.xml"/>
 
 </databaseChangeLog>
