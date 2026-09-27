@@ -32,6 +32,7 @@ jmix-insurance/
 ├── policy/             ← Policy API, core, UI, and starters
 ├── quote/              ← Quote API, core, UI, and starters
 ├── account/            ← Account API, core, UI, and starters
+├── claim/              ← Installed add-on shell for future claims capability
 ├── product/            ← Product enum/configuration modules
 ├── theme/              ← Shared Jmix theme add-on
 ├── ui-sections/        ← Shared Flow UI section contracts
@@ -39,7 +40,9 @@ jmix-insurance/
 └── test-support-ui/    ← Flow UI test helper library
 ```
 
-See [docs/architecture.md](docs/architecture.md) for the canonical module layout, domain model, agent harness, and key design decisions.
+See [docs/architecture.md](docs/architecture.md) for the current module layout, domain model,
+runtime flows, testing strategy, and automated guardrails. The reasoning behind architectural
+choices is recorded separately in the [ADR index](docs/adr/README.md).
 
 ## Getting Started
 
@@ -65,7 +68,7 @@ The embedded HSQLDB database is stored under `.jmix/hsqldb/` in the project root
 ./gradlew :webapp:test
 ```
 
-Run all module tests plus Checkstyle, SpotBugs and aggregate JaCoCo coverage from the root composite build:
+Run all module tests plus Spotless, PMD, and SpotBugs checks from the root composite build:
 
 ```bash
 ./gradlew check

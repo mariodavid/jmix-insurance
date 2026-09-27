@@ -126,4 +126,7 @@
       </entry>
     </moduleSettings>
   </component>
+  <component name="JmixPluginProjectSettings">
+    <option name="addLogicalFilePathToChangelogs" value="false" />
+  </component>
 </project>
